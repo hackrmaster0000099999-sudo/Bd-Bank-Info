@@ -3,6 +3,7 @@ import { Building2, Globe, MapPin, Search, ArrowLeft, ExternalLink, Hash, Filter
 import { Bank, Branch, Language } from '../types';
 import { getBranchesForBank } from '../lib/searchEngine';
 import { BranchCard } from './BranchCard';
+import { AdBanner } from './AdBanner';
 import { CopyButton } from './CopyButton';
 
 interface BankDetailsViewProps {
@@ -163,15 +164,17 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
       {/* Branch Grid */}
       {filteredBranches.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredBranches.map((br) => (
-            <BranchCard
-              key={br.id}
-              branch={br}
-              lang={lang}
-              onSelectBranch={onSelectBranch}
-              onOpenRoutingDecoder={onOpenRoutingDecoder}
-              onOpenReportModal={onOpenReportModal}
-            />
+          {filteredBranches.map((br, index) => (
+            <React.Fragment key={br.id}>
+              <BranchCard
+                branch={br}
+                lang={lang}
+                onSelectBranch={onSelectBranch}
+                onOpenRoutingDecoder={onOpenRoutingDecoder}
+                onOpenReportModal={onOpenReportModal}
+              />
+              {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
+            </React.Fragment>
           ))}
         </div>
       ) : (

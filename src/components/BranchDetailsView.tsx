@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Building2, MapPin, Phone, Mail, Hash, Globe, ArrowLeft, HeartHandshake, HelpCircle } from 'lucide-react';
 import { Branch, Language } from '../types';
 import { CopyButton } from './CopyButton';
+import { AdBanner } from './AdBanner';
 import { ShareButton } from './ShareButton';
 import { decodeRoutingNumber } from '../lib/routingDecoder';
 import { updateSEOMeta } from '../lib/seoManager';
@@ -55,6 +56,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           size="md"
         />
       </div>
+
+      <AdBanner className="mb-2" />
 
       {/* Hero Branch Header Card */}
       <div className="bg-white dark:bg-slate-800/90 rounded-3xl border border-slate-200/90 dark:border-slate-700/80 p-6 sm:p-8 shadow-md space-y-6">

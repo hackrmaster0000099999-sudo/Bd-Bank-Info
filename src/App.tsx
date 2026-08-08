@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSEO } from './hooks/useSEO';
 import { Language, FilterState, Bank, Branch } from './types';
 import { Header } from './components/Header';
+import { AdBanner } from './components/AdBanner';
 import { Footer } from './components/Footer';
 import { UniversalSearch } from './components/UniversalSearch';
 import { FilterBar } from './components/FilterBar';
@@ -260,13 +261,15 @@ export default function App() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {allBanks.map((bank) => (
-                      <BankCard
-                        key={bank.id}
-                        bank={bank}
-                        lang={lang}
-                        onSelectBank={handleSelectBank}
-                      />
+                    {allBanks.map((bank, index) => (
+                      <React.Fragment key={bank.id}>
+                        <BankCard
+                          bank={bank}
+                          lang={lang}
+                          onSelectBank={handleSelectBank}
+                        />
+                        {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
+                      </React.Fragment>
                     ))}
                   </div>
                 </div>
@@ -299,20 +302,19 @@ export default function App() {
 
                   {searchResults.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {searchResults.map((res) => {
+                      {searchResults.map((res, index) => {
+                        let content;
                         if (res.type === 'bank') {
-                          return (
+                          content = (
                             <BankCard
-                              key={res.id}
                               bank={res.item as Bank}
                               lang={lang}
                               onSelectBank={handleSelectBank}
                             />
                           );
                         } else {
-                          return (
+                          content = (
                             <BranchCard
-                              key={res.id}
                               branch={res.item as Branch}
                               lang={lang}
                               onSelectBranch={handleSelectBranch}
@@ -321,6 +323,12 @@ export default function App() {
                             />
                           );
                         }
+                        return (
+                          <React.Fragment key={res.id}>
+                            {content}
+                            {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
+                          </React.Fragment>
+                        );
                       })}
                     </div>
                   ) : (
