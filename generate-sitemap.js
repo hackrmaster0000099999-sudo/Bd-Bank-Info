@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 const banksData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/banks.json'), 'utf8'));
 const branchesData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/branches.json'), 'utf8'));
 
-const BASE_URL = 'https://ais-dev-zp3vsixrfvzv6qf7qdnk3g-944495601366.asia-southeast1.run.app';
+const BASE_URL = 'https://bdbankinfo.pages.dev';
 
 let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
 sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
