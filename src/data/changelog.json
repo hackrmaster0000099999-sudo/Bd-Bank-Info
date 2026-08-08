@@ -1,0 +1,31 @@
+[
+  {
+    "version": "v2026.03",
+    "date": "2026-03-01",
+    "title": "Bangladesh Bank BEFTN Routing Master Release (Q1 2026)",
+    "title_bn": "বাংলাদেশ ব্যাংক BEFTN রাউটিং মাস্টার আপডেট (মার্চ ২০২৬)",
+    "description": "Updated routing table with 42 new rural and sub-branch conversions, routing number additions for newly launched sub-branches, and 3 branch relocation updates.",
+    "description_bn": "৪২টি গ্রামীণ ও উপশাখা রূপান্তর, নতুন উপশাখার জন্য রাউটিং নম্বর সংযোজন এবং ৩টি শাখার স্থানান্তর তথ্য হালনাগাদ করা হয়েছে।",
+    "changes": [
+      "Added 42 sub-branch routing numbers issued by Bangladesh Bank",
+      "Updated Islami Bank and BRAC Bank updated SWIFT/BIC directory",
+      "Validated all 9-digit BEFTN checksums against BB master scheme",
+      "Added official Bangladesh Bank BEFTN circular ref: BPSD(ET)552/2026"
+    ],
+    "bb_ref_no": "BPSD(ET)552/2026"
+  },
+  {
+    "version": "v2026.01",
+    "date": "2026-01-15",
+    "title": "Bangladesh Bank BEFTN Annual Directory Update",
+    "title_bn": "বাংলাদেশ ব্যাংক BEFTN বার্ষিক ডিরেক্টরি হালনাগাদ",
+    "description": "Annual directory sync with official Bangladesh Bank records. Added district code mapping for new Mymensingh division districts.",
+    "description_bn": "বাংলাদেশ ব্যাংকের অফিসিয়াল রেকর্ডের সাথে বার্ষিক সমন্বয়। ময়মনসিংহ বিভাগের জন্য ডিসট্রিক্ট কোড সংশোধন করা হয়েছে।",
+    "changes": [
+      "Synchronized 60 scheduled banks and 10,000+ branch directory indices",
+      "Updated head office address mapping for renamed bank entities (PLC suffix update)",
+      "Standardized bilingual district name indexing (Dhaka, Chattogram, Sylhet, Khulna, etc.)"
+    ],
+    "bb_ref_no": "BPSD(ET)102/2026"
+  }
+]
