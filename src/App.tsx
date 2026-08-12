@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSEO } from './hooks/useSEO';
 import { Language, FilterState, Bank, Branch } from './types';
 import { Header } from './components/Header';
 import { AdBanner } from './components/AdBanner';
@@ -13,16 +12,22 @@ import { RoutingDecoderModal } from './components/RoutingDecoderModal';
 import { ReportIssueModal } from './components/ReportIssueModal';
 import { BankDetailsView } from './components/BankDetailsView';
 import { BranchDetailsView } from './components/BranchDetailsView';
-import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchBySlug, getBranchByRoutingNumber } from './lib/searchEngine';
-import { generateSeoData } from './lib/seoManager';
-import { Building2, Hash, Globe, MapPin, Sparkles, ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AboutPage } from './components/AboutPage';
+import { ContactPage } from './components/ContactPage';
+import { PrivacyPage } from './components/PrivacyPage';
+import { DisclaimerPage } from './components/DisclaimerPage';
+import { NotFoundPage } from './components/NotFoundPage';
+import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber } from './lib/searchEngine';
+import { generateSeoData, updateSEOMeta } from './lib/seoManager';
+import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('bn');
   const [currentTab, setCurrentTab] = useState<string>('search');
+  const [is404, setIs404] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Dark mode state
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -60,11 +65,9 @@ export default function App() {
   const [isRoutingDecoderOpen, setIsRoutingDecoderOpen] = useState(false);
   const [decoderRoutingNumber, setDecoderRoutingNumber] = useState('');
 
-  
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportBranchTarget, setReportBranchTarget] = useState<Branch | null>(null);
 
-  
   const isBn = lang === 'bn';
   const allBanks = getBanks();
   const divisions = getDivisions();
@@ -87,12 +90,16 @@ export default function App() {
   // React Router Sync
   useEffect(() => {
     const path = location.pathname;
+    setIs404(false);
+
     if (path.startsWith('/bank/')) {
       const slug = path.replace('/bank/', '');
       const bank = getBankBySlug(slug);
       if (bank) {
         setSelectedBank(bank);
         setSelectedBranch(null);
+      } else {
+        setIs404(true);
       }
     } else if (path.startsWith('/branch/')) {
       const routing = path.replace('/branch/', '');
@@ -100,27 +107,33 @@ export default function App() {
       if (branch) {
         setSelectedBranch(branch);
         setSelectedBank(null);
+      } else {
+        setIs404(true);
+      }
+    } else if (path === '/about' || path === '/contact' || path === '/privacy' || path === '/disclaimer') {
+      setSelectedBank(null);
+      setSelectedBranch(null);
+      setCurrentTab(path.substring(1));
+    } else if (path === '/' || path === '/banks' || path === '/routing' || path === '/swift') {
+      setSelectedBank(null);
+      setSelectedBranch(null);
+
+      const tab = path === '/' ? 'search' : path.substring(1);
+      setCurrentTab(tab);
+
+      if (tab === 'routing') {
+        setSearchType('routing');
+      } else if (tab === 'swift') {
+        setSearchType('swift');
+      } else {
+        setSearchType('all');
       }
     } else {
       setSelectedBank(null);
       setSelectedBranch(null);
-      
-      const tab = path.substring(1) || 'search';
-      setCurrentTab(tab);
-      
-      if (tab === 'routing') {
-        setSearchType('routing');
-        // if (!query) setQuery('125'); // Optional preset
-      } else if (tab === 'swift') {
-        setSearchType('swift');
-        // if (!query) setQuery('IBBL'); // Optional preset
-      } else if (tab === 'banks') {
-        setSearchType('all');
-        // setQuery('');
-      } else {
-        setSearchType('all');
-      }
+      setIs404(true);
     }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
@@ -147,38 +160,68 @@ export default function App() {
   };
 
   // SEO Metadata Update
-  const seoData = useMemo(() => {
-    let viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' = 'home';
-    if (selectedBranch) viewType = 'branch_detail';
-    else if (selectedBank) viewType = 'bank_detail';
-    else if (currentTab === 'banks') viewType = 'banks';
-    else if (currentTab === 'routing') viewType = 'routing';
-    else if (currentTab === 'swift') viewType = 'swift';
-
-    return generateSeoData(viewType, lang, selectedBank || undefined, selectedBranch || undefined, query);
-  }, [selectedBranch, selectedBank, currentTab, lang, query]);
-
   useEffect(() => {
-    document.title = seoData.title;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', seoData.description);
-  }, [seoData]);
+    let viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404' = 'home';
+
+    if (is404) {
+      viewType = '404';
+    } else if (selectedBranch) {
+      viewType = 'branch_detail';
+    } else if (selectedBank) {
+      viewType = 'bank_detail';
+    } else if (currentTab === 'banks') {
+      viewType = 'banks';
+    } else if (currentTab === 'routing') {
+      viewType = 'routing';
+    } else if (currentTab === 'swift') {
+      viewType = 'swift';
+    } else if (currentTab === 'about') {
+      viewType = 'about';
+    } else if (currentTab === 'contact') {
+      viewType = 'contact';
+    } else if (currentTab === 'privacy') {
+      viewType = 'privacy';
+    } else if (currentTab === 'disclaimer') {
+      viewType = 'disclaimer';
+    }
+
+    const seo = generateSeoData(viewType, lang, selectedBank || undefined, selectedBranch || undefined, query);
+
+    updateSEOMeta({
+      title: seo.title,
+      description: seo.description,
+      canonicalUrl: seo.canonicalUrl,
+      lang: lang,
+      bank: selectedBank || undefined,
+      branch: selectedBranch || undefined,
+      schemaType: selectedBranch ? 'branch' : selectedBank ? 'bank' : 'general'
+    });
+  }, [selectedBranch, selectedBank, currentTab, is404, lang, query]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-200 transition-colors">
       {/* Top Header Navigation */}
       <Header
-        
         lang={lang}
         onToggleLanguage={() => setLang((prev) => (prev === 'bn' ? 'en' : 'bn'))}
         darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode(prev => !prev)}
+        onToggleDarkMode={() => setDarkMode((prev) => !prev)}
       />
 
       {/* Main Body */}
       <main className="flex-1">
-        {/* VIEW 1: Branch Details View */}
-        {selectedBranch ? (
+        {is404 ? (
+          <NotFoundPage lang={lang} onHome={() => navigate('/')} />
+        ) : currentTab === 'about' ? (
+          <AboutPage lang={lang} onBack={() => navigate('/')} />
+        ) : currentTab === 'contact' ? (
+          <ContactPage lang={lang} onBack={() => navigate('/')} />
+        ) : currentTab === 'privacy' ? (
+          <PrivacyPage lang={lang} onBack={() => navigate('/')} />
+        ) : currentTab === 'disclaimer' ? (
+          <DisclaimerPage lang={lang} onBack={() => navigate('/')} />
+        ) : selectedBranch ? (
+          /* VIEW 1: Branch Details View */
           <BranchDetailsView
             branch={selectedBranch}
             lang={lang}
@@ -444,9 +487,8 @@ export default function App() {
       {/* Footer */}
       <Footer
         lang={lang}
-        
         onOpenReportModal={() => handleOpenReportModal(selectedBranch)}
-        />
+      />
 
       {/* Interactive Modals */}
       <RoutingDecoderModal
@@ -456,14 +498,13 @@ export default function App() {
         lang={lang}
       />
 
-      
       <ReportIssueModal
         branch={reportBranchTarget}
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         lang={lang}
       />
-
-          </div>
+    </div>
   );
 }
+

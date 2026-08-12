@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bdbankinfo.pages.dev/sitemap.xml

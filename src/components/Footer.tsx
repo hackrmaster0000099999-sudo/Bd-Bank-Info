@@ -17,9 +17,9 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="bg-slate-900 text-slate-300 mt-16 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {/* Brand & Purpose */}
-          <div className="md:col-span-1 space-y-3">
+          <div className="sm:col-span-2 md:col-span-1 space-y-3">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
                 BD
@@ -78,6 +78,47 @@ export const Footer: React.FC<FooterProps> = ({
                   className="hover:text-emerald-400 transition-colors cursor-pointer"
                 >
                   {isBn ? 'সার্বজনীন অনুসন্ধান (Universal Search)' : 'Universal Fast Search'}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Essential Legal & EEAT Pages */}
+          <div>
+            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3">
+              {isBn ? 'প্রয়োজনীয় পেজ' : 'Essential Pages'}
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link
+                  to="/about"
+                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  {isBn ? 'আমাদের সম্পর্কে (About Us)' : 'About Us'}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  {isBn ? 'যোগাযোগ (Contact Us)' : 'Contact Us'}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  {isBn ? 'প্রাইভেসি পলিসি (Privacy Policy)' : 'Privacy Policy'}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/disclaimer"
+                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  {isBn ? 'ডিসক্লেমার (Disclaimer)' : 'Disclaimer'}
                 </Link>
               </li>
             </ul>

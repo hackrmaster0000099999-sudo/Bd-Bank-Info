@@ -22,21 +22,36 @@ addUrl('/');
 addUrl('/banks');
 addUrl('/routing');
 addUrl('/swift');
+addUrl('/about');
+addUrl('/contact');
+addUrl('/privacy');
+addUrl('/disclaimer');
 
 // Bank routes
 for (const bank of banksData) {
   addUrl(`/bank/${bank.id}`);
 }
 
-// Branch routes (limit to first 100 for now to keep size small for testing, or we can do all)
-// Better to just do all, it will be around 11,000 links which is < 50k limit
+// Branch routes
 for (const branch of branchesData) {
   if (branch.routing_number) {
     addUrl(`/branch/${branch.routing_number}`);
   }
 }
 
-sitemap += '</urlset>';
+sitemap += '</urlset>\n';
 
-fs.writeFileSync(path.join(__dirname, 'public/sitemap.xml'), sitemap);
+// Write to public directory
+const publicDir = path.join(__dirname, 'public');
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
+
+// Also write directly to dist directory if dist exists
+const distDir = path.join(__dirname, 'dist');
+if (fs.existsSync(distDir)) {
+  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
+}
+
 console.log('Sitemap generated successfully.');
