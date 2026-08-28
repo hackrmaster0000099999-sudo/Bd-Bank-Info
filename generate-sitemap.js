@@ -5,53 +5,88 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const banksData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/banks.json'), 'utf8'));
-const branchesData = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/branches.json'), 'utf8'));
-
 const BASE_URL = 'https://worldbankcodes.com';
 
-let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
-sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+try {
+  let banks = [];
+  let branches = [];
 
-const addUrl = (url) => {
-  sitemap += `  <url>\n    <loc>${BASE_URL}${url}</loc>\n    <changefreq>weekly</changefreq>\n  </url>\n`;
-};
+  const banksPath = path.join(__dirname, 'src/data/banks.json');
+  const branchesPath = path.join(__dirname, 'src/data/branches.json');
 
-// Static routes
-addUrl('/');
-addUrl('/banks');
-addUrl('/routing');
-addUrl('/swift');
-addUrl('/about');
-addUrl('/contact');
-addUrl('/privacy');
-addUrl('/disclaimer');
-
-// Bank routes
-for (const bank of banksData) {
-  addUrl(`/bank/${bank.id}`);
-}
-
-// Branch routes
-for (const branch of branchesData) {
-  if (branch.routing_number) {
-    addUrl(`/branch/${branch.routing_number}`);
+  if (fs.existsSync(banksPath)) {
+    try {
+      const raw = fs.readFileSync(banksPath, 'utf8').trim();
+      banks = JSON.parse(raw);
+    } catch (e) {
+      console.warn('Warning: Could not parse banks.json for sitemap:', e.message);
+    }
   }
+
+  if (fs.existsSync(branchesPath)) {
+    try {
+      const raw = fs.readFileSync(branchesPath, 'utf8').trim();
+      branches = JSON.parse(raw);
+    } catch (e) {
+      console.warn('Warning: Could not parse branches.json for sitemap:', e.message);
+    }
+  }
+
+  const staticPages = [
+    { url: '/', priority: '1.0', changefreq: 'daily' },
+    { url: '/banks', priority: '0.9', changefreq: 'daily' },
+    { url: '/routing', priority: '0.9', changefreq: 'daily' },
+    { url: '/swift', priority: '0.9', changefreq: 'daily' },
+    { url: '/about', priority: '0.6', changefreq: 'monthly' },
+    { url: '/contact', priority: '0.6', changefreq: 'monthly' },
+    { url: '/privacy', priority: '0.5', changefreq: 'yearly' },
+    { url: '/disclaimer', priority: '0.5', changefreq: 'yearly' },
+  ];
+
+  const bankPages = banks.map(bank => ({
+    url: `/bank/${bank.id}`,
+    priority: '0.8',
+    changefreq: 'weekly',
+  }));
+
+  const branchPages = branches.map(branch => ({
+    url: `/branch/${branch.routing_number}`,
+    priority: '0.7',
+    changefreq: 'monthly',
+  }));
+
+  const allPages = [...staticPages, ...bankPages, ...branchPages];
+  const currentDate = new Date().toISOString().split('T')[0];
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allPages
+  .map(
+    page => `  <url>
+    <loc>${BASE_URL}${page.url}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
+  )
+  .join('\n')}
+</urlset>
+`;
+
+  // Write to public/
+  const publicDir = path.join(__dirname, 'public');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml, 'utf8');
+
+  // Write to dist/ if dist exists (during post-build)
+  const distDir = path.join(__dirname, 'dist');
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml, 'utf8');
+  }
+
+  console.log(`Sitemap generated successfully with ${allPages.length} URLs.`);
+} catch (err) {
+  console.warn('Sitemap generation error caught safely, continuing build:', err);
 }
-
-sitemap += '</urlset>\n';
-
-// Write to public directory
-const publicDir = path.join(__dirname, 'public');
-if (!fs.existsSync(publicDir)) {
-  fs.mkdirSync(publicDir, { recursive: true });
-}
-fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap, 'utf8');
-
-// Also write directly to dist directory if dist exists
-const distDir = path.join(__dirname, 'dist');
-if (fs.existsSync(distDir)) {
-  fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
-}
-
-console.log('Sitemap generated successfully.');
