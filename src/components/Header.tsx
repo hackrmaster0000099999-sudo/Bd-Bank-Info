@@ -22,26 +22,26 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/80 shadow-2xs transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Logo */}
-          <Link to="/" className="flex items-center cursor-pointer group shrink-0" id="header-logo-link">
-            <div className="h-10 sm:h-12 flex items-center justify-start group-hover:opacity-95 transition-opacity">
+          <Link to="/" className="flex items-center cursor-pointer group shrink-0 py-1" id="header-logo-link">
+            <div className="flex items-center justify-start group-hover:opacity-95 transition-opacity">
               <img 
                 src="/logo.png" 
                 alt="World Bank Codes" 
-                className="h-9 sm:h-11 w-auto max-w-[190px] sm:max-w-[240px] object-contain rounded-lg"
+                className="h-10 sm:h-12 md:h-14 w-auto max-w-[210px] sm:max-w-[280px] md:max-w-[320px] object-contain rounded-lg drop-shadow-xs"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                   e.currentTarget.parentElement?.querySelector('.fallback-brand-text')?.classList.remove('hidden');
                 }} 
               />
               <div className="fallback-brand-text hidden flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
                   <Building2 className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
+                  <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white leading-tight">
                     World Bank Codes
                   </span>
                 </div>
