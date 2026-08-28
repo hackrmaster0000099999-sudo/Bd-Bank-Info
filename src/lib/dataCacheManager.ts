@@ -1,5 +1,5 @@
 import banksData from '../data/banks.json';
-import branchesData from '../data/branches.json';
+import { allBranches } from '../data/branches/index';
 import { Bank, Branch } from '../types';
 
 const STORAGE_KEY = 'bb_routing_master';
@@ -33,7 +33,7 @@ export function initializeDataCache(): { banks: Bank[]; branches: Branch[]; from
   const defaultPayload: CacheData = {
     version: '2.0.0-march2026',
     banks: banksData as Bank[],
-    branches: branchesData as Branch[],
+    branches: allBranches,
     lastUpdated: new Date().toISOString(),
   };
 

@@ -788,9 +788,60 @@ for (const bank of allBanks) {
   });
 }
 
-// Write banks.json and branches.json
+// Write banks.json and modular branches by division
 const srcDataDir = path.join(__dirname, '../src/data');
+const branchesDir = path.join(srcDataDir, 'branches');
+
+if (!fs.existsSync(branchesDir)) {
+  fs.mkdirSync(branchesDir, { recursive: true });
+}
+
 fs.writeFileSync(path.join(srcDataDir, 'banks.json'), JSON.stringify(allBanks, null, 2), 'utf8');
+
+// Group branches by division
+const divisionGroups = {
+  dhaka: allBranches.filter(b => b.division.toLowerCase() === 'dhaka'),
+  chittagong: allBranches.filter(b => b.division.toLowerCase() === 'chittagong'),
+  sylhet: allBranches.filter(b => b.division.toLowerCase() === 'sylhet'),
+  rajshahi: allBranches.filter(b => b.division.toLowerCase() === 'rajshahi'),
+  khulna: allBranches.filter(b => b.division.toLowerCase() === 'khulna'),
+  barisal: allBranches.filter(b => b.division.toLowerCase() === 'barisal'),
+  rangpur: allBranches.filter(b => b.division.toLowerCase() === 'rangpur'),
+  mymensingh: allBranches.filter(b => b.division.toLowerCase() === 'mymensingh'),
+};
+
+for (const [divKey, divBranches] of Object.entries(divisionGroups)) {
+  fs.writeFileSync(path.join(branchesDir, `${divKey}.json`), JSON.stringify(divBranches, null, 2), 'utf8');
+}
+
+// Generate src/data/branches/index.ts
+const indexTsContent = `import dhaka from './dhaka.json';
+import chittagong from './chittagong.json';
+import sylhet from './sylhet.json';
+import rajshahi from './rajshahi.json';
+import khulna from './khulna.json';
+import barisal from './barisal.json';
+import rangpur from './rangpur.json';
+import mymensingh from './mymensingh.json';
+import { Branch } from '../../types';
+
+export const allBranches: Branch[] = [
+  ...(dhaka as unknown as Branch[]),
+  ...(chittagong as unknown as Branch[]),
+  ...(sylhet as unknown as Branch[]),
+  ...(rajshahi as unknown as Branch[]),
+  ...(khulna as unknown as Branch[]),
+  ...(barisal as unknown as Branch[]),
+  ...(rangpur as unknown as Branch[]),
+  ...(mymensingh as unknown as Branch[]),
+];
+
+export default allBranches;
+`;
+
+fs.writeFileSync(path.join(branchesDir, 'index.ts'), indexTsContent, 'utf8');
+
+// Also write clean branches.json for compatibility
 fs.writeFileSync(path.join(srcDataDir, 'branches.json'), JSON.stringify(allBranches, null, 2), 'utf8');
 
-console.log(`Generated ${allBanks.length} banks and ${allBranches.length} branches!`);
+console.log(`Generated ${allBanks.length} banks and ${allBranches.length} branches across 8 modular division files!`);

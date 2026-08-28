@@ -23,7 +23,24 @@ try {
     }
   }
 
-  if (fs.existsSync(branchesPath)) {
+  const branchesDir = path.join(__dirname, 'src/data/branches');
+  if (fs.existsSync(branchesDir)) {
+    const files = fs.readdirSync(branchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(branchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          branches.push(...parsed);
+        }
+      } catch (e) {
+        console.warn(`Warning: Could not parse branch file ${f}:`, e.message);
+      }
+    }
+  }
+
+  // Fallback to branches.json if modular folder was empty
+  if (branches.length === 0 && fs.existsSync(branchesPath)) {
     try {
       const raw = fs.readFileSync(branchesPath, 'utf8').trim();
       branches = JSON.parse(raw);

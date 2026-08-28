@@ -1,10 +1,10 @@
 import { Bank, Branch, SearchResult, FilterState } from '../types';
 import banksData from '../data/banks.json';
-import branchesData from '../data/branches.json';
+import { allBranches } from '../data/branches/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 const banks = banksData as Bank[];
-const branches = branchesData as Branch[];
+const branches = allBranches;
 
 export function getBanks(): Bank[] {
   return banks;
