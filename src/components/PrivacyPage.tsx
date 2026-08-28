@@ -40,8 +40,8 @@ export const PrivacyPage: React.FC<PageProps> = ({ lang, onBack }) => {
         <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           <p>
             {isBn
-              ? 'BD Bank Info ব্যবহারকারীদের তথ্যের গোপনীয়তা রক্ষায় অঙ্গীকারবদ্ধ। এই পেজে আমাদের গোপনীয়তা নীতি সম্পর্কে তথ্য দেওয়া হলো।'
-              : 'At BD Bank Info, accessible from https://bdbankinfo.pages.dev, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by BD Bank Info and how we use it.'}
+              ? 'World Bank Codes ব্যবহারকারীদের তথ্যের গোপনীয়তা রক্ষায় অঙ্গীকারবদ্ধ। এই পেজে আমাদের গোপনীয়তা নীতি সম্পর্কে তথ্য দেওয়া হলো।'
+              : 'At World Bank Codes, accessible from https://worldbankcodes.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by World Bank Codes and how we use it.'}
           </p>
 
           <h2 className="text-sm font-bold text-slate-900 dark:text-white pt-2">
@@ -50,7 +50,7 @@ export const PrivacyPage: React.FC<PageProps> = ({ lang, onBack }) => {
           <p>
             {isBn
               ? 'আমরা ব্যবহারকারীদের ব্যক্তিগত গোপনীয় তথ্য (যেমন জাতীয় পরিচয়পত্র, পাসওয়ার্ড, ব্যাংকিং পিন) সংগ্রহ করি না। সাইটের অভিজ্ঞতা উন্নত করতে কুকিজ এবং কুকিজ ভিত্তিক অ্যানালিটিক্স ব্যবহার করা হতে পারে।'
-              : 'BD Bank Info does not collect personal financial or confidential user data like PINs, passwords, or bank account credentials. Standard log files and Google Analytics 4 (GA4) are utilized to analyze web traffic anonymously.'}
+              : 'World Bank Codes does not collect personal financial or confidential user data like PINs, passwords, or bank account credentials. Standard log files and Google Analytics 4 (GA4) are utilized to analyze web traffic anonymously.'}
           </p>
 
           <h2 className="text-sm font-bold text-slate-900 dark:text-white pt-2">
@@ -67,7 +67,7 @@ export const PrivacyPage: React.FC<PageProps> = ({ lang, onBack }) => {
           </h2>
           <p>
             {isBn
-              ? 'আমাদের ওয়েবসাইটে সরকারি বা ব্যাংকের অফিশিয়াল ওয়েবসাইটের বাহ্যিক লিংক থাকতে পারে। বাহ্যিক ওয়েবসাইটের পলিসির জন্য BD Bank Info দায়ী নয়।'
+              ? 'আমাদের ওয়েবসাইটে সরকারি বা ব্যাংকের অফিশিয়াল ওয়েবসাইটের বাহ্যিক লিংক থাকতে পারে। বাহ্যিক ওয়েবসাইটের পলিসির জন্য World Bank Codes দায়ী নয়।'
               : 'Our website may contain links to official bank portals or external resources. We are not responsible for the privacy practices of third-party websites.'}
           </p>
         </div>

@@ -437,11 +437,11 @@ export default function App() {
                 </div>
               </div>
 
-              {/* About BD Bank Info & Educational Overview */}
+              {/* About World Bank Codes & Educational Overview */}
               <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-6 sm:p-8 space-y-4 shadow-xs">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  <span>{isBn ? 'BD Bank Info সম্পর্কে' : 'About BD Bank Info'}</span>
+                  <span>{isBn ? 'World Bank Codes সম্পর্কে' : 'About World Bank Codes'}</span>
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">

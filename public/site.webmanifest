@@ -1,7 +1,7 @@
 {
-  "name": "BD Bank Info",
-  "short_name": "BankInfo",
-  "description": "বাংলাদেশের সকল ব্যাংকের রাউটিং নম্বর ও ব্রাঞ্চ ফাইন্ডার",
+  "name": "World Bank Codes",
+  "short_name": "BankCodes",
+  "description": "Global Bank Routing Number, SWIFT / BIC Code & Branch Finder",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",

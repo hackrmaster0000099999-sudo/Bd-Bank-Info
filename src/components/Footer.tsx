@@ -21,15 +21,15 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Brand & Purpose */}
           <div className="sm:col-span-2 md:col-span-1 space-y-3">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-                BD
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-xs tracking-wider">
+                WBC
               </div>
-              <span className="font-bold text-lg text-white font-sans">BD Bank Info</span>
+              <span className="font-bold text-lg text-white font-sans">World Bank Codes</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               {isBn
-                ? 'বাংলাদেশের ব্যাংক সমূহের Routing Number, SWIFT Code এবং Branch Information দ্রুত খুঁজে পাওয়ার সবচেয়ে সহজ মাধ্যম।'
-                : 'Fast, reliable directory for Bangladesh Bank Routing Numbers, SWIFT Codes, and Branch Information.'}
+                ? 'ব্যাংক সমূহের Routing Number, SWIFT / BIC Code এবং Branch Information দ্রুত খুঁজে পাওয়ার উন্মুক্ত গ্লোবাল ডিরেক্টরি।'
+                : 'Fast, reliable global directory for Bank Routing Numbers, SWIFT Codes, and Branch Information worldwide.'}
             </p>
             <div className="pt-1">
               <button
@@ -132,20 +132,20 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <p className="text-[11px] text-slate-400 leading-relaxed">
               {isBn
-                ? 'এই ওয়েবসাইটের সকল ডাটা বাংলাদেশ ব্যাংক (Bangladesh Bank) প্রকাশিত BEFTN মাস্টার ফাইল থেকে সংগ্রহ করা হয়েছে। বড় ধরনের আর্থিক লেনদেনের পূর্বে সংশ্লিষ্ট ব্যাংকের সাথে নিশ্চিত হবার পরামর্শ দেওয়া হচ্ছে।'
-                : 'Data compiled from official Bangladesh Bank BEFTN records. BD Bank Info is an independent reference guide and not affiliated with Bangladesh Bank.'}
+                ? 'এই ওয়েবসাইটের ব্যাংক কোড ও শাখা সংক্রান্ত ডাটা সংশ্লিষ্ট কেন্দ্রীয় ব্যাংক ও আন্তর্জাতিক ব্যাংকিং ফাইল থেকে সংগ্রহ করা হয়েছে। বড় ধরনের আর্থিক লেনদেনের পূর্বে সংশ্লিষ্ট ব্যাংকের সাথে তথ্য নিশ্চিত করার পরামর্শ দেওয়া হচ্ছে।'
+                : 'Data compiled from official banking registers and BEFTN/SWIFT records. World Bank Codes is an independent reference guide.'}
             </p>
             <div className="text-[10px] text-emerald-400/90 font-mono pt-1">
-              Ref: BB BPSD(ET)552/2026 • Verified March 2026
+              Ref: WBC-BPSD-2026 • Verified March 2026
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-800 text-center sm:flex sm:justify-between sm:text-left text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} BD Bank Info. Fast, Lightweight & Open Reference.</p>
+          <p>© {new Date().getFullYear()} World Bank Codes (worldbankcodes.com). Fast, Lightweight & Open Reference.</p>
           <p className="mt-2 sm:mt-0">
-            {isBn ? 'বাংলাদেশে তৈরি 🇧🇩 • SEO-Optimized Static Engine' : 'Made for Bangladesh 🇧🇩 • Static SEO Architecture'}
+            {isBn ? 'গ্লোবাল ব্যাংক কোড ডিরেক্টরি 🌐 • SEO-Optimized Static Engine' : 'Global Banking Directory 🌐 • Static SEO Architecture'}
           </p>
         </div>
       </div>

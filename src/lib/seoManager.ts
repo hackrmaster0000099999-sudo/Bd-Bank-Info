@@ -10,7 +10,7 @@ export interface SEOProps {
   schemaType?: 'home' | 'bank' | 'branch' | 'general';
 }
 
-const BASE_URL = 'https://bdbankinfo.pages.dev';
+const BASE_URL = 'https://worldbankcodes.com';
 
 export function generateSeoData(
   viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404',
@@ -23,7 +23,7 @@ export function generateSeoData(
 
   if (viewType === 'branch_detail' && branch) {
     return {
-      title: `${branch.bank_name} (${branch.name} Branch) Routing Number & SWIFT Code`,
+      title: `${branch.bank_name} (${branch.name} Branch) Routing Number & SWIFT Code | World Bank Codes`,
       description: `Find official BEFTN Routing Number: ${branch.routing_number} and SWIFT Code: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, Bangladesh.`,
       canonicalUrl: `${BASE_URL}/branch/${branch.routing_number}`
     };
@@ -31,7 +31,7 @@ export function generateSeoData(
 
   if (viewType === 'bank_detail' && bank) {
     return {
-      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers & SWIFT Codes`,
+      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers & SWIFT Codes | World Bank Codes`,
       description: `Explore all branches, BEFTN routing numbers, and SWIFT codes for ${bank.name} in Bangladesh.`,
       canonicalUrl: `${BASE_URL}/bank/${bank.id}`
     };
@@ -39,47 +39,47 @@ export function generateSeoData(
 
   if (viewType === 'banks') {
     return {
-      title: isBn ? 'সকল তফসিলি ব্যাংক তালিকা ও কোড | BD Bank Info' : 'All Scheduled Banks List & Codes in Bangladesh | BD Bank Info',
-      description: isBn ? 'বাংলাদেশের সকল সরকারি, বেসরকারি ও বিদেশি ব্যাংকের তালিকা।' : 'Complete list of scheduled banks in Bangladesh.',
+      title: isBn ? 'সকল তফসিলি ব্যাংক তালিকা ও কোড | World Bank Codes' : 'All Scheduled Banks List & Codes | World Bank Codes',
+      description: isBn ? 'ব্যাংক তালিকা, রাউটিং নম্বর ও সুইফট কোডসমূহ।' : 'Complete list of scheduled banks, routing numbers and SWIFT codes.',
       canonicalUrl: `${BASE_URL}/banks`
     };
   }
 
   if (viewType === 'routing') {
     return {
-      title: isBn ? 'বিইএফটিএন রাউটিং নম্বর ডিরেক্টরি | BD Bank Info' : 'BEFTN Routing Number Directory Bangladesh | BD Bank Info',
-      description: isBn ? '৯ ডিজিটের রাউটিং নম্বর দিয়ে ব্যাংক ও শাখা খুঁজুন।' : 'Find bank branches by 9-digit BEFTN routing number.',
+      title: isBn ? 'রাউটিং নম্বর ডিরেক্টরি | World Bank Codes' : 'Bank Routing Number Directory | World Bank Codes',
+      description: isBn ? 'রাউটিং নম্বর দিয়ে ব্যাংক ও শাখা তাৎক্ষণিক খুঁজুন।' : 'Find bank branches by 9-digit routing number.',
       canonicalUrl: `${BASE_URL}/routing`
     };
   }
 
   if (viewType === 'swift') {
     return {
-      title: isBn ? 'সুইফট কোড (SWIFT BIC) ডিরেক্টরি | BD Bank Info' : 'SWIFT Code Directory for Banks in Bangladesh | BD Bank Info',
-      description: isBn ? 'আন্তর্জাতিক লেনদেনের জন্য ব্যাংকগুলোর সুইফট কোড।' : 'Find international SWIFT codes for banks in Bangladesh.',
+      title: isBn ? 'সুইফট কোড (SWIFT BIC) ডিরেক্টরি | World Bank Codes' : 'SWIFT Code Directory | World Bank Codes',
+      description: isBn ? 'আন্তর্জাতিক লেনদেনের জন্য ব্যাংকগুলোর সুইফট কোড।' : 'Find international SWIFT / BIC codes for banking and remittances.',
       canonicalUrl: `${BASE_URL}/swift`
     };
   }
 
   if (viewType === 'about') {
     return {
-      title: isBn ? 'আমাদের সম্পর্কে | BD Bank Info' : 'About Us | BD Bank Info',
-      description: isBn ? 'BD Bank Info সম্পর্কে বিস্তারিত জানুন।' : 'Learn about BD Bank Info and our Bangladesh Bank directory services.',
+      title: isBn ? 'আমাদের সম্পর্কে | World Bank Codes' : 'About Us | World Bank Codes',
+      description: isBn ? 'World Bank Codes সম্পর্কে বিস্তারিত জানুন।' : 'Learn about World Bank Codes and our international banking directory services.',
       canonicalUrl: `${BASE_URL}/about`
     };
   }
 
   if (viewType === 'contact') {
     return {
-      title: isBn ? 'যোগাযোগ | BD Bank Info' : 'Contact Us | BD Bank Info',
-      description: isBn ? 'BD Bank Info টিমের সাথে সরাসরি যোগাযোগ করুন।' : 'Get in touch with the BD Bank Info support and data management team.',
+      title: isBn ? 'যোগাযোগ | World Bank Codes' : 'Contact Us | World Bank Codes',
+      description: isBn ? 'World Bank Codes টিমের সাথে সরাসরি যোগাযোগ করুন।' : 'Get in touch with the World Bank Codes support and data management team.',
       canonicalUrl: `${BASE_URL}/contact`
     };
   }
 
   if (viewType === 'privacy') {
     return {
-      title: isBn ? 'প্রাইভেসি পলিসি | BD Bank Info' : 'Privacy Policy | BD Bank Info',
+      title: isBn ? 'প্রাইভেসি পলিসি | World Bank Codes' : 'Privacy Policy | World Bank Codes',
       description: isBn ? 'আমাদের তথ্য সুরক্ষা ও গোপনীয়তা নীতি দেখুন।' : 'Read our privacy policy regarding user data protection.',
       canonicalUrl: `${BASE_URL}/privacy`
     };
@@ -87,23 +87,23 @@ export function generateSeoData(
 
   if (viewType === 'disclaimer') {
     return {
-      title: isBn ? 'ডিসক্লেমার ও সতর্কতা | BD Bank Info' : 'Disclaimer | BD Bank Info',
-      description: isBn ? 'BD Bank Info ব্যবহারের নিয়মাবলি ও তথ্যের উৎস সম্পর্কে জানুন।' : 'Read our data source reference and usage disclaimer.',
+      title: isBn ? 'ডিসক্লেমার ও সতর্কতা | World Bank Codes' : 'Disclaimer | World Bank Codes',
+      description: isBn ? 'World Bank Codes ব্যবহারের নিয়মাবলি ও তথ্যের উৎস সম্পর্কে জানুন।' : 'Read our data source reference and usage disclaimer.',
       canonicalUrl: `${BASE_URL}/disclaimer`
     };
   }
 
   if (viewType === '404') {
     return {
-      title: isBn ? '৪০৪ - পেজ পাওয়া যায়নি | BD Bank Info' : '404 - Page Not Found | BD Bank Info',
+      title: isBn ? '৪০৪ - পেজ পাওয়া যায়নি | World Bank Codes' : '404 - Page Not Found | World Bank Codes',
       description: isBn ? 'দুঃখিত, আপনি যে পেজটি খুঁজছেন তা পাওয়া যায়নি।' : 'Sorry, the requested page could not be found.',
       canonicalUrl: `${BASE_URL}/404`
     };
   }
 
   return {
-    title: isBn ? 'BD Bank Info - ব্যাংক রাউটিং ও সুইফট কোড ফাইন্ডার' : 'BD Bank Info - Routing Number & SWIFT Code Finder',
-    description: isBn ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নম্বর, সুইফট কোড এবং শাখা তথ্য খুব সহজে খুঁজে বের করুন।' : 'Official Bangladesh Bank routing numbers and SWIFT codes directory.',
+    title: isBn ? 'World Bank Codes - ব্যাংক রাউটিং ও সুইফট কোড ফাইন্ডার' : 'World Bank Codes - Global Bank Routing & SWIFT Code Finder',
+    description: isBn ? 'বিশ্বের সকল ব্যাংকের রাউটিং নম্বর, সুইফট কোড এবং শাখা তথ্য খুব সহজে খুঁজে বের করুন।' : 'Global directory for bank routing numbers, SWIFT codes and branch information.',
     canonicalUrl: BASE_URL
   };
 }
@@ -140,7 +140,7 @@ export function updateSEOMeta({
   setMeta('property', 'og:url', canonicalUrl);
   setMeta('property', 'og:type', 'website');
   setMeta('property', 'og:image', `${BASE_URL}/logo.png`);
-  setMeta('property', 'og:site_name', 'BD Bank Info');
+  setMeta('property', 'og:site_name', 'World Bank Codes');
 
   // Twitter Card Meta
   setMeta('property', 'twitter:card', 'summary_large_image');
@@ -275,7 +275,7 @@ export function updateSEOMeta({
     schemaData.push({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      'name': 'BD Bank Info',
+      'name': 'World Bank Codes',
       'url': BASE_URL,
       'description': description,
       'potentialAction': {

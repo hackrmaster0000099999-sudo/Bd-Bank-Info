@@ -51,8 +51,8 @@ export const DisclaimerPage: React.FC<PageProps> = ({ lang, onBack }) => {
           </h2>
           <p>
             {isBn
-              ? 'এই ওয়েবসাইটে প্রদর্শিত সমস্ত ব্যাংক, শাখা, রাউটিং নম্বর এবং সুইফট কোড সরাসরি বাংলাদেশ ব্যাংক (Bangladesh Bank) কর্তৃক প্রকাশিত BEFTN মাস্টার ফাইল থেকে সংগৃহীত। BD Bank Info একটি স্বাধীন রেফারেন্স তথ্য সার্ভিস এবং বাংলাদেশ ব্যাংকের সাথে সরাসরি যুক্ত কোনো সরকারি প্রতিষ্ঠান নয়।'
-              : 'All bank routing numbers, branch records, and SWIFT codes published on BD Bank Info are compiled from public Bangladesh Bank BEFTN master datasets. BD Bank Info is an independent reference guide and is not directly affiliated with Bangladesh Bank.'}
+              ? 'এই ওয়েবসাইটে প্রদর্শিত ব্যাংক, শাখা, রাউটিং নম্বর এবং সুইফট কোডসমূহ সরাসরি কেন্দ্রীয় ব্যাংক ও আর্থিক কর্তৃপক্ষের পাবলিক মাস্টার ফাইল এবং আন্তর্জাতিক ব্যাংকিং ডাটাবেজ থেকে সংগৃহীত। World Bank Codes একটি স্বাধীন রেফারেন্স তথ্য সার্ভিস এবং কোনো সরকারি বা কেন্দ্রীয় ব্যাংকের সাথে সরাসরি যুক্ত কোনো প্রতিষ্ঠান নয়।'
+              : 'All bank routing numbers, branch records, and SWIFT codes published on World Bank Codes are compiled from central bank records and international banking datasets. World Bank Codes is an independent reference guide.'}
           </p>
 
           <h2 className="text-sm font-bold text-slate-900 dark:text-white pt-2">
@@ -60,8 +60,8 @@ export const DisclaimerPage: React.FC<PageProps> = ({ lang, onBack }) => {
           </h2>
           <p>
             {isBn
-              ? 'আমরা তথ্যের সর্বোচ্চ নির্ভুলতা বজায় রাখার চেষ্টা করি। তবুও ব্যাংকের শাখা পরিবর্তন বা কোড হালনাগাদের কারণে অনিচ্ছাকৃত কোনো ভুল বা বিলম্বের ফলে সৃষ্ট আর্থিক ক্ষতির জন্য BD Bank Info দায়ী থাকবে না।'
-              : 'While we strive to keep information complete and up to date, BD Bank Info makes no warranties of any kind about the completeness, reliability, or accuracy of the data.'}
+              ? 'আমরা তথ্যের সর্বোচ্চ নির্ভুলতা বজায় রাখার চেষ্টা করি। তবুও ব্যাংকের শাখা পরিবর্তন বা কোড হালনাগাদের কারণে অনিচ্ছাকৃত কোনো ভুল বা বিলম্বের ফলে সৃষ্ট আর্থিক ক্ষতির জন্য World Bank Codes দায়ী থাকবে না।'
+              : 'While we strive to keep information complete and up to date, World Bank Codes makes no warranties of any kind about the completeness, reliability, or accuracy of the data.'}
           </p>
         </div>
       </div>

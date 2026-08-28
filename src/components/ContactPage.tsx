@@ -46,15 +46,15 @@ export const ContactPage: React.FC<PageProps> = ({ lang, onBack }) => {
                 <Mail className="w-4 h-4" />
               </div>
               <h3 className="font-bold text-slate-900 dark:text-white">{isBn ? 'ইমেইল করুন' : 'Email Us'}</h3>
-              <p className="text-slate-500 font-mono">support@bdbankinfo.pages.dev</p>
+              <p className="text-slate-500 font-mono">support@worldbankcodes.com</p>
             </div>
 
             <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 space-y-2">
               <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <MapPin className="w-4 h-4" />
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white">{isBn ? 'অবস্থান' : 'Location'}</h3>
-              <p className="text-slate-500">{isBn ? 'ঢাকা, বাংলাদেশ' : 'Dhaka, Bangladesh'}</p>
+              <h3 className="font-bold text-slate-900 dark:text-white">{isBn ? 'গ্লোবাল সাপোর্ট' : 'Global Support'}</h3>
+              <p className="text-slate-500">{isBn ? 'অনলাইন সহায়তা ও ডাটাবেজ ডেস্ক' : 'Online Global Directory Helpdesk'}</p>
             </div>
           </div>
 

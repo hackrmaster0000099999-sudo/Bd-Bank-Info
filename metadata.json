@@ -1,6 +1,6 @@
 {
-  "name": "BD Bank Info",
-  "description": "Bangladesh Bank Routing Number, SWIFT Code & Branch Finder directory app",
+  "name": "World Bank Codes",
+  "description": "Global Bank Routing Number, SWIFT / BIC Code, IFSC & Branch Finder Directory",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

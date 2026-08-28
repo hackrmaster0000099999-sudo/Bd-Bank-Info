@@ -22,15 +22,15 @@ export const AboutPage: React.FC<PageProps> = ({ lang, onBack }) => {
 
       <div className="bg-white dark:bg-slate-800/90 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 sm:p-10 shadow-sm space-y-6 text-slate-800 dark:text-slate-200">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-md">
-            BD
+          <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white font-black text-sm tracking-wider shadow-md">
+            WBC
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {isBn ? 'আমাদের সম্পর্কে (About Us)' : 'About BD Bank Info'}
+              {isBn ? 'আমাদের সম্পর্কে (About Us)' : 'About World Bank Codes'}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {isBn ? 'বাংলাদেশের সবচেয়ে দ্রুতগতির ও সঠিক ব্যাংক রাউটিং নম্বর ডিরেক্টরি' : 'Fastest & verified bank routing directory in Bangladesh'}
+              {isBn ? 'দ্রুতগতির ও নির্ভরযোগ্য ব্যাংক রাউটিং নম্বর এবং সুইফট কোড ডিরেক্টরি' : 'Fast & verified global bank routing and SWIFT code directory'}
             </p>
           </div>
         </div>
@@ -40,8 +40,8 @@ export const AboutPage: React.FC<PageProps> = ({ lang, onBack }) => {
         <div className="space-y-4 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           <p>
             {isBn
-              ? 'BD Bank Info হলো একটি উন্মুক্ত ও নিরপেক্ষ অনলাইন তথ্য ডিরেক্টরি প্ল্যাটফর্ম, যা বাংলাদেশের সকল তফসিলি ব্যাংকের BEFTN রাউটিং নম্বর, সুইফট কোড (SWIFT/BIC Code), শাখার ঠিকানা এবং মোবাইল ফোন নম্বর এক প্ল্যাটফর্মে সহজে খুঁজে পাওয়ার সুবিধার্থে তৈরি করা হয়েছে।'
-              : 'BD Bank Info is an open and independent digital reference portal created to help individuals, businesses, and freelancers easily look up BEFTN Routing Numbers, SWIFT/BIC Codes, branch addresses, and contact numbers for all scheduled banks in Bangladesh.'}
+              ? 'World Bank Codes (worldbankcodes.com) হলো একটি উন্মুক্ত ও নিরপেক্ষ অনলাইন ব্যাংকিং তথ্য ডিরেক্টরি প্ল্যাটফর্ম, যা বিশ্বের ব্যাংক সমূহের রাউটিং নম্বর, সুইফট কোড (SWIFT/BIC Code), শাখার ঠিকানা এবং গুরুত্বপূর্ণ কোড এক প্ল্যাটফর্মে সহজে ও তাৎক্ষণিক খুঁজে পাওয়ার সুবিধার্থে তৈরি করা হয়েছে।'
+              : 'World Bank Codes (worldbankcodes.com) is an open and independent digital reference portal created to help individuals, businesses, and international freelancers easily look up Bank Routing Numbers, SWIFT/BIC Codes, branch locations, and banking codes worldwide.'}
           </p>
 
           <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pt-2">
@@ -50,8 +50,8 @@ export const AboutPage: React.FC<PageProps> = ({ lang, onBack }) => {
           </h2>
           <p>
             {isBn
-              ? 'আমাদের সকল তথ্য সরাসরি বাংলাদেশ ব্যাংক (Bangladesh Bank) প্রকাশিত অফিশিয়াল BEFTN (Bangladesh Electronic Funds Transfer Network) মাস্টার ফাইল থেকে নিয়মিত আপডেট করা হয়। ফলে আপনি কোনো ঝামেলা ছাড়াই সঠিক এবং হালনাগাদকৃত রাউটিং নম্বর ব্যবহার করতে পারেন।'
-              : 'Our records are compiled directly from Bangladesh Bank master BEFTN releases. We ensure high data accuracy so you can initiate electronic fund transfers (BEFTN/NPSB/RTGS) and foreign remittances with confidence.'}
+              ? 'আমাদের সকল তথ্য সরাসরি সংশ্লিষ্ট কেন্দ্রীয় ব্যাংক ও আর্থিক কর্তৃপক্ষের অফিশিয়াল ব্যাংকিং ডিরেক্টরি এবং মাস্টার ফাইল থেকে নিয়মিত আপডেট করা হয়। ফলে আপনি কোনো ঝামেলা ছাড়াই সঠিক এবং হালনাগাদকৃত ব্যাংক কোড ব্যবহার করতে পারেন।'
+              : 'Our records are compiled directly from central bank master publications and international SWIFT datasets. We ensure high data accuracy so you can initiate electronic fund transfers and foreign remittances with confidence.'}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
