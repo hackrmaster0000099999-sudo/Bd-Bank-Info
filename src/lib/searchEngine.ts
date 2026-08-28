@@ -232,5 +232,14 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
 }
 
 export function getBranchByRoutingNumber(routingNumber: string): Branch | undefined {
-  return branches.find(b => b.routing_number === routingNumber);
+  return branches.find(b => b.routing_number === routingNumber || b.id === routingNumber);
+}
+
+export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
+  const clean = identifier.trim().toLowerCase();
+  return branches.find(b => 
+    b.routing_number === clean || 
+    b.id.toLowerCase() === clean || 
+    b.id.toLowerCase().endsWith(clean)
+  );
 }

@@ -17,7 +17,7 @@ import { ContactPage } from './components/ContactPage';
 import { PrivacyPage } from './components/PrivacyPage';
 import { DisclaimerPage } from './components/DisclaimerPage';
 import { NotFoundPage } from './components/NotFoundPage';
-import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber } from './lib/searchEngine';
+import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting } from './lib/searchEngine';
 import { generateSeoData, updateSEOMeta } from './lib/seoManager';
 import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2 } from 'lucide-react';
 
@@ -102,8 +102,8 @@ export default function App() {
         setIs404(true);
       }
     } else if (path.startsWith('/branch/')) {
-      const routing = path.replace('/branch/', '');
-      const branch = getBranchByRoutingNumber(routing);
+      const identifier = decodeURIComponent(path.replace('/branch/', ''));
+      const branch = getBranchByIdOrRouting(identifier) || getBranchByRoutingNumber(identifier);
       if (branch) {
         setSelectedBranch(branch);
         setSelectedBank(null);
