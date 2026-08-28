@@ -25,8 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 cursor-pointer group">
-            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden border border-slate-100 dark:border-slate-800">
+          <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer group shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white flex items-center justify-center shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform duration-200 overflow-hidden border border-slate-100 dark:border-slate-800 shrink-0">
               <img src="/logo.png" alt="World Bank Codes Logo" className="w-full h-full object-cover" onError={(e) => {
                 // Fallback if logo not yet uploaded
                 e.currentTarget.style.display = 'none';
@@ -34,17 +34,14 @@ export const Header: React.FC<HeaderProps> = ({
               }} />
               <Building2 className="w-5 h-5 text-emerald-600 hidden" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white leading-none">
+            <div className="min-w-0">
+              <div className="flex items-center">
+                <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight truncate">
                   World Bank Codes
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
-                  v2.0
-                </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block mt-0.5 font-medium">
-                {isBn ? 'গ্লোবাল ব্যাংক রাউটিং ও সুইফট কোড ডিরেক্টরি' : 'Global Bank Routing & SWIFT Codes Directory'}
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 hidden sm:block font-medium truncate">
+                {isBn ? 'ব্যাংক রাউটিং ও সুইফট কোড ডিরেক্টরি' : 'Bank Routing & SWIFT Codes Directory'}
               </p>
             </div>
           </Link>

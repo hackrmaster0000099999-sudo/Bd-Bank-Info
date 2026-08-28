@@ -143,9 +143,9 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-800 text-center sm:flex sm:justify-between sm:text-left text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} World Bank Codes (worldbankcodes.com). Fast, Lightweight & Open Reference.</p>
-          <p className="mt-2 sm:mt-0">
-            {isBn ? 'গ্লোবাল ব্যাংক কোড ডিরেক্টরি 🌐 • SEO-Optimized Static Engine' : 'Global Banking Directory 🌐 • Static SEO Architecture'}
+          <p>© {new Date().getFullYear()} World Bank Codes (worldbankcodes.com). All rights reserved.</p>
+          <p className="mt-2 sm:mt-0 text-slate-500">
+            {isBn ? 'উন্মুক্ত ব্যাংকিং রেফারেন্স ও কোড ডিরেক্টরি' : 'Open Banking Reference Directory'}
           </p>
         </div>
       </div>

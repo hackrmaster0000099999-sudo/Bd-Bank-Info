@@ -41,20 +41,20 @@ export const ContactPage: React.FC<PageProps> = ({ lang, onBack }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300">
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 space-y-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/60 space-y-2.5">
+              <div className="w-9 h-9 rounded-full bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center text-white shadow-xs">
                 <Mail className="w-4 h-4" />
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white">{isBn ? 'ইমেইল করুন' : 'Email Us'}</h3>
-              <p className="text-slate-500 font-mono">support@worldbankcodes.com</p>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 space-y-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                <MapPin className="w-4 h-4" />
+              <div>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">{isBn ? 'ইমেইল সাপোর্ট' : 'Email Support'}</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{isBn ? 'সরাসরি যোগাযোগের ঠিকানা' : 'Direct contact address'}</p>
               </div>
-              <h3 className="font-bold text-slate-900 dark:text-white">{isBn ? 'গ্লোবাল সাপোর্ট' : 'Global Support'}</h3>
-              <p className="text-slate-500">{isBn ? 'অনলাইন সহায়তা ও ডাটাবেজ ডেস্ক' : 'Online Global Directory Helpdesk'}</p>
+              <a 
+                href="mailto:support@worldbankcodes.com" 
+                className="inline-block text-emerald-700 dark:text-emerald-300 font-mono font-bold text-xs sm:text-sm hover:underline break-all"
+              >
+                support@worldbankcodes.com
+              </a>
             </div>
           </div>
 
