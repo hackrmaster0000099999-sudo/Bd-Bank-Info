@@ -37,12 +37,11 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
 
   const popularTags = [
     { label: 'SBIN0000001', type: 'ifsc' as const, note: 'SBI Mumbai' },
-    { label: 'HDFC0000060', type: 'ifsc' as const, note: 'HDFC New Delhi' },
-    { label: '125260123', type: 'routing' as const, note: 'IBBL Dhaka Main' },
+    { label: '044525225', type: 'routing' as const, note: 'Sberbank BIK' },
+    { label: '125260123', type: 'routing' as const, note: 'IBBL Dhaka' },
     { label: 'SBININBB', type: 'swift' as const, note: 'SBI SWIFT' },
-    { label: 'IBBLBDDH', type: 'swift' as const, note: 'Islami Bank SWIFT' },
-    { label: 'State Bank of India', type: 'branch' as const, note: 'SBI' },
-    { label: 'BRAC Bank', type: 'branch' as const, note: 'BRAC Bank' }
+    { label: 'IBBLBDDH', type: 'swift' as const, note: 'IBBL SWIFT' },
+    { label: 'SABRRU2P', type: 'swift' as const, note: 'Sberbank SWIFT' }
   ];
 
   return (
@@ -102,7 +101,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{lang === 'hi' ? 'सभी' : lang === 'bn' ? 'সবগুলো' : 'All'}</span>
+            <span>{lang === 'hi' ? 'सभी' : lang === 'bn' ? 'সবগুলো' : lang === 'ru' ? 'Все' : 'All'}</span>
           </button>
 
           <button

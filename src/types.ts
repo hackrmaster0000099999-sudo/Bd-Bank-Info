@@ -1,56 +1,73 @@
-export type Language = 'bn' | 'en' | 'hi';
-export type Country = 'all' | 'bd' | 'in';
+export type Language = 'bn' | 'en' | 'hi' | 'ru';
+export type Country = 'all' | 'bd' | 'in' | 'ru';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh' or 'state-bank-of-india'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', or 'sberbank'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
+  name_ru?: string; // Russian (e.g. Сбербанк)
   short_name: string;
-  country: 'bd' | 'in'; // 'bd' for Bangladesh, 'in' for India
-  bank_code: string; // 3-digit BEFTN bank code or Indian Bank code
+  country: 'bd' | 'in' | 'ru'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia
+  bank_code: string; // 3-digit BEFTN bank code, Indian Bank code, or 3-digit Russian Bank code
+  bik_code?: string; // 9-digit Russian BIK (БИК) Code
+  corr_account?: string; // 20-digit Russian Correspondent Account (Корр. счет)
+  inn?: string; // 10-digit Taxpayer Identification Number (ИНН)
+  kpp?: string; // 9-digit Tax Registration Reason Code (КПП)
+  ogrn?: string; // 13-digit Primary State Registration Number (ОГРН)
   swift_code: string; // Head office SWIFT/BIC
   ifsc_prefix?: string; // e.g. SBIN, HDFC, ICIC
   head_office: string;
   head_office_bn?: string;
   head_office_hi?: string;
+  head_office_ru?: string;
   website: string;
   branch_count: number;
   established?: string;
-  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance';
+  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important';
   former_names?: string[]; // Former name for renamed/merged banks
   redirect_to?: string; // Slug for merged bank
 }
 
 export interface Branch {
-  id: string; // e.g., 'sbi-mumbai-main-sbin0000300' or 'ibbl-dhaka-main-125260001'
+  id: string; // e.g., 'sberbank-moscow-main-044525225' or 'sbi-mumbai-main-sbin0000300'
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
   bank_name_hi?: string;
+  bank_name_ru?: string;
   bank_short_name: string;
-  country: 'bd' | 'in';
+  country: 'bd' | 'in' | 'ru';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
-  division: string; // Division in Bangladesh or State in India
+  name_ru?: string; // Russian
+  division: string; // Division in BD, State in India, Federal Subject / District in Russia
   division_bn?: string;
   division_hi?: string;
-  district: string; // District in English
+  division_ru?: string;
+  district: string; // District / City in English
   district_bn?: string;
   district_hi?: string;
-  upazila?: string; // Upazila / City / Locality
+  district_ru?: string;
+  upazila?: string; // Upazila / City / Locality / District
   upazila_bn?: string;
   upazila_hi?: string;
+  upazila_ru?: string;
   address: string;
   address_bn?: string;
   address_hi?: string;
-  routing_number: string; // 9-digit BEFTN routing number or 9-digit MICR code in India
+  address_ru?: string;
+  routing_number: string; // 9-digit BEFTN routing number, 9-digit MICR code, or 9-digit BIK code
+  bik_code?: string; // 9-digit Russian BIK (БИК) Code
+  corr_account?: string; // 20-digit Russian Correspondent Account (Корр. счет)
+  inn?: string; // 10-digit INN
+  kpp?: string; // 9-digit KPP
   ifsc_code?: string; // 11-character Indian IFSC code (e.g. SBIN0000300)
   micr_code?: string; // 9-digit MICR code
   swift_code?: string; // Branch-specific or head office SWIFT
   uses_head_office_swift?: boolean;
-  branch_code: string; // 4 or 6 digit branch code
+  branch_code: string; // 4, 6 or 3-digit branch code
   phone?: string;
   email?: string;
   status: 'active' | 'relocated' | 'merged';
@@ -61,32 +78,39 @@ export interface FilterState {
   bankId: string;
   division: string;
   district: string;
-  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc';
+  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc' | 'bik';
 }
 
 export interface SearchResult {
-  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc';
+  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc' | 'bik';
   id: string;
   title: string;
   title_bn?: string;
   title_hi?: string;
+  title_ru?: string;
   subtitle: string;
   subtitle_bn?: string;
   subtitle_hi?: string;
+  subtitle_ru?: string;
   routing_number?: string;
+  bik_code?: string;
+  corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in';
+  country: 'bd' | 'in' | 'ru';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
   bank_name_hi?: string;
+  bank_name_ru?: string;
   district?: string;
   district_bn?: string;
   district_hi?: string;
+  district_ru?: string;
   division?: string;
   division_bn?: string;
   division_hi?: string;
+  division_ru?: string;
   matchedField?: string;
   score?: number;
   item: Bank | Branch;
@@ -101,6 +125,22 @@ export interface RoutingBreakdown {
   bank?: Bank;
   districtName?: string;
   branchName?: string;
+}
+
+export interface BikBreakdown {
+  bikCode: string;
+  isValid: boolean;
+  countryCode: string; // 04 (Russia)
+  countryName?: string;
+  regionCode: string; // 2 digits OKATO
+  regionName: string;
+  regionNameRu: string;
+  settlementCenterCode: string; // 2 digits RKC
+  creditOrgCode: string; // 3 digits branch/head code
+  branchIndex?: string; // 3 digits branch index
+  bank?: Bank;
+  branchName?: string;
+  corrAccount?: string;
 }
 
 export interface ChangeLogItem {

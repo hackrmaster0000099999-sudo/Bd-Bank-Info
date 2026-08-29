@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, Hash, Info, CheckCircle2, AlertTriangle, Building2, MapPin } from 'lucide-react';
+import { X, Hash, Info, CheckCircle2, AlertTriangle, Building2, MapPin, ShieldCheck } from 'lucide-react';
 import { Language } from '../types';
 import { decodeRoutingNumber } from '../lib/routingDecoder';
+import { decodeBik } from '../data/russia/bikDecoder';
 import { CopyButton } from './CopyButton';
 
 interface RoutingDecoderModalProps {
@@ -20,7 +21,12 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
   if (!isOpen) return null;
 
   const isBn = lang === 'bn';
-  const decoded = decodeRoutingNumber(routingNumber);
+  const isRu = lang === 'ru';
+  const isHi = lang === 'hi';
+
+  const isBik = routingNumber && routingNumber.startsWith('04');
+  const bikDecoded = decodeBik(routingNumber);
+  const bdDecoded = decodeRoutingNumber(routingNumber);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
@@ -40,10 +46,18 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
           </div>
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              {isBn ? 'BEFTN রাউটিং নম্বর কোড বিশ্লেষণ' : 'BEFTN Routing Number Breakdown'}
+              {isBik || isRu
+                ? (isRu ? 'Расшифровка структуры БИК (Банк России)' : 'Russian BIK Code Breakdown')
+                : isBn
+                ? 'BEFTN রাউটিং নম্বর কোড বিশ্লেষণ'
+                : 'BEFTN Routing Number Breakdown'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {isBn ? 'বাংলাদেশ ব্যাংকের ৯-ডিজিট রাউটিং কোডের গঠন' : 'Bangladesh Bank 9-Digit BEFTN Structure'}
+              {isBik || isRu
+                ? (isRu ? 'Структура 9-значного банковского кода РФ' : 'Bank of Russia 9-Digit BIK Structure')
+                : isBn
+                ? 'বাংলাদেশ ব্যাংকের ৯-ডিজিট রাউটিং কোডের গঠন'
+                : 'Bangladesh Bank 9-Digit BEFTN Structure'}
             </p>
           </div>
         </div>
@@ -52,7 +66,7 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
         <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600/80 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
-              {isBn ? 'পরীক্ষাধীন রাউটিং নম্বর:' : 'Target Routing Number:'}
+              {isRu ? 'Проверяемый код:' : isBn ? 'পরীক্ষাধীন রাউটিং নম্বর:' : 'Target Code / Number:'}
             </span>
             <span className="font-mono text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-wider break-all">
               {routingNumber || 'N/A'}
@@ -61,7 +75,87 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
           <CopyButton textToCopy={routingNumber} lang={lang} size="md" className="shrink-0" />
         </div>
 
-        {decoded.isValid ? (
+        {/* Russian BIK Breakdown */}
+        {isBik && bikDecoded.isValid ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800/60">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>{isRu ? 'Корректный 9-значный БИК Банка России.' : 'Valid 9-digit Bank of Russia BIK code.'}</span>
+            </div>
+
+            {/* Visual 3-part breakdown bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center pt-2">
+              <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">
+                  {isRu ? 'Страна (РФ)' : 'Country (RU)'}
+                </span>
+                <span className="font-mono text-lg font-bold text-emerald-900 dark:text-emerald-100">{bikDecoded.countryCode}</span>
+                <span className="text-[11px] text-emerald-700 dark:text-emerald-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {bikDecoded.countryName}
+                </span>
+              </div>
+
+              <div className="bg-amber-50/80 dark:bg-amber-950/40 p-3 rounded-xl border border-amber-200 dark:border-amber-800/60">
+                <span className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-300 block">
+                  {isRu ? 'Код ОКАТО' : 'Region Code'}
+                </span>
+                <span className="font-mono text-lg font-bold text-amber-900 dark:text-amber-100">{bikDecoded.regionCode}</span>
+                <span className="text-[11px] text-amber-700 dark:text-amber-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {bikDecoded.regionName}
+                </span>
+              </div>
+
+              <div className="bg-sky-50/80 dark:bg-sky-950/40 p-3 rounded-xl border border-sky-200 dark:border-sky-800/60">
+                <span className="text-[10px] uppercase font-bold text-sky-800 dark:text-sky-300 block">
+                  {isRu ? 'Номер филиала' : 'Branch ID'}
+                </span>
+                <span className="font-mono text-lg font-bold text-sky-900 dark:text-sky-100">{bikDecoded.branchIndex}</span>
+                <span className="text-[11px] text-sky-700 dark:text-sky-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {bikDecoded.branchIndex === '000' || bikDecoded.branchIndex === '001' || bikDecoded.branchIndex === '002' ? 'РКЦ / Головной' : 'Филиал банка'}
+                </span>
+              </div>
+            </div>
+
+            {/* Detailed Explanation */}
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 text-xs space-y-2">
+              <div className="flex items-start space-x-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isRu ? 'Символы 1-2 (Код страны):' : 'Digits 1-2 (Country Code):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {isRu ? '04 — официальный код Российской Федерации в международной кодификации.' : '04 identifies the Russian Federation in the national payment system.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2 border-t border-slate-200/80 dark:border-slate-700/80 pt-2">
+                <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-500 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isRu ? 'Символы 3-4 (Код субъекта РФ по ОКАТО):' : 'Digits 3-4 (OKATO Region Code):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {bikDecoded.regionCode} — {bikDecoded.regionName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2 border-t border-slate-200/80 dark:border-slate-700/80 pt-2">
+                <Hash className="w-4 h-4 text-sky-600 dark:text-sky-500 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isRu ? 'Символы 7-9 (Условный номер подразделения):' : 'Digits 7-9 (Branch Unit Identifier):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {bikDecoded.branchIndex} ({isRu ? 'Порядковый номер в расчетной сети Банка России' : 'Sequential node code in CBR network'})
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : bdDecoded.isValid ? (
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800/60">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -72,23 +166,23 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center pt-2">
               <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
                 <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">Bank Code</span>
-                <span className="font-mono text-lg font-bold text-emerald-900 dark:text-emerald-100">{decoded.bankCode}</span>
+                <span className="font-mono text-lg font-bold text-emerald-900 dark:text-emerald-100">{bdDecoded.bankCode}</span>
                 <span className="text-[11px] text-emerald-700 dark:text-emerald-400 block mt-0.5 line-clamp-1 font-semibold">
-                  {decoded.bank ? (isBn ? decoded.bank.short_name : decoded.bank.short_name) : 'Bank'}
+                  {bdDecoded.bank ? (isBn ? bdDecoded.bank.short_name : bdDecoded.bank.short_name) : 'Bank'}
                 </span>
               </div>
 
               <div className="bg-amber-50/80 dark:bg-amber-950/40 p-3 rounded-xl border border-amber-200 dark:border-amber-800/60">
                 <span className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-300 block">District Code</span>
-                <span className="font-mono text-lg font-bold text-amber-900 dark:text-amber-100">{decoded.districtCode}</span>
+                <span className="font-mono text-lg font-bold text-amber-900 dark:text-amber-100">{bdDecoded.districtCode}</span>
                 <span className="text-[11px] text-amber-700 dark:text-amber-400 block mt-0.5 line-clamp-1 font-semibold">
-                  {decoded.districtName}
+                  {bdDecoded.districtName}
                 </span>
               </div>
 
               <div className="bg-sky-50/80 dark:bg-sky-950/40 p-3 rounded-xl border border-sky-200 dark:border-sky-800/60">
                 <span className="text-[10px] uppercase font-bold text-sky-800 dark:text-sky-300 block">Branch Code</span>
-                <span className="font-mono text-lg font-bold text-sky-900 dark:text-sky-100">{decoded.branchCode}</span>
+                <span className="font-mono text-lg font-bold text-sky-900 dark:text-sky-100">{bdDecoded.branchCode}</span>
                 <span className="text-[11px] text-sky-700 dark:text-sky-400 block mt-0.5 line-clamp-1 font-semibold">
                   {isBn ? 'শাখা আইডি' : 'Branch ID'}
                 </span>
@@ -104,9 +198,9 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
                     {isBn ? 'প্রথম ৩ সংখ্যা (Bank Identifier):' : 'First 3 digits (Bank Code):'}
                   </span>
                   <p className="text-slate-600 dark:text-slate-300">
-                    {decoded.bank
-                      ? `${decoded.bankCode} - ${isBn ? decoded.bank.name_bn : decoded.bank.name}`
-                      : `${decoded.bankCode} - Unlisted Bank`}
+                    {bdDecoded.bank
+                      ? `${bdDecoded.bankCode} - ${isBn ? bdDecoded.bank.name_bn : bdDecoded.bank.name}`
+                      : `${bdDecoded.bankCode} - Unlisted Bank`}
                   </p>
                 </div>
               </div>
@@ -117,7 +211,7 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
                   <span className="font-bold text-slate-800 dark:text-slate-200">
                     {isBn ? '৪র্থ ও ৫ম সংখ্যা (District Code):' : '4th & 5th digits (District Code):'}
                   </span>
-                  <p className="text-slate-600 dark:text-slate-300">{decoded.districtCode} - {decoded.districtName}</p>
+                  <p className="text-slate-600 dark:text-slate-300">{bdDecoded.districtCode} - {bdDecoded.districtName}</p>
                 </div>
               </div>
 
@@ -129,8 +223,8 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
                   </span>
                   <p className="text-slate-600 dark:text-slate-300">
                     {isBn
-                      ? `${decoded.branchCode} - সংশ্লিষ্ট ব্যাংকের শাখা আইডি।`
-                      : `${decoded.branchCode} - Specific branch serial code.`}
+                      ? `${bdDecoded.branchCode} - সংশ্লিষ্ট ব্যাংকের শাখা আইডি।`
+                      : `${bdDecoded.branchCode} - Specific branch serial code.`}
                   </p>
                 </div>
               </div>
@@ -141,12 +235,14 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
             <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-500 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold block mb-0.5">
-                {isBn ? 'অকার্যকর বা অপূর্ণ রাউটিং নম্বর' : 'Invalid or Incomplete Routing Number'}
+                {isRu ? 'Недействительный или неполный код' : isBn ? 'অকার্যকর বা অপূর্ণ রাউটিং নম্বর' : 'Invalid or Incomplete Code'}
               </span>
               <p>
-                {isBn
+                {isRu
+                  ? 'БИК должен состоять ровно из 9 цифр и начинаться с 04 (код РФ).'
+                  : isBn
                   ? 'বাংলাদেশ ব্যাংকের BEFTN সিস্টেম অনুযায়ী রাউটিং নম্বর অবশ্যই ৯টি ডিজিট সম্পন্ন হতে হবে।'
-                  : 'BEFTN Routing Numbers issued by Bangladesh Bank must be exactly 9 digits.'}
+                  : 'Routing / BIK Numbers must be exactly 9 numeric digits.'}
               </p>
             </div>
           </div>
@@ -158,7 +254,7 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-xs font-semibold bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors cursor-pointer"
           >
-            {isBn ? 'বন্ধ করুন' : 'Close'}
+            {isRu ? 'Закрыть' : isBn ? 'বন্ধ করুন' : 'Close'}
           </button>
         </div>
       </div>

@@ -14,22 +14,28 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
   const t = translations[lang] || translations.en;
 
   const getBankName = () => {
+    if (lang === 'ru' && bank.name_ru) return bank.name_ru;
     if (lang === 'hi' && bank.name_hi) return bank.name_hi;
     if (lang === 'bn' && bank.name_bn) return bank.name_bn;
     return bank.name;
   };
 
   const getSubName = () => {
+    if (lang === 'ru') return bank.name;
     if (lang === 'hi') return bank.name;
     if (lang === 'bn') return bank.name;
-    return bank.name_hi || bank.name_bn || '';
+    return bank.name_ru || bank.name_hi || bank.name_bn || '';
   };
 
   const getHeadOffice = () => {
+    if (lang === 'ru' && bank.head_office_ru) return bank.head_office_ru;
     if (lang === 'hi' && bank.head_office_hi) return bank.head_office_hi;
     if (lang === 'bn' && bank.head_office_bn) return bank.head_office_bn;
     return bank.head_office;
   };
+
+  const isRussia = bank.country === 'ru';
+  const isIndia = bank.country === 'in';
 
   return (
     <div
@@ -46,14 +52,16 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
-                  {bank.country === 'in' ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+                  {isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
                 </span>
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
                   {bank.type || 'Bank'}
                 </span>
               </div>
               <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate">
-                {bank.country === 'in' && bank.ifsc_prefix ? (
+                {isRussia ? (
+                  <>БИК: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bik_code || bank.bank_code}</span></>
+                ) : isIndia && bank.ifsc_prefix ? (
                   <>IFSC Prefix: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.ifsc_prefix}</span></>
                 ) : (
                   <>Bank Code: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bank_code}</span></>
@@ -98,7 +106,13 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
 
       {/* Footer Action */}
       <div className="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-emerald-700 dark:text-emerald-400 group-hover:text-emerald-800 dark:group-hover:text-emerald-300">
-        <span>{bank.country === 'in' ? (lang === 'hi' ? 'शाखाएँ व IFSC कोड देखें' : 'View Branches & IFSC Codes') : (lang === 'bn' ? 'শাখা ও রাউটিং নম্বর দেখুন' : 'View Branches & Routing')}</span>
+        <span>
+          {isRussia
+            ? (lang === 'ru' ? 'Отделения, БИК и реквизиты' : 'View Branches & BIK Codes')
+            : isIndia
+            ? (lang === 'hi' ? 'शाखाएँ व IFSC कोड देखें' : 'View Branches & IFSC Codes')
+            : (lang === 'bn' ? 'শাখা ও রাউটিং নম্বর দেখুন' : 'View Branches & Routing')}
+        </span>
         <div className="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-700 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all">
           <ChevronRight className="w-3.5 h-3.5" />
         </div>

@@ -104,13 +104,12 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
           </nav>
 
-          {/* Right actions: ONLY Country Selector (Flag + Code) & Dark Mode Toggle */}
+          {/* Right actions: Country Selector, & Dark Mode Toggle */}
           <div className="flex items-center space-x-2.5 sm:space-x-3.5 pl-2 pr-0.5 sm:pr-2">
             {/* Country Selector with Flag and 2-Letter Code */}
             <CountrySelector
               country={country}
               onSetCountry={onSetCountry}
-              onSetLanguage={onSetLanguage}
               lang={lang}
             />
 

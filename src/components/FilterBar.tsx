@@ -73,6 +73,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <option value="all" className="dark:bg-slate-800">🌐 {t.allCountries}</option>
             <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>
             <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
+            <option value="ru" className="dark:bg-slate-800">🇷🇺 {t.russia}</option>
           </select>
           <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
         </div>

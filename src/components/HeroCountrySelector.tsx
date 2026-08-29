@@ -21,13 +21,13 @@ interface CountryTab {
 
 const COUNTRY_TABS: CountryTab[] = [
   {
-    id: 'all',
-    flag: '🌐',
-    code: 'ALL',
-    nameEn: 'All Countries',
-    nameNative: 'সমস্ত দেশ / सभी देश',
-    badgeEn: 'Global Directory',
-    badgeNative: 'গ্লোবাল ডিরেক্টরি'
+    id: 'ru',
+    flag: '🇷🇺',
+    code: 'RU',
+    nameEn: 'Russia',
+    nameNative: 'Россия',
+    badgeEn: 'BIK & SWIFT',
+    badgeNative: 'БИК и SWIFT'
   },
   {
     id: 'bd',
@@ -65,16 +65,18 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600 dark:bg-emerald-400"></span>
         </span>
         <span className="font-semibold text-[11px] sm:text-xs">
-          {country === 'in'
-            ? (lang === 'hi' ? 'चयनित देश: भारत (RBI अधिकृत बैंक एवं IFSC डाटाबेस)' : 'Selected Country: India (RBI IFSC & SWIFT Directory)')
+          {country === 'ru'
+            ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
+            : country === 'in'
+            ? (lang === 'hi' ? 'चयनित देश: भारत (RBI अधिकृत बैंक एवं IFSC डाटाबेस)' : lang === 'bn' ? 'নির্বাচিত দেশ: ভারত (আরবিআই অনুমোদিত IFSC ডাটাবেজ)' : 'Selected Country: India (RBI IFSC & SWIFT Directory)')
             : country === 'bd'
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: বাংলাদেশ (বাংলাদেশ ব্যাংক অনুমোদিত BEFTN ডাটাবেজ)' : 'Selected Country: Bangladesh (Central Bank BEFTN Database)')
-            : (lang === 'hi' ? 'सभी देश: भारत एवं बांग्लादेश के संपूर्ण बैंक कोड' : lang === 'bn' ? 'বিশ্বের ব্যাংক সমূহের সকল কোড ও ব্রাঞ্চ ডিরেক্টরি' : 'Global Banking Network: India & Bangladesh Central Directory')}
+            : (lang === 'ru' ? 'Все страны: Полная база реквизитов РФ, Индии и Бангладеш' : lang === 'hi' ? 'सभी देश: भारत, रूस एवं बांग्लादेश के संपूर्ण बैंक कोड' : lang === 'bn' ? 'বিশ্বের ব্যাংক সমূহের সকল কোড ও ব্রাঞ্চ ডিরেক্টরি' : 'Global Banking Network: Russia, India & Bangladesh Central Directory')}
         </span>
       </div>
 
-      {/* Interactive 3-Pill Switcher */}
-      <div className="bg-slate-200/70 dark:bg-slate-800/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs grid grid-cols-3 gap-1.5">
+      {/* Interactive Pill Switcher (Scrollable) */}
+      <div className="bg-slate-200/70 dark:bg-slate-800/90 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs flex flex-nowrap overflow-x-auto snap-x gap-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {COUNTRY_TABS.map((tab) => {
           const isActive = country === tab.id;
           return (
@@ -82,7 +84,7 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
               key={tab.id}
               type="button"
               onClick={() => onSetCountry(tab.id)}
-              className={`relative flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2.5 py-2 sm:py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-center select-none ${
+              className={`relative flex-shrink-0 flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-center select-none snap-start min-w-[140px] sm:min-w-[160px] ${
                 isActive
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm border border-slate-200/90 dark:border-slate-600 font-bold scale-[1.01]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-700/50 font-medium'
@@ -91,10 +93,12 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
               <div className="flex items-center gap-1.5">
                 <span className="text-base sm:text-lg leading-none">{tab.flag}</span>
                 <span className="text-xs sm:text-sm font-bold tracking-tight">
-                  {lang === 'hi' && tab.id === 'in'
-                    ? 'भारत'
-                    : lang === 'bn' && tab.id === 'bd'
-                    ? 'বাংলাদেশ'
+                  {lang === 'ru'
+                    ? (tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
+                    : lang === 'hi'
+                    ? (tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
+                    : lang === 'bn'
+                    ? (tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
                     : tab.nameEn}
                 </span>
               </div>

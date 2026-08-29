@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, MapPin, Phone, Mail, Hash, Globe, ArrowLeft, HeartHandshake, HelpCircle, BookOpen, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Building2, MapPin, Phone, Mail, Hash, Globe, ArrowLeft, HeartHandshake, HelpCircle, BookOpen, CheckCircle2, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
 import { Branch, Language } from '../types';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
 import { decodeRoutingNumber } from '../lib/routingDecoder';
+import { decodeBik } from '../data/russia/bikDecoder';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -25,39 +26,66 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
 }) => {
   const t = translations[lang] || translations.en;
   const decoded = decodeRoutingNumber(branch.routing_number);
+  const bikDecoded = decodeBik(branch.bik_code || branch.routing_number);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
 
   const getBranchName = () => {
+    if (lang === 'ru' && branch.name_ru) return branch.name_ru;
     if (lang === 'hi' && branch.name_hi) return branch.name_hi;
     if (lang === 'bn' && branch.name_bn) return branch.name_bn;
     return branch.name;
   };
 
   const getBankName = () => {
+    if (lang === 'ru' && branch.bank_name_ru) return branch.bank_name_ru;
     if (lang === 'hi' && branch.bank_name_hi) return branch.bank_name_hi;
     if (lang === 'bn' && branch.bank_name_bn) return branch.bank_name_bn;
     return branch.bank_name;
   };
 
   const getDistrict = () => {
+    if (lang === 'ru' && branch.district_ru) return branch.district_ru;
     if (lang === 'hi' && branch.district_hi) return branch.district_hi;
     if (lang === 'bn' && branch.district_bn) return branch.district_bn;
     return branch.district;
   };
 
   const getAddress = () => {
+    if (lang === 'ru' && branch.address_ru) return branch.address_ru;
     if (lang === 'hi' && branch.address_hi) return branch.address_hi;
     if (lang === 'bn' && branch.address_bn) return branch.address_bn;
     return branch.address;
   };
 
   const shareTitle = `${branch.bank_name} (${branch.name} Branch) Code & Details`;
-  const shareText = isIndia
+  const shareText = isRussia
+    ? `БИК: ${branch.bik_code || branch.routing_number} | Корр. счет: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}, Россия.`
+    : isIndia
     ? `Official IFSC: ${branch.ifsc_code} | MICR: ${branch.routing_number} | City: ${branch.district}, ${branch.division}, India.`
     : `Official BEFTN Routing: ${branch.routing_number} | SWIFT Code: ${branch.swift_code || 'Head Office'} | District: ${branch.district}, Bangladesh.`;
 
-  const faqs = lang === 'hi'
+  const faqs = lang === 'ru'
+    ? [
+        {
+          question: `Какой БИК у отделения ${getBankName()} (${getBranchName()})?`,
+          answer: `Официальный 9-значный БИК (Банковский идентификационный код) данного отделения: ${branch.bik_code || branch.routing_number}. Зарегистрирован в платежной системе Банка России.`
+        },
+        {
+          question: `Какой корреспондентский счет используется для переводов?`,
+          answer: branch.corr_account
+            ? `Корреспондентский счет отделения в Главном управлении Банка России: ${branch.corr_account}.`
+            : `Для данного филиала используется корреспондентский счет головного банка в Банке России.`
+        },
+        {
+          question: `Какой SWIFT код использовать для международных расчетов?`,
+          answer: branch.swift_code
+            ? `Прямой SWIFT/BIC код этого отделения: ${branch.swift_code}.`
+            : `Рекомендуется использовать головной SWIFT код банка ${branch.bank_name} с указанием наименования отделения "${branch.name}".`
+        }
+      ]
+    : lang === 'hi'
     ? [
         {
           question: `${getBankName()} ${getBranchName()} शाखा का IFSC कोड क्या है?`,
@@ -90,7 +118,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
     : [
         {
           question: `What is the official code of ${branch.bank_name} ${branch.name} branch?`,
-          answer: `The official code for ${branch.bank_name} (${branch.name} Branch) is ${branch.ifsc_code || branch.routing_number}.`
+          answer: `The official code for ${branch.bank_name} (${branch.name} Branch) is ${branch.bik_code || branch.ifsc_code || branch.routing_number}.`
         },
         {
           question: `Which SWIFT code should be used for international transfers?`,
@@ -104,14 +132,16 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   useEffect(() => {
     updateSEOMeta({
       title: `${branch.bank_name} ${branch.name} Branch Code & SWIFT | World Bank Codes`,
-      description: isIndia
+      description: isRussia
+        ? `Official BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, Russia.`
+        : isIndia
         ? `Official IFSC Code: ${branch.ifsc_code}, MICR: ${branch.routing_number} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, India.`
         : `Official BEFTN Routing Number: ${branch.routing_number} and SWIFT Code for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, Bangladesh.`,
       lang,
       branch,
       faqs
     });
-  }, [branch, lang, isIndia, faqs]);
+  }, [branch, lang, isRussia, isIndia, faqs]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -156,11 +186,11 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               {getDistrict()}, {branch.division}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-              {isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+              {isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              <span>{lang === 'hi' ? `सत्यापित: ${CURRENT_DATA_VERSION_DATE}` : lang === 'bn' ? `যাচাইকৃত: ${CURRENT_DATA_VERSION_DATE}` : `Verified: ${CURRENT_DATA_VERSION_DATE}`}</span>
+              <span>{lang === 'ru' ? `Проверено: ${CURRENT_DATA_VERSION_DATE}` : lang === 'hi' ? `सत्यापित: ${CURRENT_DATA_VERSION_DATE}` : lang === 'bn' ? `যাচাইকৃত: ${CURRENT_DATA_VERSION_DATE}` : `Verified: ${CURRENT_DATA_VERSION_DATE}`}</span>
             </span>
           </div>
 
@@ -175,7 +205,19 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
         {/* Highlighted Code Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Primary Transfer Code Box */}
-          {isIndia && branch.ifsc_code ? (
+          {isRussia ? (
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
+                  БИК (Банковский идентификационный код)
+                </span>
+                <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.bik_code || branch.routing_number}
+                </span>
+              </div>
+              <CopyButton textToCopy={branch.bik_code || branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
+            </div>
+          ) : isIndia && branch.ifsc_code ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
               <div>
                 <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
@@ -200,7 +242,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
                 </div>
                 <button
                   onClick={() => onOpenRoutingDecoder(branch.routing_number)}
-                  className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition-colors"
+                  className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition-colors cursor-pointer"
                   title="Decode 9-digit routing number"
                 >
                   <HelpCircle className="w-4 h-4" />
@@ -210,24 +252,100 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
             </div>
           )}
 
-          {/* Secondary Code Box: SWIFT or MICR */}
-          <div className="bg-slate-50 dark:bg-slate-700/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between space-y-3">
-            <div>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
-                {branch.swift_code ? t.swift : isIndia ? 'MICR Code' : t.swift}
-              </span>
-              <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
-                {branch.swift_code || branch.routing_number}
-              </span>
+          {/* Secondary Code Box: Corr Account for RU, SWIFT or MICR */}
+          {isRussia && branch.corr_account ? (
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+                  Корреспондентский счет (Корр. счет)
+                </span>
+                <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.corr_account}
+                </span>
+              </div>
+              <CopyButton
+                textToCopy={branch.corr_account}
+                size="md"
+                lang={lang}
+                className="w-full justify-center"
+              />
             </div>
-            <CopyButton
-              textToCopy={branch.swift_code || branch.routing_number}
-              size="md"
-              lang={lang}
-              className="w-full justify-center"
-            />
-          </div>
+          ) : (
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+                  {branch.swift_code ? t.swift : isIndia ? 'MICR Code' : t.swift}
+                </span>
+                <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.swift_code || branch.routing_number}
+                </span>
+              </div>
+              <CopyButton
+                textToCopy={branch.swift_code || branch.routing_number}
+                size="md"
+                lang={lang}
+                className="w-full justify-center"
+              />
+            </div>
+          )}
         </div>
+
+        {/* Russian Extra Requisites Section (INN, KPP, SWIFT) */}
+        {isRussia && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            {branch.inn && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">ИНН банка:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.inn}</span>
+                </div>
+                <CopyButton textToCopy={branch.inn} size="sm" lang={lang} />
+              </div>
+            )}
+            {branch.kpp && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">КПП филиала:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.kpp}</span>
+                </div>
+                <CopyButton textToCopy={branch.kpp} size="sm" lang={lang} />
+              </div>
+            )}
+            {branch.swift_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">SWIFT / BIC:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.swift_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.swift_code} size="sm" lang={lang} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Russian BIK Structure Explanation Card */}
+        {isRussia && bikDecoded && bikDecoded.isValid && (
+          <div className="bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>{lang === 'ru' ? 'Расшифровка структуры БИК (Банк России)' : 'BIK Code Structure Breakdown'}</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Страна (04):</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{bikDecoded.countryName}</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Код региона (ОКАТО):</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{bikDecoded.regionName} ({bikDecoded.regionCode})</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Номер подразделения:</span>
+                <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{bikDecoded.branchIndex}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Contact & Location Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-4 border-t border-slate-100 dark:border-slate-700/80">

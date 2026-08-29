@@ -24,8 +24,8 @@ import { translations } from './lib/translations';
 import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2, Clock, Star } from 'lucide-react';
 
 export default function App() {
-  const [lang, setLang] = useState<Language>('bn');
-  const [country, setCountry] = useState<Country>('all');
+  const [lang, setLang] = useState<Language>('en');
+  const [country, setCountry] = useState<Country>('in');
   const [currentTab, setCurrentTab] = useState<string>('search');
   const [is404, setIs404] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export default function App() {
   const [query, setQuery] = useState<string>('');
   const [searchType, setSearchType] = useState<'all' | 'routing' | 'ifsc' | 'swift' | 'branch'>('all');
   const [filters, setFilters] = useState<FilterState>({
-    country: 'all',
+    country: 'in',
     bankId: 'all',
     division: 'all',
     district: 'all',
@@ -68,6 +68,10 @@ export default function App() {
       setLang('hi');
     } else if (newCountry === 'bd') {
       setLang('bn');
+    } else if (newCountry === 'ru') {
+      setLang('ru');
+    } else {
+      setLang('en');
     }
 
     setFilters((prev) => ({
@@ -310,14 +314,28 @@ export default function App() {
                 {country === 'in' ? (
                   lang === 'hi'
                     ? 'भारत के सभी बैंकों के IFSC कोड, MICR ও स्विफ्ट कोड'
+                    : lang === 'ru'
+                    ? 'Справочник IFSC, MICR и SWIFT кодов банков Индии'
                     : 'All India Bank IFSC Codes, MICR & SWIFT Directory'
                 ) : country === 'bd' ? (
                   lang === 'bn'
                     ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নম্বর ও সুইফট কোড'
+                    : lang === 'ru'
+                    ? 'Справочник Routing и SWIFT кодов банков Бангладеш'
                     : 'Bangladesh Bank Routing Numbers & SWIFT Code Directory'
+                ) : country === 'ru' ? (
+                  lang === 'ru'
+                    ? 'Открытый справочник банковских реквизитов: БИК, корр. счета и SWIFT коды РФ'
+                    : lang === 'hi'
+                    ? 'रूसी बैंकों के BIK एवं SWIFT कोड डायरेक्टरी'
+                    : lang === 'bn'
+                    ? 'রাশিয়ান ব্যাংক সমূহের BIK এবং SWIFT কোড ডিরেক্টরি'
+                    : 'Russian Bank BIK, Correspondent Accounts & SWIFT Codes Directory'
                 ) : (
-                  lang === 'hi'
-                    ? 'भारत एवं बांग्लादेश के सभी बैंकों के IFSC, রাউটিং ও SWIFT कोड'
+                  lang === 'ru'
+                    ? 'Глобальный справочник кодов IFSC, Routing и SWIFT'
+                    : lang === 'hi'
+                    ? 'वैश्विक बैंक IFSC, राउटिंग एवं SWIFT कोड डायरेक्टरी'
                     : lang === 'bn'
                     ? 'বিশ্বের ব্যাংক সমূহের IFSC, রাউটিং ও সুইফট কোড ডিরেক্টরি'
                     : 'Global Bank IFSC, Routing Numbers & SWIFT Codes Directory'
@@ -581,7 +599,7 @@ export default function App() {
         aria-label="Rate Us & Send Direct Message"
       >
         <Star className="w-4 h-4 fill-slate-950 text-slate-950" />
-        <span>{lang === 'hi' ? 'रेटिंग व फीडबैक' : lang === 'bn' ? 'রেটিং ও মতামত' : 'Rate Us ⭐'}</span>
+        <span>{lang === 'hi' ? 'रेटिंग व फीडबैक' : lang === 'bn' ? 'রেটিং ও মতামত' : lang === 'ru' ? 'Оцените нас ⭐' : 'Rate Us ⭐'}</span>
       </button>
 
       {/* Interactive Modals */}

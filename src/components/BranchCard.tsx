@@ -21,34 +21,41 @@ export const BranchCard: React.FC<BranchCardProps> = ({
   onOpenReportModal
 }) => {
   const t = translations[lang] || translations.en;
+  const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
 
   const getBranchName = () => {
+    if (lang === 'ru' && branch.name_ru) return branch.name_ru;
     if (lang === 'hi' && branch.name_hi) return branch.name_hi;
     if (lang === 'bn' && branch.name_bn) return branch.name_bn;
     return branch.name;
   };
 
   const getBankName = () => {
+    if (lang === 'ru' && branch.bank_name_ru) return branch.bank_name_ru;
     if (lang === 'hi' && branch.bank_name_hi) return branch.bank_name_hi;
     if (lang === 'bn' && branch.bank_name_bn) return branch.bank_name_bn;
     return branch.bank_name;
   };
 
   const getDistrict = () => {
+    if (lang === 'ru' && branch.district_ru) return branch.district_ru;
     if (lang === 'hi' && branch.district_hi) return branch.district_hi;
     if (lang === 'bn' && branch.district_bn) return branch.district_bn;
     return branch.district;
   };
 
   const getAddress = () => {
+    if (lang === 'ru' && branch.address_ru) return branch.address_ru;
     if (lang === 'hi' && branch.address_hi) return branch.address_hi;
     if (lang === 'bn' && branch.address_bn) return branch.address_bn;
     return branch.address;
   };
 
   const shareTitle = `${branch.bank_name} - ${branch.name} Branch`;
-  const shareText = isIndia
+  const shareText = isRussia
+    ? `БИК: ${branch.bik_code || branch.routing_number} | Корр: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}`
+    : isIndia
     ? `IFSC: ${branch.ifsc_code} | MICR: ${branch.routing_number} | City: ${branch.district}, ${branch.division}`
     : `Routing: ${branch.routing_number} | SWIFT: ${branch.swift_code || 'N/A'} | District: ${branch.district}`;
 
@@ -69,7 +76,7 @@ export const BranchCard: React.FC<BranchCardProps> = ({
 
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-              {isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
+              {isRussia ? '🇷🇺 RU' : isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
             </span>
             <ShareButton
               title={shareTitle}
@@ -91,8 +98,37 @@ export const BranchCard: React.FC<BranchCardProps> = ({
           {branch.name} • {branch.division}
         </p>
 
-        {/* Primary Code Highlight Box: IFSC for India, Routing for BD */}
-        {isIndia && branch.ifsc_code ? (
+        {/* Primary Code Highlight Box: BIK for Russia, IFSC for India, Routing for BD */}
+        {isRussia ? (
+          <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 sm:p-3.5 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 mb-3 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <div className="flex items-center space-x-1.5 min-w-0">
+                <div className="w-5 h-5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                  <Hash className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                  БИК (BIK):
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase">
+                Банк России
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-800 px-3 py-2 rounded-xl border border-emerald-200/80 dark:border-emerald-700/60 shadow-2xs">
+              <span className="font-mono text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-wider break-all min-w-0">
+                {branch.bik_code || branch.routing_number}
+              </span>
+              <CopyButton
+                textToCopy={branch.bik_code || branch.routing_number}
+                label={t.copy}
+                size="sm"
+                lang={lang}
+                className="shrink-0"
+              />
+            </div>
+          </div>
+        ) : isIndia && branch.ifsc_code ? (
           <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 sm:p-3.5 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 mb-3 space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-1">
               <div className="flex items-center space-x-1.5 min-w-0">
@@ -157,8 +193,20 @@ export const BranchCard: React.FC<BranchCardProps> = ({
           </div>
         )}
 
-        {/* Secondary Codes: MICR / SWIFT */}
+        {/* Secondary Codes: Corr Account / MICR / SWIFT */}
         <div className="space-y-2 text-xs">
+          {/* Russian Corr Account */}
+          {isRussia && branch.corr_account && (
+            <div className="flex items-center justify-between bg-slate-50/80 dark:bg-slate-700/40 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+              <div className="flex items-center space-x-1.5">
+                <Hash className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="font-medium text-slate-600 dark:text-slate-300">{lang === 'ru' ? 'Корр. счет:' : 'Corr. Account:'}</span>
+                <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.corr_account}</span>
+              </div>
+              <CopyButton textToCopy={branch.corr_account} size="sm" lang={lang} />
+            </div>
+          )}
+
           {/* MICR / Secondary Code */}
           {isIndia && branch.routing_number && (
             <div className="flex items-center justify-between bg-slate-50/80 dark:bg-slate-700/40 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
@@ -183,14 +231,14 @@ export const BranchCard: React.FC<BranchCardProps> = ({
             </div>
           ) : (
             <div className="text-[11px] text-slate-500 dark:text-slate-400 bg-amber-50/50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl border border-amber-200/40 dark:border-amber-800/40">
-              {lang === 'hi' ? 'यह शाखा मुख्य शाखा (Head Office) का स्विफ्ट कोड उपयोग करती है।' : lang === 'bn' ? 'এই শাখাটি হেড অফিসের সুইফট কোড ব্যবহার করে।' : 'Uses Head Office SWIFT Code'}
+              {lang === 'ru' ? 'Используется SWIFT код головного офиса' : lang === 'hi' ? 'यह शाखा मुख्य शाखा (Head Office) का स्विफ्ट कोड उपयोग करती है।' : lang === 'bn' ? 'এই শাখাটি হেড অফিসের সুইফট কোড ব্যবহার করে।' : 'Uses Head Office SWIFT Code'}
             </div>
           )}
 
           {/* Address */}
           <div className="flex items-start space-x-1.5 text-slate-600 dark:text-slate-300 text-xs pt-1">
             <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
-            <span className="line-clamp-2">{getAddress()}</span>
+            <span className="break-words line-clamp-2">{getAddress()}</span>
           </div>
 
           {/* Phone */}

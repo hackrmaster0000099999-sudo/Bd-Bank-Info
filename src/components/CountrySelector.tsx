@@ -20,14 +20,6 @@ interface CountryOption {
 
 const COUNTRIES: CountryOption[] = [
   {
-    code: 'all',
-    flag: '🌐',
-    shortCode: 'ALL',
-    name: 'All Countries',
-    nameNative: 'সমস্ত দেশ / सभी देश',
-    defaultLang: 'en'
-  },
-  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',
@@ -42,6 +34,14 @@ const COUNTRIES: CountryOption[] = [
     name: 'India',
     nameNative: 'भारत',
     defaultLang: 'hi'
+  },
+  {
+    code: 'ru',
+    flag: '🇷🇺',
+    shortCode: 'RU',
+    name: 'Russia',
+    nameNative: 'Россия',
+    defaultLang: 'ru'
   }
 ];
 

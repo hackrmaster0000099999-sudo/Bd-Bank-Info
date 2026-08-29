@@ -53,7 +53,7 @@ export const Footer: React.FC<FooterProps> = ({
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition-all cursor-pointer shadow-xs"
                 >
                   <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  <span>{isHi ? 'रेटिंग व फीडबैक' : isBn ? 'রেটিং ও মতামত দিন' : 'Rate Us ⭐'}</span>
+                  <span>{isHi ? 'रेटिंग व फीडबैक' : isBn ? 'রেটিং ও মতামত দিন' : lang === 'ru' ? 'Оцените нас ⭐' : 'Rate Us ⭐'}</span>
                 </button>
               )}
               <button

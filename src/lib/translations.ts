@@ -6,11 +6,13 @@ export interface TranslationDict {
   routing: string;
   swift: string;
   ifsc: string;
+  bik: string;
   country: string;
   selectCountry: string;
   allCountries: string;
   bangladesh: string;
   india: string;
+  russia: string;
   allBanks: string;
   allDivisions: string;
   allDistricts: string;
@@ -22,6 +24,7 @@ export interface TranslationDict {
   totalBranches: string;
   verifiedCodes: string;
   routingDecoder: string;
+  bikDecoder: string;
   reportIssue: string;
   filterBy: string;
   active: string;
@@ -49,6 +52,7 @@ export interface TranslationDict {
   swiftCodeTitle: string;
   ifscCodeTitle: string;
   micrCodeTitle: string;
+  bikCodeTitle: string;
   howToUseRouting: string;
   bankBranchDirectory: string;
 }
@@ -60,22 +64,25 @@ export const translations: Record<Language, TranslationDict> = {
     routing: 'রাউটিং নম্বর',
     swift: 'সুইফট কোড',
     ifsc: 'আইএফএসসি কোড',
+    bik: 'বিক (BIK) কোড',
     country: 'দেশ',
     selectCountry: 'দেশ নির্বাচন করুন',
     allCountries: 'সকল দেশ',
     bangladesh: 'বাংলাদেশ',
     india: 'ভারত',
+    russia: 'রাশিয়া (Russia)',
     allBanks: 'সকল ব্যাংক',
-    allDivisions: 'সকল বিভাগ / রাজ্য',
-    divisionState: 'বিভাগ / রাজ্য',
+    allDivisions: 'সকল বিভাগ / অঞ্চল',
+    divisionState: 'বিভাগ / অঞ্চল',
     districtCity: 'জেলা / শহর',
-    allDistricts: 'সকল জেলা',
-    searchPlaceholder: 'ব্যাংক, শাখা, রাউটিং নম্বর, IFSC বা সুইফট কোড দিয়ে খুঁজুন...',
+    allDistricts: 'সকল জেলা / শহর',
+    searchPlaceholder: 'ব্যাংক, শাখা, রাউটিং নম্বর, BIK, IFSC বা সুইফট কোড দিয়ে খুঁজুন...',
     searchBtn: 'খুঁজুন',
     totalBanks: 'মোট ব্যাংক',
     totalBranches: 'মোট ব্রাঞ্চ',
     verifiedCodes: 'যাচাইকৃত কোড',
     routingDecoder: 'রাউটিং ডিকোডার',
+    bikDecoder: 'রাশিয়ান BIK ডিকোডার',
     reportIssue: 'তথ্য ভুল মনে হচ্ছে? জানান',
     filterBy: 'ফিল্টার করুন',
     active: 'সক্রিয়',
@@ -97,13 +104,14 @@ export const translations: Record<Language, TranslationDict> = {
     disclaimer: 'ডিসক্লেইমার',
     quickSearch: 'দ্রুত সন্ধান',
     popularBanks: 'জনপ্রিয় ব্যাংকসমূহ',
-    tagline: 'ব্যাংক সমূহের Routing Number, IFSC Code, SWIFT / BIC Code এবং Branch Information দ্রুত খুঁজে পাওয়ার উন্মুক্ত গ্লোবাল ডিরেক্টরি।',
-    footerDesc: 'ব্যাংক সমূহের Routing Number, IFSC Code, SWIFT / BIC Code এবং Branch Information দ্রুত খুঁজে পাওয়ার উন্মুক্ত গ্লোবাল ডিরেক্টরি।',
+    tagline: 'ব্যাংক সমূহের Routing Number, BIK Code, IFSC Code, SWIFT / BIC Code এবং Branch Information দ্রুত খুঁজে পাওয়ার উন্মুক্ত গ্লোবাল ডিরেক্টরি।',
+    footerDesc: 'ব্যাংক সমূহের Routing Number, BIK Code, IFSC Code, SWIFT / BIC Code এবং Branch Information দ্রুত খুঁজে পাওয়ার উন্মুক্ত গ্লোবাল ডিরেক্টরি।',
     routingNumberTitle: 'রাউটিং নম্বর ডিরেক্টরি',
     swiftCodeTitle: 'সুইফট কোড ফাইন্ডার',
     ifscCodeTitle: 'IFSC কোড ফাইন্ডার',
     micrCodeTitle: 'MICR কোড ফাইন্ডার',
-    howToUseRouting: 'রাউটিং ও সুইফট কোড ব্যবহারের নিয়মাবলী',
+    bikCodeTitle: 'রাশিয়ান BIK (БИК) কোড ফাইন্ডার',
+    howToUseRouting: 'রাউটিং, BIK ও সুইফট কোড ব্যবহারের নিয়মাবলী',
     bankBranchDirectory: 'ব্যাংক ও ব্রাঞ্চ ডিরেক্টরি'
   },
   en: {
@@ -112,22 +120,25 @@ export const translations: Record<Language, TranslationDict> = {
     routing: 'Routing Numbers',
     swift: 'SWIFT Codes',
     ifsc: 'IFSC Codes',
+    bik: 'BIK Codes',
     country: 'Country',
     selectCountry: 'Select Country',
     allCountries: 'All Countries',
     bangladesh: 'Bangladesh',
     india: 'India',
+    russia: 'Russia',
     allBanks: 'All Banks',
-    allDivisions: 'All Divisions / States',
-    divisionState: 'Division / State',
-    districtCity: 'District / City',
-    allDistricts: 'All Districts',
-    searchPlaceholder: 'Search by Bank, Branch, Routing Number, IFSC or SWIFT Code...',
+    allDivisions: 'All Regions / Federal Districts',
+    divisionState: 'Region / District',
+    districtCity: 'City / District',
+    allDistricts: 'All Cities / Districts',
+    searchPlaceholder: 'Search by Bank, Branch, Routing Number, BIK, IFSC or SWIFT Code...',
     searchBtn: 'Search',
     totalBanks: 'Total Banks',
     totalBranches: 'Total Branches',
     verifiedCodes: 'Verified Codes',
     routingDecoder: 'Routing Decoder',
+    bikDecoder: 'Russian BIK Decoder',
     reportIssue: 'Report an Issue',
     filterBy: 'Filter By',
     active: 'active',
@@ -149,13 +160,14 @@ export const translations: Record<Language, TranslationDict> = {
     disclaimer: 'Disclaimer',
     quickSearch: 'Quick Search',
     popularBanks: 'Popular Banks',
-    tagline: 'The Open Global Directory for Bank Routing Numbers, IFSC Codes, SWIFT / BIC Codes & Branch Information.',
-    footerDesc: 'The Open Global Directory for Bank Routing Numbers, IFSC Codes, SWIFT / BIC Codes & Branch Information.',
+    tagline: 'The Open Global Directory for Bank Routing Numbers, Russian BIK Codes, IFSC Codes, SWIFT Codes & Branch Information.',
+    footerDesc: 'The Open Global Directory for Bank Routing Numbers, Russian BIK Codes, IFSC Codes, SWIFT Codes & Branch Information.',
     routingNumberTitle: 'Routing Number Directory',
     swiftCodeTitle: 'SWIFT Code Finder',
     ifscCodeTitle: 'IFSC Code Finder',
     micrCodeTitle: 'MICR Code Finder',
-    howToUseRouting: 'How to use Routing & SWIFT Codes',
+    bikCodeTitle: 'Russian BIK (БИК) Finder',
+    howToUseRouting: 'How to use Routing, BIK & SWIFT Codes',
     bankBranchDirectory: 'Bank & Branch Directory'
   },
   hi: {
@@ -164,22 +176,25 @@ export const translations: Record<Language, TranslationDict> = {
     routing: 'राउटिंग / MICR',
     swift: 'स्विफ्ट कोड',
     ifsc: 'IFSC कोड',
+    bik: 'BIK कोड',
     country: 'देश',
     selectCountry: 'देश चुनें',
     allCountries: 'सभी देश',
     bangladesh: 'बांग्लादेश',
     india: 'भारत (India)',
+    russia: 'रूस (Russia)',
     allBanks: 'सभी बैंक',
-    allDivisions: 'सभी राज्य (States)',
-    divisionState: 'राज्य (State)',
+    allDivisions: 'सभी राज्य / क्षेत्र',
+    divisionState: 'राज्य / क्षेत्र',
     districtCity: 'ज़िला / शहर',
-    allDistricts: 'सभी ज़िले (Districts)',
-    searchPlaceholder: 'बैंक का नाम, शाखा, IFSC कोड, MICR या स्विफ्ट कोड से खोजें...',
+    allDistricts: 'सभी ज़िले / शहर',
+    searchPlaceholder: 'बैंक का नाम, शाखा, BIK, IFSC कोड, MICR या स्विफ्ट कोड से खोजें...',
     searchBtn: 'खोजें',
     totalBanks: 'कुल बैंक',
     totalBranches: 'कुल शाखाएँ',
     verifiedCodes: 'सत्यापित कोड्स',
     routingDecoder: 'राउटिंग डिकोडर',
+    bikDecoder: 'रूसी BIK डिकोडर',
     reportIssue: 'क्या जानकारी गलत है? बताएं',
     filterBy: 'फ़िल्टर करें',
     active: 'सक्रिय',
@@ -201,13 +216,71 @@ export const translations: Record<Language, TranslationDict> = {
     disclaimer: 'अस्वीकरण',
     quickSearch: 'त्वरित खोज',
     popularBanks: 'प्रमुख बैंक',
-    tagline: 'बैंकों के IFSC कोड, MICR, Routing Number, SWIFT कोड और शाखा विवरण खोजने की खुली ग्लोबल डायरेक्टरी।',
-    footerDesc: 'बैंकों के IFSC कोड, MICR, Routing Number, SWIFT कोड और शाखा विवरण खोजने की खुली ग्लोबल डायरेक्टरी।',
+    tagline: 'बैंकों के IFSC कोड, रूसी BIK, MICR, Routing Number, SWIFT कोड और शाखा विवरण खोजने की खुली ग्लोबल डायरेक्टरी।',
+    footerDesc: 'बैंकों के IFSC कोड, रूसी BIK, MICR, Routing Number, SWIFT कोड और शाखा विवरण खोजने की खुली ग्लोबल डायरेक्टरी।',
     routingNumberTitle: 'राउटिंग व MICR डायरेक्टरी',
     swiftCodeTitle: 'स्विफ्ट (SWIFT) कोड खोजक',
     ifscCodeTitle: 'IFSC कोड फाइंडर',
     micrCodeTitle: 'MICR कोड फाइंडर',
-    howToUseRouting: 'IFSC एवं स्विफ्ट कोड उपयोग गाइड',
+    bikCodeTitle: 'रूसी BIK (БИК) कोड खोजक',
+    howToUseRouting: 'IFSC, BIK एवं स्विफ्ट कोड उपयोग गाइड',
     bankBranchDirectory: 'बैंक एवं शाखा निर्देशिका'
+  },
+  ru: {
+    search: 'Поиск',
+    banks: 'Все банки',
+    routing: 'БИК и Маршрутизация',
+    swift: 'SWIFT коды',
+    ifsc: 'IFSC / Международные',
+    bik: 'БИК коды',
+    country: 'Страна',
+    selectCountry: 'Выберите страну',
+    allCountries: 'Все страны',
+    bangladesh: 'Бангладеш',
+    india: 'Индия',
+    russia: 'Россия (РФ)',
+    allBanks: 'Все банки',
+    allDivisions: 'Все федеральные округа',
+    divisionState: 'Федеральный округ',
+    districtCity: 'Город / Субъект РФ',
+    allDistricts: 'Все города / Регионы',
+    searchPlaceholder: 'Поиск по названию банка, отделению, БИК, корр. счету, ИНН или SWIFT...',
+    searchBtn: 'Найти',
+    totalBanks: 'Всего банков',
+    totalBranches: 'Всего отделений',
+    verifiedCodes: 'Проверенные реквизиты',
+    routingDecoder: 'Декодер маршрутизации',
+    bikDecoder: 'Декодер БИК Банка России',
+    reportIssue: 'Сообщить о неточности',
+    filterBy: 'Фильтр',
+    active: 'действующий',
+    reset: 'Сбросить',
+    headOffice: 'Головной офис',
+    established: 'Основан',
+    branchCount: 'Отделений',
+    type: 'Тип лицензии',
+    viewDetails: 'Подробнее',
+    copy: 'Копировать',
+    copied: 'Скопировано!',
+    share: 'Поделиться',
+    address: 'Адрес',
+    phone: 'Телефон',
+    email: 'Эл. почта',
+    aboutUs: 'О сервисе',
+    contactUs: 'Контакты',
+    privacyPolicy: 'Политика конфиденциальности',
+    disclaimer: 'Отказ от ответственности',
+    quickSearch: 'Быстрый поиск',
+    popularBanks: 'Крупнейшие банки',
+    tagline: 'Открытый справочник банковских реквизитов: БИК, корр. счета, SWIFT коды, отделения и филиалы.',
+    footerDesc: 'Открытый справочник банковских реквизитов: БИК, корр. счета, SWIFT коды, отделения и филиалы банков РФ и мира.',
+    routingNumberTitle: 'Справочник БИК и маршрутизации',
+    swiftCodeTitle: 'Поиск SWIFT кодов',
+    ifscCodeTitle: 'Поиск международных кодов',
+    micrCodeTitle: 'Поиск MICR кодов',
+    bikCodeTitle: 'Справочник БИК (Банковские Идентификационные Коды)',
+    howToUseRouting: 'Инструкция по использованию БИК и SWIFT',
+    bankBranchDirectory: 'Каталог банков и отделений'
   }
 };
+
