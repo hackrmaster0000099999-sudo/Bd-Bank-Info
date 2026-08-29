@@ -49,16 +49,16 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
         </div>
 
         {/* Main Number Display & Copy */}
-        <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600/80 flex items-center justify-between">
-          <div>
+        <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600/80 flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
               {isBn ? 'পরীক্ষাধীন রাউটিং নম্বর:' : 'Target Routing Number:'}
             </span>
-            <span className="font-mono text-2xl font-bold text-slate-900 dark:text-white tracking-wider">
+            <span className="font-mono text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-wider break-all">
               {routingNumber || 'N/A'}
             </span>
           </div>
-          <CopyButton textToCopy={routingNumber} lang={lang} size="md" />
+          <CopyButton textToCopy={routingNumber} lang={lang} size="md" className="shrink-0" />
         </div>
 
         {decoded.isValid ? (
@@ -69,7 +69,7 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
             </div>
 
             {/* Visual 3-part breakdown bar */}
-            <div className="grid grid-cols-3 gap-2 text-center pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center pt-2">
               <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
                 <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">Bank Code</span>
                 <span className="font-mono text-lg font-bold text-emerald-900 dark:text-emerald-100">{decoded.bankCode}</span>

@@ -30,140 +30,207 @@ export interface BankGuide {
 }
 
 export function getBankGuideContent(bank: Bank, lang: Language): BankGuide {
-  const isBn = lang === 'bn';
+  const isIndia = bank.country === 'in';
 
-  if (isBn) {
+  if (lang === 'hi') {
+    const bankName = bank.name_hi || bank.name;
     return {
-      title: `${bank.name_bn} - রাউটিং নম্বর, সুইফট কোড ও ব্যাংকিং সহায়িকা ২০২৬`,
-      summary: `${bank.name_bn} (${bank.short_name})-এর সকল ব্রাঞ্চের সঠিক ৯ ডিজিটের BEFTN রাউটিং নম্বর, আন্তর্জাতিক সুইফট/BIC কোড (${bank.swift_code}) এবং তহবিল স্থানান্তরের বিস্তারিত নিয়মাবলি।`,
+      title: `${bankName} - IFSC कोड, MICR, स्विफ्ट कोड एवं शाखा निर्देशिका 2026`,
+      summary: `${bankName} (${bank.short_name}) की सभी शाखाओं के आधिकारिक 11-अक्षरीय IFSC कोड, MICR, SWIFT कोड (${bank.swift_code}) और ऑनलाइन फंड ट्रांसफर गाइड।`,
       historySection: {
-        heading: `${bank.name_bn} পরিচিতি ও শাখা নেটওয়ার্ক`,
-        content: `${bank.name_bn} (${bank.name}) বাংলাদেশের ব্যাংকিং খাতের একটি অন্যতম নির্ভরযোগ্য প্রতিষ্ঠান। ব্যাংকটির কেন্দ্রীয় ব্যাংক কোড হলো "${bank.bank_code}"। বর্তমানে সারাদেশে ব্যাংকটির প্রায় ${bank.branch_count}+ টি অনুমোদিত শাখা এবং বিশাল এটিএম বুথ নেটওয়ার্ক রয়েছে, যার মাধ্যমে গ্রাহকরা সার্বক্ষণিক আধুনিক ব্যাংকিং সেবা গ্রহণ করতে পারেন।`
+        heading: `${bankName} का परिचय एवं नेटवर्क`,
+        content: `${bankName} भारत के बैंकिंग क्षेत्र का एक प्रमुख एवं विश्वसनीय बैंक है। भारतीय रिज़र्व बैंक (RBI) द्वारा मान्यता प्राप्त इस बैंक की देशभर में ${bank.branch_count.toLocaleString()}+ से अधिक शाखाएँ हैं, जो ग्राहकों को NEFT, RTGS, IMPS एवं नेटबैंकिंग की आधुनिक सुविधा प्रदान करती हैं।`
       },
       routingGuideSection: {
-        heading: `${bank.short_name} রাউটিং নম্বর কী এবং কীভাবে কাজ করে?`,
-        content: `বাংলাদেশ ব্যাংক পরিচালিত ইলেকট্রনিক ফান্ড ট্রান্সফার (BEFTN/RTGS/NPSB) সেবায় ${bank.name_bn}-এর প্রতিটি ব্রাঞ্চের জন্য একটি অনন্য ৯-ডিজিটের রাউটিং নম্বর নির্ধারণ করা হয়েছে। এই ৯ ডিজিটের গঠন কাঠামো নিম্নরূপ:`,
+        heading: `${bank.short_name} IFSC कोड क्या है और इसकी संरचना कैसे होती है?`,
+        content: `IFSC (Indian Financial System Code) एक 11-वर्णों का अल्फ़ान्यूमेरिक कोड है जो RBI द्वारा अंतर-बैंक फंड ट्रांसफर के लिए प्रत्येक शाखा को आवंटित किया जाता है। इसकी संरचना इस प्रकार है:`,
         steps: [
-          `প্রথম ৩ ডিজিট (${bank.bank_code}): এটি হলো ${bank.short_name}-এর অফিশিয়াল ব্যাংক আইডেন্টিফিকেশন কোড।`,
-          `পরবর্তী ২ ডিজিট: সংশ্লিষ্ট জেলা বা অঞ্চলের কোড (যেমন: ঢাকার জন্য ২৬, চট্টগ্রামের জন্য ১৫)।`,
-          `শেষ ৪ ডিজিট: সংশ্লিষ্ট নির্দিষ্ট ব্রাঞ্চের নিজস্ব ব্রাঞ্চ কোড।`
+          `पहले 4 अक्षर (${bank.ifsc_prefix || bank.short_name.toUpperCase()}): यह बैंक के नाम को दर्शाता है।`,
+          `5वां अक्षर (0): यह हमेशा '0' (शून्य) होता है और भविष्य के उपयोग के लिए सुरक्षित है।`,
+          `अंतिम 6 वर्ण: यह संबंधित विशिष्ट शाखा (Branch Code) की पहचान कराता है।`
         ]
       },
       remittanceGuideSection: {
-        heading: `বিদেশ থেকে ${bank.short_name}-এ রেমিট্যান্স বা ফ্রিল্যান্সিং পেমেন্ট গ্রহণের নিয়ম`,
-        content: `আন্তর্জাতিক ব্যাংক ওয়্যার ট্রান্সফার, ফ্রিল্যান্সিং প্ল্যাটফর্ম (Upwork, Fiverr, Payoneer, Deel) কিংবা Google AdSense ও ইউটিউব থেকে সরাসরি ${bank.name_bn}-এর একাউন্টে টাকা আনতে নিচের তথ্যগুলো প্রেরণকারী বা পেমেন্ট সেটিংসে সঠিকভাবে প্রদান করুন:`,
+        heading: `विदेश से ${bank.short_name} में अंतर्राष्ट्रीय वायर ट्रांसफर / रेमिटेंस प्राप्त करने की विधि`,
+        content: `विदेश से भारत में पैसा मंगवाने या फ्रीलांसिंग प्लेटफॉर्म (Upwork, Deel, PayPal, YouTube/AdSense) से भुगतान प्राप्त करने के लिए निम्नलिखित विवरण दर्ज करें:`,
         requiredDetails: [
-          { label: 'ব্যাংকের নাম (Bank Name)', value: bank.name },
-          { label: 'সুইফট কোড (SWIFT / BIC Code)', value: bank.swift_code },
-          { label: 'হেড অফিস ঠিকানা', value: bank.head_office },
-          { label: 'অ্যাকাউন্টের ধরন', value: 'Savings / Current / Freelancer Account' },
-          { label: 'সরকারি প্রণোদনা', value: 'বৈধ রেমিট্যান্সে ২.৫% সরকারি নগদ প্রণোদনা প্রযোজ্য' }
+          { label: 'बैंक का नाम (Bank Name)', value: bank.name },
+          { label: 'स्विफ्ट कोड (SWIFT / BIC)', value: bank.swift_code },
+          { label: 'IFSC कोड (शाखा IFSC)', value: `${bank.ifsc_prefix || bank.short_name}0******` },
+          { label: 'प्रधान कार्यालय पता', value: bank.head_office_hi || bank.head_office },
+          { label: 'मुद्रा (Currency)', value: 'INR / USD / EUR' }
         ]
       },
       transferComparison: [
         {
-          type: 'NPSB (ইন্টারনেট/মোবাইল ব্যাংকিং)',
-          speed: 'তাৎক্ষণিক (Real-Time)',
-          limit: 'প্রতিবারে সর্বোচ্চ ৩,০০,০০০ টাকা পর্যন্ত',
-          bestFor: 'জরুরি বিল পরিশোধ ও তাৎক্ষণিক একাউন্ট ট্রান্সফার'
+          type: 'IMPS (Immediate Payment)',
+          speed: 'तुरंत (Real-Time 24x7)',
+          limit: '₹5,00,000 प्रति दिन',
+          bestFor: 'त्वरित एवं आपातकालीन छोटे लेन-देन'
         },
         {
-          type: 'BEFTN (ব্যাংক ইলেকট্রনিক ট্রান্সফার)',
-          speed: 'একই কার্যদিবস বা পরবর্তী কার্যদিবস',
-          limit: 'সাধারণ লেনদেন (কোনো অতিরিক্ত চার্জ নেই)',
-          bestFor: 'বেতন প্রদান, লভ্যাংশ বিতরণ ও সাধারণ ফান্ড ট্রান্সফার'
+          type: 'NEFT (National Electronic Funds)',
+          speed: '30 मिनट से 2 घंटे',
+          limit: 'कोई न्यूनतम या अधिकतम सीमा नहीं',
+          bestFor: 'सामान्य ऑनलाइन बिल एवं व्यापारिक भुगतान'
         },
         {
-          type: 'RTGS (রিয়েল-টাইম গ্রস সেটেলমেন্ট)',
-          speed: 'কয়েক মিনিটের মধ্যে',
-          limit: 'সর্বনিম্ন ১,০০,০০০ টাকা থেকে সীমাহীন',
-          bestFor: 'ব্যবসায়িক ও বড় অংকের জরুরি লেনদেন'
+          type: 'RTGS (Real Time Gross Settlement)',
+          speed: 'तत्काल (Real-Time)',
+          limit: 'न्यूनतम ₹2,00,000',
+          bestFor: 'बड़े व्यापारिक भुगतान एवं व्यावसायिक ट्रांसफर'
+        },
+        {
+          type: 'SWIFT / Wire Transfer',
+          speed: '1 से 3 कार्य दिवस',
+          limit: 'विदेशी मुद्रा नियमों (FEMA) के अनुसार',
+          bestFor: 'अंतर्राष्ट्रीय रेमिटेंस एवं विदेशी भुगतान'
         }
       ],
       faqs: [
         {
-          question: `${bank.short_name}-এর হেড অফিস সুইফট কোড কী?`,
-          answer: `${bank.name_bn}-এর অফিশিয়াল আন্তর্জাতিক সুইফট (SWIFT/BIC) কোড হলো ${bank.swift_code}। বৈদেশিক লেনদেন ও রেমিট্যান্সের জন্য এই কোডটি সারা বিশ্বের যেকোনো প্রান্ত থেকে ব্যবহার করা যায়।`
+          question: `${bank.short_name} का IFSC कोड कैसे पता करें?`,
+          answer: `आप अपनी चेकबुक की ऊपरी बाईं ओर, बैंक पासबुक के पहले पन्ने पर, अथवा हमारी इस वेबसाइट पर शाखा का नाम या शहर खोजकर तुरंत आधिकारिक IFSC कोड प्राप्त कर सकते हैं।`
         },
         {
-          question: `${bank.name_bn}-এর রাউটিং নম্বর কত ডিজিটের হয়?`,
-          answer: `বাংলাদেশ ব্যাংকের নিয়ম অনুযায়ী ${bank.short_name}-এর প্রতিটি শাখার রাউটিং নম্বর মোট ৯ ডিজিটের হয়ে থাকে, যার প্রথম ৩ ডিজিট "${bank.bank_code}" দ্বারা শুরু হয়।`
+          question: `क्या सभी शाखाओं का SWIFT कोड एक ही होता है?`,
+          answer: `ज़्यादातर मामलों में विदेशी लेन-देन मुख्य शाखा के SWIFT कोड (${bank.swift_code}) और स्थानीय शाखा के IFSC कोड के ज़रिए सफलतापूर्वक प्रोसेस हो जाते हैं।`
         },
         {
-          question: `চেক বই ছাড়া কীভাবে ${bank.short_name}-এর ব্রাঞ্চ রাউটিং নম্বর জানা যাবে?`,
-          answer: `আমাদের World Bank Codes পোর্টালে ব্যাংকের নাম এবং আপনার জেলার নাম নির্বাচন করলেই সাথে সাথে সংশ্লিষ্ট শাখার নির্ভুল ৯ ডিজিটের রাউটিং নম্বর পেয়ে যাবেন।`
-        },
-        {
-          question: `ভুল রাউটিং নম্বর দিলে কি টাকা অন্য একাউন্টে চলে যাবে?`,
-          answer: `না। রাউটিং নম্বর শুধুমাত্র ব্রাঞ্চ শনাক্ত করে। একাউন্ট নম্বর এবং ব্রাঞ্চের রাউটিং নম্বর উভয়ের তথ্য ম্যাচ না করলে BEFTN স্বয়ংক্রিয়ভাবে লেনদেন বাতিল করে ২-৩ কার্যদিবসের মধ্যে টাকা প্রেরকের অ্যাকাউন্টে ফেরত পাঠিয়ে দেয়।`
+          question: `MICR कोड और IFSC कोड में क्या अंतर है?`,
+          answer: `IFSC कोड का उपयोग ऑनलाइन ट्रांसफर (NEFT, RTGS, IMPS) के लिए होता है, जबकि 9-अंकीय MICR कोड का उपयोग चेक क्लियरिंग (Cheque Clearing) में मैग्नेटिक इंक तकनीक द्वारा तेज़ी से चेक प्रोसेस करने के लिए होता है।`
         }
       ]
     };
   }
 
+  if (lang === 'bn') {
+    return {
+      title: `${bank.name_bn} - রাউটিং নম্বর, সুইফট কোড ও ব্যাংকিং সহায়িকা ২০২৬`,
+      summary: `${bank.name_bn} (${bank.short_name})-এর সকল ব্রাঞ্চের সঠিক ৯ ডিজিটের BEFTN রাউটিং নম্বর, আন্তর্জাতিক সুইফট/BIC কোড (${bank.swift_code}) এবং তহবিল স্থানান্তরের বিস্তারিত নিয়মাবলি।`,
+      historySection: {
+        heading: `${bank.name_bn} পরিচিতি ও শাখা নেটওয়ার্ক`,
+        content: `${bank.name_bn} (${bank.name}) ব্যাংকিং খাতের একটি অন্যতম নির্ভরযোগ্য প্রতিষ্ঠান। সারাদেশে ব্যাংকটির প্রায় ${bank.branch_count.toLocaleString()}+ টি অনুমোদিত শাখা রয়েছে, যার মাধ্যমে গ্রাহকরা সার্বক্ষণিক আধুনিক ব্যাংকিং সেবা গ্রহণ করতে পারেন।`
+      },
+      routingGuideSection: {
+        heading: `${bank.short_name} কোড কী এবং কীভাবে কাজ করে?`,
+        content: `ইলেকট্রনিক ফান্ড ট্রান্সফার (BEFTN/RTGS/NPSB/IFSC) সেবায় ${bank.name_bn}-এর প্রতিটি ব্রাঞ্চের জন্য অনন্য কোড নির্ধারণ করা হয়েছে। এই কোডের গঠন কাঠামো নিম্নরূপ:`,
+        steps: [
+          `প্রথম অংশ: ব্যাংক আইডেন্টিফিকেশন কোড।`,
+          `দ্বিতীয় অংশ: সংশ্লিষ্ট জেলা বা অঞ্চলের কোড।`,
+          `শেষ অংশ: সংশ্লিষ্ট নির্দিষ্ট ব্রাঞ্চের নিজস্ব কোড।`
+        ]
+      },
+      remittanceGuideSection: {
+        heading: `বিদেশ থেকে ${bank.short_name}-এ রেমিট্যান্স বা ফ্রিল্যান্সিং পেমেন্ট গ্রহণের নিয়ম`,
+        content: `আন্তর্জাতিক ব্যাংক ওয়্যার ট্রান্সফার, ফ্রিল্যান্সিং প্ল্যাটফর্ম (Upwork, Fiverr, Payoneer, Deel) কিংবা Google AdSense ও ইউটিউব থেকে সরাসরি ${bank.name_bn}-এর একাউন্টে টাকা আনতে নিচের তথ্যগুলো প্রদান করুন:`,
+        requiredDetails: [
+          { label: 'ব্যাংকের নাম (Bank Name)', value: bank.name },
+          { label: 'সুইফট কোড (SWIFT / BIC Code)', value: bank.swift_code },
+          { label: 'হেড অফিস ঠিকানা', value: bank.head_office },
+          { label: 'অ্যাকাউন্টের ধরন', value: 'Savings / Current / Freelancer Account' }
+        ]
+      },
+      transferComparison: [
+        {
+          type: 'BEFTN / NEFT',
+          speed: 'পরবর্তী কার্যদিবস / কয়েক ঘণ্টা',
+          limit: 'ব্যাংক পলিসি অনুযায়ী',
+          bestFor: 'সাধারণ আন্তঃব্যাংক ট্রান্সফার ও বেতন প্রদান'
+        },
+        {
+          type: 'RTGS',
+          speed: 'তাৎক্ষণিক (রিয়েল-টাইম)',
+          limit: 'উচ্চ অংকের লেনদেন',
+          bestFor: 'জরুরি ও বড় অংকের বাণিজ্যিক লেনদেন'
+        },
+        {
+          type: 'NPSB / IMPS',
+          speed: 'ইন্সট্যান্ট (২৪/৭)',
+          limit: 'দৈনিক নির্দিষ্ট সীমা',
+          bestFor: 'কার্ড ও ইন্টারনেট ব্যাংকিং ফান্ড ট্রান্সফার'
+        },
+        {
+          type: 'SWIFT / Wire',
+          speed: '১ থেকে ৩ কার্যদিবস',
+          limit: 'আন্তর্জাতিক রেমিট্যান্স নিয়ম অনুযায়ী',
+          bestFor: 'বিদেশ থেকে অর্থ গ্রহণ ও ফ্রিল্যান্সিং পেমেন্ট'
+        }
+      ],
+      faqs: [
+        {
+          question: `${bank.short_name}-এর সুইফট কোড কি সব ব্রাঞ্চের জন্য এক?`,
+          answer: `হ্যাঁ, ${bank.name_bn}-এর হেড অফিসের মূল সুইফট কোড (${bank.swift_code}) ব্যবহার করে যেকোনো ব্রাঞ্চের অ্যাকাউন্টে আন্তর্জাতিক রেমিট্যান্স গ্রহণ করা যায়।`
+        },
+        {
+          question: `রাউটিং বা IFSC নম্বর ভুল দিলে কি টাকা কেটে যাবে?`,
+          answer: `রাউটিং নম্বর বা অ্যাকাউন্ট নম্বর ভুল হলে অর্থ সাধারণত প্রাপকের অ্যাকাউন্টে জমা না হয়ে মূল প্রেরকের অ্যাকাউন্টে ২ থেকে ৩ কার্যদিবসের মধ্যে স্বয়ংক্রিয়ভাবে ফেরত আসে।`
+        }
+      ]
+    };
+  }
+
+  // English fallback
   return {
-    title: `${bank.name} - Routing Number, SWIFT Code & Banking Guide 2026`,
-    summary: `Complete 9-digit BEFTN Routing Numbers, Head Office SWIFT Code (${bank.swift_code}), branch locations and money transfer guide for ${bank.name} (${bank.short_name}).`,
+    title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers, IFSC & SWIFT Codes`,
+    summary: `Complete directory of ${bank.name} branches, official 9-digit BEFTN Routing Numbers / IFSC codes, SWIFT/BIC code (${bank.swift_code}), MICR codes, and wire transfer guide.`,
     historySection: {
-      heading: `About ${bank.name} & Network`,
-      content: `${bank.name} (${bank.short_name}) is one of the leading commercial financial institutions in Bangladesh, assigned central Bank Code "${bank.bank_code}". With over ${bank.branch_count} branches nationwide, it provides advanced electronic fund transfer (BEFTN, RTGS, NPSB) and international trade services.`
+      heading: `About ${bank.name} & Branch Network`,
+      content: `${bank.name} is a leading commercial bank operating with over ${bank.branch_count.toLocaleString()}+ branches across the country, providing comprehensive financial services including electronic funds transfer, retail banking, and international remittances.`
     },
     routingGuideSection: {
-      heading: `Understanding ${bank.short_name} 9-Digit BEFTN Routing Number`,
-      content: `In Bangladesh Electronic Funds Transfer Network (BEFTN), every individual branch of ${bank.name} has a designated 9-digit routing number structured as follows:`,
+      heading: `${bank.short_name} Bank Code Structure & Routing Guide`,
+      content: `Each branch of ${bank.name} is assigned a unique identifying code for processing interbank transfers (BEFTN/RTGS/IFSC/NEFT) efficiently:`,
       steps: [
-        `First 3 Digits (${bank.bank_code}): Represents ${bank.short_name}'s central institutional code.`,
-        `Middle 2 Digits: Represents the District code (e.g., 26 for Dhaka, 15 for Chittagong).`,
-        `Last 4 Digits: The unique 4-digit branch code identifying the specific branch location.`
+        `Prefix / Bank Identifier: Represents ${bank.name}.`,
+        `Middle Code: Designates the clearing zone / district.`,
+        `Suffix: Identifies the individual branch location.`
       ]
     },
     remittanceGuideSection: {
-      heading: `Receiving Inward Foreign Remittances & Freelancing Payouts`,
-      content: `To receive direct bank wires, freelancer platform earnings (Upwork, Fiverr, Payoneer, Deel), Google AdSense, or overseas remittances into your ${bank.name} account, provide these verified banking details:`,
+      heading: `How to Receive International Wire Transfers & Inward Remittances`,
+      content: `To receive inward remittances, overseas wire transfers, or freelance payouts (Upwork, Deel, PayPal, AdSense) into your ${bank.name} account, provide these details:`,
       requiredDetails: [
-        { label: 'Bank Name', value: bank.name },
+        { label: 'Beneficiary Bank', value: bank.name },
         { label: 'SWIFT / BIC Code', value: bank.swift_code },
         { label: 'Head Office Address', value: bank.head_office },
-        { label: 'Account Type', value: 'Savings / Current / Freelancer Account' },
-        { label: 'Govt Incentive', value: '2.5% direct cash incentive on legal remittances' }
+        { label: 'Account Currency', value: isIndia ? 'INR' : 'BDT' }
       ]
     },
     transferComparison: [
       {
-        type: 'NPSB (Internet & Mobile Banking)',
-        speed: 'Instant Real-Time Settlement',
-        limit: 'Up to BDT 300,000 per transaction',
-        bestFor: 'Urgent inter-bank transfers and card/app payments'
+        type: isIndia ? 'IMPS (Immediate)' : 'NPSB (Instant)',
+        speed: 'Instant (24x7 Real-time)',
+        limit: 'Standard daily limit',
+        bestFor: 'Emergency and immediate transfers'
       },
       {
-        type: 'BEFTN (Electronic Funds Transfer)',
-        speed: 'Same-day or next business day',
-        limit: 'Standard transactions (Zero extra fee)',
-        bestFor: 'Salary disbursements, dividend payouts, routine transfers'
+        type: isIndia ? 'NEFT' : 'BEFTN',
+        speed: 'Within hours / Same day',
+        limit: 'No upper limit',
+        bestFor: 'Routine payroll, vendor & bill payments'
       },
       {
-        type: 'RTGS (Real-Time Gross Settlement)',
-        speed: 'Within a few minutes',
-        limit: 'Minimum BDT 100,000 (No upper limit)',
-        bestFor: 'High-value corporate and urgent fund transfers'
+        type: 'RTGS',
+        speed: 'Instant (Real-time)',
+        limit: 'High-value transactions',
+        bestFor: 'Large commercial & corporate settlements'
+      },
+      {
+        type: 'SWIFT Wire Transfer',
+        speed: '1 to 3 Business Days',
+        limit: 'As per central bank FX guidelines',
+        bestFor: 'Inward foreign remittances & global earnings'
       }
     ],
     faqs: [
       {
         question: `What is the SWIFT Code for ${bank.name}?`,
-        answer: `The official SWIFT / BIC Code for ${bank.name} is ${bank.swift_code}. This code is universally accepted for foreign remittances and international wire transfers.`
+        answer: `The primary international SWIFT / BIC code for ${bank.name} is ${bank.swift_code}. It can be used for international transfers to any of its branches.`
       },
       {
-        question: `How many digits is the ${bank.short_name} routing number?`,
-        answer: `All routing numbers for ${bank.name} are exactly 9 digits long, always beginning with the 3-digit bank code "${bank.bank_code}".`
-      },
-      {
-        question: `How can I find the routing number without a cheque book?`,
-        answer: `You can instantly look up your specific branch on World Bank Codes by selecting the bank and district to get the verified 9-digit routing number.`
-      },
-      {
-        question: `What happens if an incorrect routing number is entered?`,
-        answer: `If the routing number does not match the account holder's branch records, the BEFTN network automatically rejects the transaction and reverses the funds within 2-3 banking business days.`
+        question: `How do I locate my branch routing or IFSC number?`,
+        answer: `You can find it printed on your bank cheque book, on the front page of your bank passbook, or search directly on World Bank Codes by branch name or district.`
       }
     ]
   };

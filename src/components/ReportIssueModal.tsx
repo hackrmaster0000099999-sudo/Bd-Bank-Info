@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, HeartHandshake, CheckCircle2, Send } from 'lucide-react';
+import { X, HeartHandshake, CheckCircle2, Send, Loader2, ShieldCheck } from 'lucide-react';
 import { Language, Branch } from '../types';
+import { sendSupportMessage } from '../lib/supportMailService';
 
 interface ReportIssueModalProps {
   branch?: Branch | null;
@@ -18,20 +19,32 @@ export const ReportIssueModal: React.FC<ReportIssueModalProps> = ({
   const [issueType, setIssueType] = useState('wrong_routing');
   const [details, setDetails] = useState('');
   const [userContact, setUserContact] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   if (!isOpen) return null;
 
   const isBn = lang === 'bn';
+  const isHi = lang === 'hi';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    await sendSupportMessage({
+      type: 'report_issue',
+      senderEmail: userContact,
+      subject: `🚨 Data Correction Report: [${issueType}] ${branch ? `${branch.bank_name} - ${branch.name}` : 'General Report'}`,
+      message: details,
+      category: issueType,
+      branchOrBank: branch ? `${branch.bank_name} (${branch.name} Branch, IFSC/Routing: ${branch.ifsc_code || branch.routing_number})` : undefined
+    });
+    setIsSubmitting(false);
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
       setDetails('');
       onClose();
-    }, 2000);
+    }, 2200);
   };
 
   return (
@@ -137,21 +150,42 @@ export const ReportIssueModal: React.FC<ReportIssueModalProps> = ({
               />
             </div>
 
+            {/* Direct dispatch notice */}
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span>
+                {isBn
+                  ? 'রিপোর্টটি সরাসরি আমাদের ডেটাবেস রিভিউ টিম ও সাপোর্ট জিমেইলে চলে যাবে।'
+                  : 'Report dispatched directly to our database verification desk.'}
+              </span>
+            </div>
+
             {/* Action buttons */}
             <div className="pt-2 flex items-center justify-end space-x-2">
               <button
                 type="button"
                 onClick={onClose}
+                disabled={isSubmitting}
                 className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
               >
                 {isBn ? 'বাতিল' : 'Cancel'}
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-700 dark:bg-emerald-600 rounded-lg hover:bg-emerald-800 dark:hover:bg-emerald-700 transition-colors cursor-pointer"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-700 dark:bg-emerald-600 rounded-lg hover:bg-emerald-800 dark:hover:bg-emerald-700 transition-colors cursor-pointer disabled:opacity-70"
               >
-                <Send className="w-3.5 h-3.5" />
-                <span>{isBn ? 'রিপোর্ট পাঠান' : 'Submit Report'}</span>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>{isBn ? 'পাঠানো হচ্ছে...' : 'Sending...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{isBn ? 'রিপোর্ট পাঠান' : 'Submit Report'}</span>
+                  </>
+                )}
               </button>
             </div>
           </form>

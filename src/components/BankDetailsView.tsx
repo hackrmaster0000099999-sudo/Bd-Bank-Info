@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Globe, MapPin, Search, ArrowLeft, ExternalLink, Hash, BookOpen, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, ArrowRightLeft, ShieldCheck } from 'lucide-react';
+import { Building2, Globe, MapPin, Search, ArrowLeft, ExternalLink, Hash, BookOpen, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, ArrowRightLeft, ShieldCheck, Clock, Sparkles } from 'lucide-react';
 import { Bank, Branch, Language } from '../types';
 import { getBranchesForBank } from '../lib/searchEngine';
 import { BranchCard } from './BranchCard';
-import { AdBanner } from './AdBanner';
 import { CopyButton } from './CopyButton';
 import { getBankGuideContent } from '../lib/bankGuideContent';
-import { updateSEOMeta } from '../lib/seoManager';
+import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 
 interface BankDetailsViewProps {
   bank: Bank;
@@ -30,15 +29,18 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const isBn = lang === 'bn';
+  const isHi = lang === 'hi';
   const allBranches = getBranchesForBank(bank.id);
   const guide = getBankGuideContent(bank, lang);
 
   // Update SEO Meta Tags on view mount
   useEffect(() => {
     updateSEOMeta({
-      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers & SWIFT Codes | World Bank Codes`,
+      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers, IFSC & SWIFT Codes | World Bank Codes`,
       description: guide.summary,
-      lang
+      lang,
+      bank,
+      faqs: guide.faqs
     });
   }, [bank, lang, guide]);
 
@@ -48,12 +50,15 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
   // Filter branches
   const filteredBranches = allBranches.filter((br) => {
     const matchesDistrict = selectedDistrict === 'all' || br.district === selectedDistrict;
+    const q = bankBranchQuery.toLowerCase().trim();
     const matchesQuery =
-      !bankBranchQuery ||
-      br.name.toLowerCase().includes(bankBranchQuery.toLowerCase()) ||
-      br.name_bn.includes(bankBranchQuery) ||
-      br.routing_number.includes(bankBranchQuery) ||
-      (br.swift_code && br.swift_code.toLowerCase().includes(bankBranchQuery.toLowerCase()));
+      !q ||
+      br.name.toLowerCase().includes(q) ||
+      (br.name_bn && br.name_bn.includes(q)) ||
+      (br.name_hi && br.name_hi.includes(q)) ||
+      (br.routing_number && br.routing_number.includes(q)) ||
+      (br.ifsc_code && br.ifsc_code.toLowerCase().includes(q)) ||
+      (br.swift_code && br.swift_code.toLowerCase().includes(q));
 
     return matchesDistrict && matchesQuery;
   });
@@ -66,7 +71,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-xs cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-        <span>{isBn ? 'পূর্ববর্তী পাতায় ফিরে যান' : 'Back to Bank Directory'}</span>
+        <span>{isHi ? 'वापस बैंक सूची पर जाएं' : isBn ? 'পূর্ববর্তী পাতায় ফিরে যান' : 'Back to Bank Directory'}</span>
       </button>
 
       {/* Main Bank Header Banner */}
@@ -77,41 +82,45 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
               {bank.type || 'Commercial Bank'}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-slate-200 border border-white/10">
-              Bank Code: {bank.bank_code}
+              {bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              {bank.branch_count} {isBn ? 'টি শাখা' : 'Branches Total'}
+              {bank.branch_count} {isHi ? 'कुल शाखाएं' : isBn ? 'টি শাখা' : 'Branches Total'}
+            </span>
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <span>{isHi ? `अद्यतन: ${CURRENT_DATA_VERSION_DATE}` : isBn ? `হালনাগাদ: ${CURRENT_DATA_VERSION_DATE}` : `Updated: ${CURRENT_DATA_VERSION_DATE}`}</span>
             </span>
           </div>
 
           <div>
             <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight break-words">
-              {isBn ? bank.name_bn : bank.name}
+              {isHi ? (bank.name_hi || bank.name) : isBn ? bank.name_bn : bank.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 break-words">
-              {isBn ? bank.name : bank.name_bn}
+              {isHi ? bank.name : isBn ? bank.name : (bank.name_bn || bank.name_hi)}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-700/80 text-xs">
             {/* SWIFT Box */}
-            <div className="bg-white/5 backdrop-blur-xs p-4 rounded-2xl border border-white/10 flex items-center justify-between">
-              <div>
+            <div className="bg-white/5 backdrop-blur-xs p-4 rounded-2xl border border-white/10 flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
                 <span className="text-slate-400 font-medium block text-[11px]">
-                  {isBn ? 'হেড অফিস সুইফট/BIC কোড:' : 'Head Office SWIFT Code:'}
+                  {isHi ? 'प्रधान कार्यालय स्विफ्ट/BIC कोड:' : isBn ? 'হেড অফিস সুইফট/BIC কোড:' : 'Head Office SWIFT Code:'}
                 </span>
-                <span className="font-mono text-base sm:text-lg font-bold text-white tracking-wider">
+                <span className="font-mono text-base sm:text-lg font-bold text-white tracking-wider break-all">
                   {bank.swift_code}
                 </span>
               </div>
-              <CopyButton textToCopy={bank.swift_code} size="md" lang={lang} />
+              <CopyButton textToCopy={bank.swift_code} size="md" lang={lang} className="shrink-0" />
             </div>
 
             {/* Address & Official Site */}
             <div className="bg-white/5 backdrop-blur-xs p-4 rounded-2xl border border-white/10 space-y-1.5">
               <div className="flex items-start space-x-2 text-slate-300">
                 <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span className="break-words">{isBn ? bank.head_office_bn : bank.head_office}</span>
+                <span className="break-words">{isHi ? (bank.head_office_hi || bank.head_office) : isBn ? bank.head_office_bn : bank.head_office}</span>
               </div>
               {bank.website && (
                 <a
@@ -121,7 +130,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
                   className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2 pt-1"
                 >
                   <Globe className="w-3.5 h-3.5" />
-                  <span>{isBn ? 'অফিসিয়াল ওয়েবসাইট' : 'Official Website'}</span>
+                  <span>{isHi ? 'आधिकारिक वेबसाइट' : isBn ? 'অফিসিয়াল ওয়েবসাইট' : 'Official Website'}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               )}
@@ -136,9 +145,11 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
           <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Building2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>
-              {isBn
+              {isHi
+                ? `${bank.short_name} शाखाएं एवं कोड निर्देशिका (${filteredBranches.length})`
+                : isBn
                 ? `${bank.short_name}-এর শাখা ও রাউটিং তালিকা (${filteredBranches.length})`
-                : `${bank.short_name} Branches & Routing Directory (${filteredBranches.length})`}
+                : `${bank.short_name} Branches & Code Directory (${filteredBranches.length})`}
             </span>
           </h2>
 
@@ -150,7 +161,9 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
                 onChange={(e) => setSelectedDistrict(e.target.value)}
                 className="w-full px-3 py-2 text-xs font-medium bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
               >
-                <option value="all" className="dark:bg-slate-800">{isBn ? 'সকল জেলা (All Districts)' : 'All Districts'}</option>
+                <option value="all" className="dark:bg-slate-800">
+                  {isHi ? 'सभी जिले / शहर (All Districts)' : isBn ? 'সকল জেলা (All Districts)' : 'All Districts / Cities'}
+                </option>
                 {districts.map((d) => (
                   <option key={d} value={d} className="dark:bg-slate-800">
                     {d}
@@ -169,9 +182,11 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
             value={bankBranchQuery}
             onChange={(e) => setBankBranchQuery(e.target.value)}
             placeholder={
-              isBn
+              isHi
+                ? 'शाखा का नाम, शहर या IFSC/MICR कोड लिखें...'
+                : isBn
                 ? 'এই ব্যাংকের শাখা বা রাউটিং নম্বর লিখুন (যেমন গুলশান / ১২৫২৬০১২৩)...'
-                : 'Search within this bank by branch name or routing number...'
+                : 'Search within this bank by branch name or routing/IFSC code...'
             }
             className="w-full pl-10 pr-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
           />
@@ -181,23 +196,21 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
       {/* Branch Grid */}
       {filteredBranches.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredBranches.map((br, index) => (
-            <React.Fragment key={br.id}>
-              <BranchCard
-                branch={br}
-                lang={lang}
-                onSelectBranch={onSelectBranch}
-                onOpenRoutingDecoder={onOpenRoutingDecoder}
-                onOpenReportModal={onOpenReportModal}
-              />
-              {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
-            </React.Fragment>
+          {filteredBranches.map((br) => (
+            <BranchCard
+              key={`${br.country || 'bd'}-${br.id}`}
+              branch={br}
+              lang={lang}
+              onSelectBranch={onSelectBranch}
+              onOpenRoutingDecoder={onOpenRoutingDecoder}
+              onOpenReportModal={onOpenReportModal}
+            />
           ))}
         </div>
       ) : (
         <div className="bg-white dark:bg-slate-800/90 p-8 rounded-2xl border border-slate-200 dark:border-slate-700/80 text-center space-y-2">
           <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {isBn ? 'কোনো শাখা পাওয়া যায়নি।' : 'No branches found matching your filter.'}
+            {isHi ? 'आपके फ़िल्टर के अनुसार कोई शाखा नहीं मिली।' : isBn ? 'কোনো শাখা পাওয়া যায়নি।' : 'No branches found matching your filter.'}
           </p>
           <button
             onClick={() => {
@@ -206,7 +219,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
             }}
             className="text-xs text-emerald-700 dark:text-emerald-400 font-bold underline cursor-pointer"
           >
-            {isBn ? 'ফিল্টার রিসেট করুন' : 'Reset Filters'}
+            {isHi ? 'फ़िल्टर रीसेट करें' : isBn ? 'ফিল্টার রিসেট করুন' : 'Reset Filters'}
           </button>
         </div>
       )}
@@ -216,7 +229,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         <div className="border-b border-slate-200 dark:border-slate-700/80 pb-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 mb-2">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>{isBn ? 'ব্যাংকিং গাইড ও নির্দেশিকা' : 'Official Banking Guide & Reference'}</span>
+            <span>{isHi ? 'बैंकिंग गाइड एवं निर्देशिका' : isBn ? 'ব্যাংকিং গাইড ও নির্দেশিকা' : 'Official Banking Guide & Reference'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight break-words">
             {guide.title}
@@ -280,17 +293,17 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         <section className="space-y-3">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <ArrowRightLeft className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>{isBn ? 'তহবিল স্থানান্তরের মাধ্যম তুলনা' : 'Electronic Funds Transfer Methods'}</span>
+            <span>{isHi ? 'इलेक्ट्रॉनिक फंड ट्रांसफर माध्यमों की तुलना' : isBn ? 'তহবিল স্থানান্তরের মাধ্যম তুলনা' : 'Electronic Funds Transfer Methods'}</span>
           </h3>
           
           <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
             <table className="w-full text-left text-xs sm:text-sm">
               <thead className="bg-slate-100 dark:bg-slate-700/60 text-slate-800 dark:text-slate-200 font-bold border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                  <th className="p-3 sm:p-4">{isBn ? 'পেমেন্ট চ্যানেল' : 'Payment Method'}</th>
-                  <th className="p-3 sm:p-4">{isBn ? 'গতি' : 'Settlement Speed'}</th>
-                  <th className="p-3 sm:p-4">{isBn ? 'লেনদেন সীমা' : 'Limit'}</th>
-                  <th className="p-3 sm:p-4">{isBn ? 'ব্যবহারের উপযুক্ত ক্ষেত্র' : 'Best Used For'}</th>
+                  <th className="p-3 sm:p-4">{isHi ? 'पेमेंट चैनल' : isBn ? 'পেমেন্ট চ্যানেল' : 'Payment Method'}</th>
+                  <th className="p-3 sm:p-4">{isHi ? 'गति' : isBn ? 'গতি' : 'Settlement Speed'}</th>
+                  <th className="p-3 sm:p-4">{isHi ? 'लेन-देन सीमा' : isBn ? 'লেনদেন সীমা' : 'Limit'}</th>
+                  <th className="p-3 sm:p-4">{isHi ? 'उपयुक्तता' : isBn ? 'ব্যবহারের উপযুক্ত ক্ষেত্র' : 'Best Used For'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60 text-slate-700 dark:text-slate-300">
@@ -311,7 +324,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         <section className="space-y-3 pt-2">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>{isBn ? 'সচরাচর জিজ্ঞাসিত প্রশ্নাবলি (FAQ)' : 'Frequently Asked Questions (FAQ)'}</span>
+            <span>{isHi ? 'अक्सर पूछे जाने वाले प्रश्न (FAQ)' : isBn ? 'সচরাচর জিজ্ঞাসিত প্রশ্নাবলি (FAQ)' : 'Frequently Asked Questions (FAQ)'}</span>
           </h3>
 
           <div className="space-y-2.5">

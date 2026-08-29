@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Language, FilterState, Bank, Branch } from './types';
+import { Language, FilterState, Bank, Branch, Country } from './types';
 import { Header } from './components/Header';
-import { AdBanner } from './components/AdBanner';
 import { Footer } from './components/Footer';
 import { UniversalSearch } from './components/UniversalSearch';
 import { FilterBar } from './components/FilterBar';
@@ -10,19 +9,23 @@ import { BankCard } from './components/BankCard';
 import { BranchCard } from './components/BranchCard';
 import { RoutingDecoderModal } from './components/RoutingDecoderModal';
 import { ReportIssueModal } from './components/ReportIssueModal';
+import { RatingFeedbackModal } from './components/RatingFeedbackModal';
 import { BankDetailsView } from './components/BankDetailsView';
 import { BranchDetailsView } from './components/BranchDetailsView';
+import { HeroCountrySelector } from './components/HeroCountrySelector';
 import { AboutPage } from './components/AboutPage';
 import { ContactPage } from './components/ContactPage';
 import { PrivacyPage } from './components/PrivacyPage';
 import { DisclaimerPage } from './components/DisclaimerPage';
 import { NotFoundPage } from './components/NotFoundPage';
 import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting } from './lib/searchEngine';
-import { generateSeoData, updateSEOMeta } from './lib/seoManager';
-import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2 } from 'lucide-react';
+import { generateSeoData, updateSEOMeta, getFreshnessLabel, CURRENT_DATA_VERSION_DATE } from './lib/seoManager';
+import { translations } from './lib/translations';
+import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2, Clock, Star } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState<Language>('bn');
+  const [country, setCountry] = useState<Country>('all');
   const [currentTab, setCurrentTab] = useState<string>('search');
   const [is404, setIs404] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -49,13 +52,50 @@ export default function App() {
 
   // Search & Filter state
   const [query, setQuery] = useState<string>('');
-  const [searchType, setSearchType] = useState<'all' | 'routing' | 'swift' | 'branch'>('all');
+  const [searchType, setSearchType] = useState<'all' | 'routing' | 'ifsc' | 'swift' | 'branch'>('all');
   const [filters, setFilters] = useState<FilterState>({
+    country: 'all',
     bankId: 'all',
     division: 'all',
     district: 'all',
     searchType: 'all'
   });
+
+  // Keep country filter in sync with global country
+  const handleSetCountry = (newCountry: Country) => {
+    setCountry(newCountry);
+    if (newCountry === 'in') {
+      setLang('hi');
+    } else if (newCountry === 'bd') {
+      setLang('bn');
+    }
+
+    setFilters((prev) => ({
+      ...prev,
+      country: newCountry,
+      bankId: 'all',
+      division: 'all',
+      district: 'all'
+    }));
+
+    // If currently on a detail page from another country, redirect to appropriate directory
+    const path = location.pathname;
+    if (newCountry !== 'all') {
+      if (path.startsWith('/bank/')) {
+        const slug = path.replace('/bank/', '');
+        const currentBank = getBankBySlug(slug);
+        if (currentBank && currentBank.country && currentBank.country !== newCountry) {
+          navigate('/banks');
+        }
+      } else if (path.startsWith('/branch/')) {
+        const identifier = decodeURIComponent(path.replace('/branch/', ''));
+        const currentBranch = getBranchByIdOrRouting(identifier) || getBranchByRoutingNumber(identifier);
+        if (currentBranch && currentBranch.country && currentBranch.country !== newCountry) {
+          navigate('/routing');
+        }
+      }
+    }
+  };
 
   // Selected detail view items
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
@@ -68,22 +108,31 @@ export default function App() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportBranchTarget, setReportBranchTarget] = useState<Branch | null>(null);
 
-  const isBn = lang === 'bn';
-  const allBanks = getBanks();
-  const divisions = getDivisions();
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+
+  const t = translations[lang] || translations.en;
+  const currentBanks = getBanks(country);
+  const divisions = getDivisions(country);
 
   // Search results memoized
   const searchResults = useMemo(() => {
-    return searchAll(query, { ...filters, searchType });
-  }, [query, filters, searchType]);
+    return searchAll(query, { ...filters, country, searchType });
+  }, [query, filters, country, searchType]);
 
   // Filter handlers
   const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    if (key === 'country') {
+      handleSetCountry(value as Country);
+      if (value === 'in') setLang('hi');
+      else if (value === 'bd') setLang('bn');
+    } else {
+      setFilters((prev) => ({ ...prev, [key]: value }));
+    }
   };
 
   const handleResetFilters = () => {
-    setFilters({ bankId: 'all', division: 'all', district: 'all', searchType: 'all' });
+    setFilters({ country: 'all', bankId: 'all', division: 'all', district: 'all', searchType: 'all' });
+    setCountry('all');
     setQuery('');
   };
 
@@ -110,7 +159,7 @@ export default function App() {
       } else {
         setIs404(true);
       }
-    } else if (path === '/about' || path === '/contact' || path === '/privacy' || path === '/disclaimer') {
+    } else if (path === '/about' || path === '/contact' || path === '/privacy-policy' || path === '/disclaimer') {
       setSelectedBank(null);
       setSelectedBranch(null);
       setCurrentTab(path.substring(1));
@@ -122,7 +171,7 @@ export default function App() {
       setCurrentTab(tab);
 
       if (tab === 'routing') {
-        setSearchType('routing');
+        setSearchType(country === 'in' ? 'ifsc' : 'routing');
       } else if (tab === 'swift') {
         setSearchType('swift');
       } else {
@@ -135,7 +184,7 @@ export default function App() {
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location.pathname]);
+  }, [location.pathname, country]);
 
   // Select Bank Detail
   const handleSelectBank = (bankId: string) => {
@@ -144,7 +193,8 @@ export default function App() {
 
   // Select Branch Detail
   const handleSelectBranch = (branch: Branch) => {
-    navigate('/branch/' + branch.routing_number);
+    const code = branch.ifsc_code || branch.routing_number;
+    navigate('/branch/' + encodeURIComponent(code));
   };
 
   // Trigger Routing Decoder Modal
@@ -179,7 +229,7 @@ export default function App() {
       viewType = 'about';
     } else if (currentTab === 'contact') {
       viewType = 'contact';
-    } else if (currentTab === 'privacy') {
+    } else if (currentTab === 'privacy-policy') {
       viewType = 'privacy';
     } else if (currentTab === 'disclaimer') {
       viewType = 'disclaimer';
@@ -203,7 +253,9 @@ export default function App() {
       {/* Top Header Navigation */}
       <Header
         lang={lang}
-        onToggleLanguage={() => setLang((prev) => (prev === 'bn' ? 'en' : 'bn'))}
+        onSetLanguage={setLang}
+        country={country}
+        onSetCountry={handleSetCountry}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode((prev) => !prev)}
       />
@@ -216,7 +268,7 @@ export default function App() {
           <AboutPage lang={lang} onBack={() => navigate('/')} />
         ) : currentTab === 'contact' ? (
           <ContactPage lang={lang} onBack={() => navigate('/')} />
-        ) : currentTab === 'privacy' ? (
+        ) : currentTab === 'privacy-policy' ? (
           <PrivacyPage lang={lang} onBack={() => navigate('/')} />
         ) : currentTab === 'disclaimer' ? (
           <DisclaimerPage lang={lang} onBack={() => navigate('/')} />
@@ -244,29 +296,49 @@ export default function App() {
           <div className="space-y-8 py-6">
             {/* Hero Section */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-center space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>
-                  {isBn
-                    ? 'বাংলাদেশ ব্যাংক BEFTN ডাটাবেজ আপডেট (মার্চ ২০২৬)'
-                    : 'Official Bangladesh Bank BEFTN Records (Updated March 2026)'}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200/90 dark:border-emerald-800/80 shadow-2xs max-w-full text-center break-words">
+                <span className="flex h-2 w-2 relative shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600 dark:bg-emerald-400"></span>
+                </span>
+                <span className="break-words">
+                  {getFreshnessLabel(lang)}
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                {isBn
-                  ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নম্বর ও সুইফট কোড'
-                  : 'Bangladesh Bank Routing Numbers & SWIFT Code Directory'}
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto leading-tight">
+                {country === 'in' ? (
+                  lang === 'hi'
+                    ? 'भारत के सभी बैंकों के IFSC कोड, MICR ও स्विफ्ट कोड'
+                    : 'All India Bank IFSC Codes, MICR & SWIFT Directory'
+                ) : country === 'bd' ? (
+                  lang === 'bn'
+                    ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নম্বর ও সুইফট কোড'
+                    : 'Bangladesh Bank Routing Numbers & SWIFT Code Directory'
+                ) : (
+                  lang === 'hi'
+                    ? 'भारत एवं बांग्लादेश के सभी बैंकों के IFSC, রাউটিং ও SWIFT कोड'
+                    : lang === 'bn'
+                    ? 'বিশ্বের ব্যাংক সমূহের IFSC, রাউটিং ও সুইফট কোড ডিরেক্টরি'
+                    : 'Global Bank IFSC, Routing Numbers & SWIFT Codes Directory'
+                )}
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
-                {isBn
-                  ? 'সহজে এবং এক-ক্লিকে কপি সুবিধাসহ ব্যাংক নাম, শাখা, ৯ ডিজিটের রাউটিং নম্বর এবং সুইফট কোড খুঁজুন।'
-                  : 'Fast, lightweight and clean search directory. Copy BEFTN routing numbers and BIC SWIFT codes instantly.'}
+                {t.tagline}
               </p>
 
-              {/* Universal Search Input Bar */}
+              {/* Hero Country Quick Switcher (3-Pill Switcher) */}
               <div className="pt-2">
+                <HeroCountrySelector
+                  country={country}
+                  onSetCountry={handleSetCountry}
+                  lang={lang}
+                />
+              </div>
+
+              {/* Universal Search Input Bar */}
+              <div className="pt-1">
                 <UniversalSearch
                   query={query}
                   onChangeQuery={setQuery}
@@ -291,28 +363,26 @@ export default function App() {
               {/* Tab 1: Banks List (When Tab is 'banks') */}
               {currentTab === 'banks' && !query && filters.bankId === 'all' && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-                    <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center">
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0">
                         <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </div>
-                      <span>{isBn ? 'তালিকাভুক্ত ব্যাংক সমূহ' : 'Scheduled Banks of Bangladesh'}</span>
+                      <span className="truncate">{t.allBanks} ({currentBanks.length})</span>
                     </h2>
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-600/60">
-                      {allBanks.length} {isBn ? 'টি ব্যাংক' : 'Banks'}
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-600/60 shrink-0">
+                      {currentBanks.length} {t.banks}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {allBanks.map((bank, index) => (
-                      <React.Fragment key={bank.id}>
-                        <BankCard
-                          bank={bank}
-                          lang={lang}
-                          onSelectBank={handleSelectBank}
-                        />
-                        {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
-                      </React.Fragment>
+                    {currentBanks.map((bank) => (
+                      <BankCard
+                        key={`${bank.country || 'bd'}-${bank.id}`}
+                        bank={bank}
+                        lang={lang}
+                        onSelectBank={handleSelectBank}
+                      />
                     ))}
                   </div>
                 </div>
@@ -321,13 +391,15 @@ export default function App() {
               {/* Search Results Display Area */}
               {(query || currentTab !== 'banks' || filters.bankId !== 'all' || filters.division !== 'all' || filters.district !== 'all') && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-                    <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center">
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0">
                         <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       </div>
-                      <span>
-                        {isBn
+                      <span className="break-words">
+                        {lang === 'hi'
+                          ? `खोज परिणाम (${searchResults.length})`
+                          : lang === 'bn'
                           ? `অনুসন্ধান ফলাফল (${searchResults.length})`
                           : `Search Results (${searchResults.length})`}
                       </span>
@@ -336,55 +408,51 @@ export default function App() {
                     {query && (
                       <button
                         onClick={() => setQuery('')}
-                        className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+                        className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer shrink-0"
                       >
-                        {isBn ? 'অনুসন্ধান মুছুন' : 'Clear Query'}
+                        {lang === 'hi' ? 'खोज हटाएं' : lang === 'bn' ? 'অনুসন্ধান মুছুন' : 'Clear Query'}
                       </button>
                     )}
                   </div>
 
                   {searchResults.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {searchResults.map((res, index) => {
-                        let content;
+                      {searchResults.map((res) => {
                         if (res.type === 'bank') {
-                          content = (
+                          return (
                             <BankCard
+                              key={`bank-${res.country || 'bd'}-${res.id}`}
                               bank={res.item as Bank}
                               lang={lang}
                               onSelectBank={handleSelectBank}
                             />
                           );
-                        } else {
-                          content = (
-                            <BranchCard
-                              branch={res.item as Branch}
-                              lang={lang}
-                              onSelectBranch={handleSelectBranch}
-                              onOpenRoutingDecoder={handleOpenRoutingDecoder}
-                              onOpenReportModal={handleOpenReportModal}
-                            />
-                          );
                         }
                         return (
-                          <React.Fragment key={res.id}>
-                            {content}
-                            {(index + 1) % 6 === 0 && <AdBanner className="col-span-1 md:col-span-2 lg:col-span-3" />}
-                          </React.Fragment>
+                          <BranchCard
+                            key={`branch-${res.country || 'bd'}-${res.id}`}
+                            branch={res.item as Branch}
+                            lang={lang}
+                            onSelectBranch={handleSelectBranch}
+                            onOpenRoutingDecoder={handleOpenRoutingDecoder}
+                            onOpenReportModal={handleOpenReportModal}
+                          />
                         );
                       })}
                     </div>
                   ) : (
-                    /* No Results State with Fuzzy Suggestions & Report Link */
+                    /* No Results State */
                     <div className="bg-white dark:bg-slate-800/90 p-8 sm:p-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 text-center space-y-4 max-w-xl mx-auto shadow-xs">
                       <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-400 rounded-full flex items-center justify-center mx-auto">
                         <Building2 className="w-6 h-6" />
                       </div>
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                        {isBn ? 'কোনো ফলাফল পাওয়া যায়নি' : 'No Results Found'}
+                        {lang === 'hi' ? 'कोई परिणाम नहीं मिला' : lang === 'bn' ? 'কোনো ফলাফল পাওয়া যায়নি' : 'No Results Found'}
                       </h3>
                       <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                        {isBn
+                        {lang === 'hi'
+                          ? 'आपकी खोज के अनुसार कोई बैंक या शाखा नहीं मिली। कृपया वर्तनी (Spelling) जाँचें या फ़िल्टर रीसेट करें।'
+                          : lang === 'bn'
                           ? 'আপনার অনুসন্ধানের সাথে মিল রেখে কোনো ব্যাংক বা শাখা পাওয়া যায়নি। বানান পরীক্ষা করুন অথবা ফিল্টার রিসেট করে আবার চেষ্টা করুন।'
                           : 'No matching banks or branches found for your query. Try checking spelling or resetting filters.'}
                       </p>
@@ -394,14 +462,14 @@ export default function App() {
                           onClick={handleResetFilters}
                           className="px-4 py-2 text-xs font-semibold bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors cursor-pointer"
                         >
-                          {isBn ? 'ফিল্টার রিসেট করুন' : 'Reset All Filters'}
+                          {t.reset}
                         </button>
 
                         <button
                           onClick={() => handleOpenReportModal(null)}
-                          className="px-4 py-2 text-xs font-semibold bg-slate-100 text-slate-800 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
+                          className="px-4 py-2 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                         >
-                          {isBn ? 'অনুপস্থিত শাখা রিপোর্ট করুন' : 'Report Missing Branch'}
+                          {t.reportIssue}
                         </button>
                       </div>
                     </div>
@@ -409,11 +477,17 @@ export default function App() {
                 </div>
               )}
 
-              {/* Browse By Division Section */}
+              {/* Browse By Division/State Section */}
               <div className="pt-6 border-t border-slate-200/80 dark:border-slate-700/80 space-y-4">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  <span>{isBn ? 'বিভাগ অনুযায়ী ব্যাংক শাখা খুঁজুন' : 'Browse Branches by Division'}</span>
+                  <span>
+                    {country === 'in'
+                      ? (lang === 'hi' ? 'राज्य के अनुसार बैंक शाखाएँ खोजें' : 'Browse Branches by Indian State')
+                      : country === 'bd'
+                      ? (lang === 'bn' ? 'বিভাগ অনুযায়ী ব্যাংক শাখা খুঁজুন' : 'Browse Branches by BD Division')
+                      : (lang === 'hi' ? 'राज्य / विभाग अनुसार शाखाएँ खोजें' : lang === 'bn' ? 'বিভাগ / রাজ্য অনুযায়ী শাখা খুঁজুন' : 'Browse Branches by State / Division')}
+                  </span>
                 </h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
@@ -430,8 +504,10 @@ export default function App() {
                           : 'bg-white dark:bg-slate-800/90 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:border-emerald-300 dark:hover:border-emerald-700/60 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20'
                       }`}
                     >
-                      <span className="text-xs font-bold block">{isBn ? div.bn : div.en}</span>
-                      <span className="text-[10px] opacity-75 font-mono">{div.en}</span>
+                      <span className="text-xs font-bold block truncate">
+                        {lang === 'hi' && div.hi ? div.hi : lang === 'bn' ? div.bn : div.en}
+                      </span>
+                      <span className="text-[10px] opacity-75 font-mono truncate block">{div.en}</span>
                     </button>
                   ))}
                 </div>
@@ -441,40 +517,46 @@ export default function App() {
               <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-6 sm:p-8 space-y-4 shadow-xs">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  <span>{isBn ? 'World Bank Codes সম্পর্কে' : 'About World Bank Codes'}</span>
+                  <span>{t.aboutUs} - World Bank Codes</span>
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      {isBn ? 'BEFTN রাউটিং নম্বর কী?' : 'What is a BEFTN Routing Number?'}
+                      {lang === 'hi' ? 'IFSC एवं রাউটিং কোড কী?' : lang === 'bn' ? 'IFSC ও BEFTN রাউটিং নম্বর কী?' : 'What is IFSC & Routing Code?'}
                     </h3>
                     <p>
-                      {isBn
-                        ? 'বাংলাদেশ ইলেকট্রনিক ফান্ডস ট্র্যান্সফার নেটওয়ার্ক (BEFTN)-এর জন্য ব্যবহৃত ৯ ডিজিটের অনন্য কোড, যা এক ব্যাংকের অ্যাকাউন্ট থেকে অন্য ব্যাংকে টাকা পাঠানোর জন্য প্রয়োজন হয়।'
-                        : 'A 9-digit unique numeric code used by Bangladesh Electronic Funds Transfer Network (BEFTN) for interbank transfers.'}
+                      {lang === 'hi'
+                        ? 'IFSC (Indian Financial System Code) ११ अक्षरों का कोड है जो NEFT, RTGS, IMPS के लिए आवश्यक है। बांग्लादेश में ৯ অঙ্কের BEFTN রাউটিং কোড ব্যবহৃত হয়।'
+                        : lang === 'bn'
+                        ? 'বাংলাদেশ ইলেকট্রনিক ফান্ডস ট্র্যান্সফার নেটওয়ার্ক (BEFTN)-এর জন্য ব্যবহৃত ৯ ডিজিটের অনন্য কোড এবং ভারতের ১১ ডিজিটের IFSC কোড আন্তঃব্যাংক লেনদেনে ব্যবহৃত হয়।'
+                        : 'IFSC is an 11-character alphanumeric code for Indian interbank transfers (NEFT/RTGS), while Bangladesh uses 9-digit BEFTN routing numbers.'}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      {isBn ? 'SWIFT / BIC কোড কী?' : 'What is a SWIFT / BIC Code?'}
+                      {lang === 'hi' ? 'SWIFT / BIC कोड क्या है?' : lang === 'bn' ? 'SWIFT / BIC কোড কী?' : 'What is a SWIFT / BIC Code?'}
                     </h3>
                     <p>
-                      {isBn
-                        ? 'আন্তর্জাতিক রেমিট্যান্স বা বিদেশ থেকে বাংলাদেশে অর্থ পাঠানোর জন্য ৮ বা ১১ ডিজিটের আন্তর্জাতিক ব্যাংক আইডেন্টিফায়ার কোড।'
-                        : 'An 8-character or 11-character international code used for receiving foreign remittances into Bangladeshi bank accounts.'}
+                      {lang === 'hi'
+                        ? 'अंतर्राष्ट्रीय मनी ट्रांसफर या विदेश से भारत/बांग्लादेश में पैसे मंगवाने के लिए ८ या ११ अक्षरों का अंतर्राष्ट्रीय बैंक कोड।'
+                        : lang === 'bn'
+                        ? 'আন্তর্জাতিক রেমিট্যান্স বা বিদেশ থেকে অর্থ পাঠানোর জন্য ৮ বা ১১ ডিজিটের আন্তর্জাতিক ব্যাংক আইডেন্টিফায়ার কোড।'
+                        : 'An 8 or 11 character standard identifier code used worldwide for international wire transfers and foreign remittances.'}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      {isBn ? 'ডাটা নির্ভুলতা ও দ্রুততা' : 'Data Accuracy & Speed'}
+                      {lang === 'hi' ? 'सटीकता एवं गति' : lang === 'bn' ? 'ডাটা নির্ভুলতা ও দ্রুততা' : 'Data Accuracy & Speed'}
                     </h3>
                     <p>
-                      {isBn
-                        ? 'বাংলাদেশ ব্যাংকের অফিশিয়াল তালিকা অনুযায়ী নিয়মিত হালনাগাদকৃত ডাটা। কোনো পেজ রিলোড ছাড়াই ইন্সট্যান্ট কপি এবং সার্চ।'
-                        : 'Updated directly from Bangladesh Bank master BEFTN releases with instant offline-capable client search.'}
+                      {lang === 'hi'
+                        ? 'RBI एवं केंद्रीय बैंकों द्वारा सत्यापित मास्टर डेटाबेस। बिना किसी विज्ञापन (Ad-free) के तेज़ और सहज अनुभव।'
+                        : lang === 'bn'
+                        ? 'বাংলাদেশ ব্যাংক ও আরবিআই-এর অফিশিয়াল ডাটা অনুযায়ী নিয়মিত হালনাগাদকৃত। শতভাগ বিজ্ঞাপনমুক্ত ও নিরাপদ।'
+                        : 'Updated directly from official central bank databases. 100% ad-free, ultra-fast, and mobile-friendly.'}
                     </p>
                   </div>
                 </div>
@@ -488,7 +570,19 @@ export default function App() {
       <Footer
         lang={lang}
         onOpenReportModal={() => handleOpenReportModal(selectedBranch)}
+        onOpenRatingModal={() => setIsRatingModalOpen(true)}
       />
+
+      {/* Floating Instant Rating & Feedback Button */}
+      <button
+        onClick={() => setIsRatingModalOpen(true)}
+        className="fixed bottom-5 right-4 sm:right-6 z-30 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-full bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-xs shadow-xl shadow-amber-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer border border-amber-400/80"
+        title="Rate & Feedback"
+        aria-label="Rate Us & Send Direct Message"
+      >
+        <Star className="w-4 h-4 fill-slate-950 text-slate-950" />
+        <span>{lang === 'hi' ? 'रेटिंग व फीडबैक' : lang === 'bn' ? 'রেটিং ও মতামত' : 'Rate Us ⭐'}</span>
+      </button>
 
       {/* Interactive Modals */}
       <RoutingDecoderModal
@@ -504,7 +598,12 @@ export default function App() {
         onClose={() => setIsReportModalOpen(false)}
         lang={lang}
       />
+
+      <RatingFeedbackModal
+        isOpen={isRatingModalOpen}
+        onClose={() => setIsRatingModalOpen(false)}
+        lang={lang}
+      />
     </div>
   );
 }
-

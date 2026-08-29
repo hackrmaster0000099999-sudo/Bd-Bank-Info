@@ -1,7 +1,8 @@
 import React from 'react';
-import { Filter, RotateCcw, ChevronDown } from 'lucide-react';
-import { FilterState, Language } from '../types';
+import { Filter, RotateCcw, ChevronDown, Globe } from 'lucide-react';
+import { FilterState, Language, Country } from '../types';
 import { getBanks, getDivisions, getDistricts } from '../lib/searchEngine';
+import { translations } from '../lib/translations';
 
 interface FilterBarProps {
   filters: FilterState;
@@ -14,14 +15,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   filters,
   onChangeFilter,
   onResetFilters,
-  lang
+  lang,
 }) => {
-  const isBn = lang === 'bn';
-  const banks = getBanks();
-  const divisions = getDivisions();
-  const districts = getDistricts(filters.division !== 'all' ? filters.division : undefined);
+  const t = translations[lang] || translations.en;
+  const banks = getBanks(filters.country);
+  const divisions = getDivisions(filters.country);
+  const districts = getDistricts(filters.division !== 'all' ? filters.division : undefined, filters.country);
 
   const activeFiltersCount =
+    (filters.country !== 'all' ? 1 : 0) +
     (filters.bankId !== 'all' ? 1 : 0) +
     (filters.division !== 'all' ? 1 : 0) +
     (filters.district !== 'all' ? 1 : 0);
@@ -34,11 +36,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <Filter className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-            {isBn ? 'ফিল্টার করুন (Bank → Division → District)' : 'Filters (Bank → Division → District)'}
+            {t.filterBy} ({t.country} → {t.banks} → {t.divisionState} → {t.districtCity})
           </span>
           {activeFiltersCount > 0 && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
-              {activeFiltersCount} {isBn ? 'সক্রিয়' : 'active'}
+              {activeFiltersCount} {t.active}
             </span>
           )}
         </div>
@@ -49,13 +51,32 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>{isBn ? 'রিসেট' : 'Reset'}</span>
+            <span>{t.reset}</span>
           </button>
         )}
       </div>
 
-      {/* Dropdowns */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+      {/* 4 Dropdowns: Country, Bank, State/Division, District/City */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        {/* Country Dropdown */}
+        <div className="relative">
+          <select
+            value={filters.country}
+            onChange={(e) => {
+              onChangeFilter('country', e.target.value);
+              onChangeFilter('bankId', 'all');
+              onChangeFilter('division', 'all');
+              onChangeFilter('district', 'all');
+            }}
+            className="w-full pl-3.5 pr-8 py-2.5 text-xs font-bold bg-emerald-50/70 dark:bg-slate-700/80 border border-emerald-200/70 dark:border-slate-600 rounded-xl text-emerald-950 dark:text-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all"
+          >
+            <option value="all" className="dark:bg-slate-800">🌐 {t.allCountries}</option>
+            <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>
+            <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+        </div>
+
         {/* Bank Dropdown */}
         <div className="relative">
           <select
@@ -63,17 +84,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             onChange={(e) => onChangeFilter('bankId', e.target.value)}
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-semibold bg-slate-50/80 dark:bg-slate-700/60 border border-slate-200/80 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:bg-slate-700 appearance-none cursor-pointer transition-all"
           >
-            <option value="all" className="dark:bg-slate-800">{isBn ? 'সকল ব্যাংক (All Banks)' : 'All Banks'}</option>
+            <option value="all" className="dark:bg-slate-800">{t.allBanks}</option>
             {banks.map((b) => (
               <option key={b.id} value={b.id} className="dark:bg-slate-800">
-                {isBn ? b.name_bn : b.name} ({b.short_name})
+                {lang === 'hi' && b.name_hi ? b.name_hi : lang === 'bn' && b.name_bn ? b.name_bn : b.name} ({b.short_name})
               </option>
             ))}
           </select>
           <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
         </div>
 
-        {/* Division Dropdown */}
+        {/* Division/State Dropdown */}
         <div className="relative">
           <select
             value={filters.division}
@@ -83,27 +104,27 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             }}
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-semibold bg-slate-50/80 dark:bg-slate-700/60 border border-slate-200/80 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:bg-slate-700 appearance-none cursor-pointer transition-all"
           >
-            <option value="all" className="dark:bg-slate-800">{isBn ? 'সকল বিভাগ (All Divisions)' : 'All Divisions'}</option>
+            <option value="all" className="dark:bg-slate-800">{t.allDivisions}</option>
             {divisions.map((d) => (
               <option key={d.en} value={d.en} className="dark:bg-slate-800">
-                {isBn ? d.bn : d.en}
+                {lang === 'hi' && d.hi ? d.hi : lang === 'bn' ? d.bn : d.en}
               </option>
             ))}
           </select>
           <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
         </div>
 
-        {/* District Dropdown */}
+        {/* District/City Dropdown */}
         <div className="relative">
           <select
             value={filters.district}
             onChange={(e) => onChangeFilter('district', e.target.value)}
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-semibold bg-slate-50/80 dark:bg-slate-700/60 border border-slate-200/80 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:bg-slate-700 appearance-none cursor-pointer transition-all"
           >
-            <option value="all" className="dark:bg-slate-800">{isBn ? 'সকল জেলা (All Districts)' : 'All Districts'}</option>
+            <option value="all" className="dark:bg-slate-800">{t.allDistricts}</option>
             {districts.map((dst) => (
               <option key={dst.en} value={dst.en} className="dark:bg-slate-800">
-                {isBn ? dst.bn : dst.en}
+                {lang === 'hi' && dst.hi ? dst.hi : lang === 'bn' ? dst.bn : dst.en}
               </option>
             ))}
           </select>

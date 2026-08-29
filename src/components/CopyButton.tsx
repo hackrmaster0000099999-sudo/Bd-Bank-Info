@@ -43,7 +43,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
       type="button"
       onClick={handleCopy}
       aria-label={`Copy ${textToCopy}`}
-      className={`inline-flex items-center justify-center font-medium transition-all duration-200 border active:scale-95 cursor-pointer select-none ${
+      className={`inline-flex items-center justify-center font-medium transition-all duration-200 border active:scale-95 cursor-pointer select-none whitespace-nowrap shrink-0 ${
         copied
           ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/25 ring-2 ring-emerald-500/30 scale-105 animate-pop-spring'
           : 'bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/60 hover:border-emerald-300/80 dark:hover:border-emerald-700/80 hover:shadow-xs'

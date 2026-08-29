@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
 import { Language } from '../types';
+import { sendSupportMessage, ADMIN_EMAIL } from '../lib/supportMailService';
 
 interface PageProps {
   lang: Language;
@@ -9,11 +10,22 @@ interface PageProps {
 
 export const ContactPage: React.FC<PageProps> = ({ lang, onBack }) => {
   const isBn = lang === 'bn';
+  const isHi = lang === 'hi';
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    await sendSupportMessage({
+      type: 'contact',
+      senderName: formData.name,
+      senderEmail: formData.email,
+      subject: formData.subject || 'New Contact Inquire via World Bank Codes',
+      message: formData.message
+    });
+    setIsSubmitting(false);
     setSubmitted(true);
   };
 
@@ -125,12 +137,31 @@ export const ContactPage: React.FC<PageProps> = ({ lang, onBack }) => {
                   />
                 </div>
 
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>
+                    {isBn
+                      ? 'বার্তাটি সরাসরি আমাদের সেন্ট্রাল সাপোর্ট ইনবক্সে চলে যাবে।'
+                      : 'Delivered directly to our central support desk.'}
+                  </span>
+                </div>
+
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>{isBn ? 'বার্তা পাঠান' : 'Send Message'}</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>{isBn ? 'বার্তা পাঠানো হচ্ছে...' : 'Sending Message...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>{isBn ? 'সরাসরি বার্তা পাঠান' : 'Send Direct Message'}</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}

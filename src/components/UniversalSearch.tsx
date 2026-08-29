@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Search, X, Sparkles, Hash, Globe, Building2, MapPin } from 'lucide-react';
+import { Search, X, Sparkles, Hash, Globe, Building2 } from 'lucide-react';
 import { Language } from '../types';
+import { translations } from '../lib/translations';
 
 interface UniversalSearchProps {
   query: string;
   onChangeQuery: (q: string) => void;
-  searchType: 'all' | 'routing' | 'swift' | 'branch';
-  onChangeSearchType: (type: 'all' | 'routing' | 'swift' | 'branch') => void;
+  searchType: 'all' | 'routing' | 'ifsc' | 'swift' | 'branch';
+  onChangeSearchType: (type: any) => void;
   lang: Language;
   totalResultsCount: number;
 }
@@ -20,7 +21,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
   totalResultsCount
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const isBn = lang === 'bn';
+  const t = translations[lang] || translations.en;
 
   // Keyboard shortcut '/' focus search
   useEffect(() => {
@@ -35,12 +36,13 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
   }, []);
 
   const popularTags = [
+    { label: 'SBIN0000001', type: 'ifsc' as const, note: 'SBI Mumbai' },
+    { label: 'HDFC0000060', type: 'ifsc' as const, note: 'HDFC New Delhi' },
     { label: '125260123', type: 'routing' as const, note: 'IBBL Dhaka Main' },
-    { label: '090260012', type: 'routing' as const, note: 'DBBL Motijheel' },
+    { label: 'SBININBB', type: 'swift' as const, note: 'SBI SWIFT' },
     { label: 'IBBLBDDH', type: 'swift' as const, note: 'Islami Bank SWIFT' },
-    { label: 'BRAC Bank', type: 'branch' as const, note: 'BRAC Bank' },
-    { label: 'Gulshan Branch', type: 'branch' as const, note: 'Gulshan' },
-    { label: 'Chattogram', type: 'branch' as const, note: 'Chattogram District' }
+    { label: 'State Bank of India', type: 'branch' as const, note: 'SBI' },
+    { label: 'BRAC Bank', type: 'branch' as const, note: 'BRAC Bank' }
   ];
 
   return (
@@ -58,11 +60,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
           type="text"
           value={query}
           onChange={(e) => onChangeQuery(e.target.value)}
-          placeholder={
-            isBn
-              ? 'ব্যাংক, শাখা, রাউটিং নম্বর (যেমন ১২৫২৬০১২৩) বা সুইফট কোড টাইপ করুন...'
-              : 'Search bank, branch, routing number (e.g. 125260123) or SWIFT code...'
-          }
+          placeholder={t.searchPlaceholder}
           className="block w-full pl-14 pr-24 py-4 text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl shadow-sm hover:border-emerald-300 dark:hover:border-emerald-500 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 text-sm sm:text-base transition-all font-medium placeholder-slate-400 dark:placeholder-slate-500"
         />
 
@@ -86,7 +84,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
 
           {/* Results Badge */}
           <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
-            {totalResultsCount} {isBn ? 'ফলাফল' : 'found'}
+            {totalResultsCount}
           </span>
         </div>
       </div>
@@ -94,67 +92,67 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
       {/* Search Mode Toggles & Popular Tags */}
       <div className="flex flex-wrap items-center justify-between gap-2 pt-1 px-1">
         {/* Search Mode Chips */}
-        <div className="flex items-center gap-1 bg-slate-200/60 dark:bg-slate-800 p-1 rounded-2xl text-xs">
+        <div className="flex flex-wrap items-center gap-1 bg-slate-200/60 dark:bg-slate-800 p-1 rounded-2xl text-xs max-w-full">
           <button
             onClick={() => onChangeSearchType('all')}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs ${
               searchType === 'all'
-                ? 'bg-white dark:bg-slate-700 text-emerald-900 dark:text-emerald-300 shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{isBn ? 'সব' : 'All'}</span>
+            <span>{lang === 'hi' ? 'सभी' : lang === 'bn' ? 'সবগুলো' : 'All'}</span>
+          </button>
+
+          <button
+            onClick={() => onChangeSearchType('ifsc')}
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs ${
+              searchType === 'ifsc'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Hash className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>{t.ifsc}</span>
           </button>
 
           <button
             onClick={() => onChangeSearchType('routing')}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs ${
               searchType === 'routing'
-                ? 'bg-white dark:bg-slate-700 text-emerald-900 dark:text-emerald-300 shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Hash className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{isBn ? 'রাউটিং' : 'Routing'}</span>
+            <span>{t.routing}</span>
           </button>
 
           <button
             onClick={() => onChangeSearchType('swift')}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs ${
               searchType === 'swift'
-                ? 'bg-white dark:bg-slate-700 text-emerald-900 dark:text-emerald-300 shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-2xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Globe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{isBn ? 'সুইফট' : 'SWIFT'}</span>
-          </button>
-
-          <button
-            onClick={() => onChangeSearchType('branch')}
-            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              searchType === 'branch'
-                ? 'bg-white dark:bg-slate-700 text-emerald-900 dark:text-emerald-300 shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>{isBn ? 'শাখা' : 'Branch'}</span>
+            <span>{t.swift}</span>
           </button>
         </div>
 
-        {/* Popular Tags */}
-        <div className="hidden md:flex items-center space-x-1.5 text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-semibold text-slate-500 dark:text-slate-400">{isBn ? 'পরামর্শ:' : 'Popular:'}</span>
-          {popularTags.slice(0, 4).map((tag) => (
+        {/* Popular search quick pills */}
+        <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <span className="font-semibold">{t.quickSearch}:</span>
+          {popularTags.slice(0, 4).map((tag, idx) => (
             <button
-              key={tag.label}
+              key={idx}
               onClick={() => {
-                onChangeSearchType('all');
                 onChangeQuery(tag.label);
+                onChangeSearchType(tag.type);
               }}
-              className="inline-flex items-center px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-800 dark:hover:text-emerald-300 hover:border-emerald-300 transition-all cursor-pointer font-mono text-[11px] shadow-2xs"
+              className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors font-mono text-[11px] cursor-pointer"
             >
               {tag.label}
             </button>
