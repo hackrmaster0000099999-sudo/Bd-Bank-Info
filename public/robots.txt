@@ -1,4 +1,19 @@
 User-agent: *
 Allow: /
+Disallow: /4/
+Disallow: /404
+
+# Major Search Engine Bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 Sitemap: https://worldbankcodes.com/sitemap.xml

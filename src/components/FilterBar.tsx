@@ -30,16 +30,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div className="bg-white dark:bg-slate-800/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2 min-w-0">
+          <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Filter className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
             {t.filterBy} ({t.country} → {t.banks} → {t.divisionState} → {t.districtCity})
           </span>
           {activeFiltersCount > 0 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 whitespace-nowrap shrink-0">
               {activeFiltersCount} {t.active}
             </span>
           )}
@@ -48,7 +48,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         {activeFiltersCount > 0 && (
           <button
             onClick={onResetFilters}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer whitespace-nowrap shrink-0 ml-auto sm:ml-0"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>{t.reset}</span>
@@ -71,9 +71,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-bold bg-emerald-50/70 dark:bg-slate-700/80 border border-emerald-200/70 dark:border-slate-600 rounded-xl text-emerald-950 dark:text-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all"
           >
             <option value="all" className="dark:bg-slate-800">🌐 {t.allCountries}</option>
-            <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>
-            <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
+            <option value="us" className="dark:bg-slate-800">🇺🇸 {t.usa}</option>
             <option value="ru" className="dark:bg-slate-800">🇷🇺 {t.russia}</option>
+            <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
+            <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>
           </select>
           <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
         </div>

@@ -21,6 +21,15 @@ interface CountryTab {
 
 const COUNTRY_TABS: CountryTab[] = [
   {
+    id: 'us',
+    flag: '🇺🇸',
+    code: 'US',
+    nameEn: 'United States',
+    nameNative: 'USA',
+    badgeEn: 'ABA & ACH Routing',
+    badgeNative: 'ABA রাউটিং'
+  },
+  {
     id: 'ru',
     flag: '🇷🇺',
     code: 'RU',
@@ -65,13 +74,15 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600 dark:bg-emerald-400"></span>
         </span>
         <span className="font-semibold text-[11px] sm:text-xs">
-          {country === 'ru'
+          {country === 'us'
+            ? (lang === 'bn' ? 'নির্বাচিত দেশ: মার্কিন যুক্তরাষ্ট্র (ইউএস ফেডারেল রিজার্ভ ও ABA রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त राज्य अमेरिका (US Fed Reserve ABA Routing Database)' : lang === 'ru' ? 'Выбранная страна: США (ФРС США, ABA Routing и SWIFT)' : 'Selected Country: United States (US Federal Reserve ABA Routing & SWIFT Directory)')
+            : country === 'ru'
             ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
             : country === 'in'
             ? (lang === 'hi' ? 'चयनित देश: भारत (RBI अधिकृत बैंक एवं IFSC डाटाबेस)' : lang === 'bn' ? 'নির্বাচিত দেশ: ভারত (আরবিআই অনুমোদিত IFSC ডাটাবেজ)' : 'Selected Country: India (RBI IFSC & SWIFT Directory)')
             : country === 'bd'
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: বাংলাদেশ (বাংলাদেশ ব্যাংক অনুমোদিত BEFTN ডাটাবেজ)' : 'Selected Country: Bangladesh (Central Bank BEFTN Database)')
-            : (lang === 'ru' ? 'Все страны: Полная база реквизитов РФ, Индии и Бангладеш' : lang === 'hi' ? 'सभी देश: भारत, रूस एवं बांग्लादेश के संपूर्ण बैंक कोड' : lang === 'bn' ? 'বিশ্বের ব্যাংক সমূহের সকল কোড ও ব্রাঞ্চ ডিরেক্টরি' : 'Global Banking Network: Russia, India & Bangladesh Central Directory')}
+            : (lang === 'ru' ? 'Все страны: База реквизитов США, РФ, Индии и Бангладеш' : lang === 'hi' ? 'सभी देश: अमेरिका, भारत, रूस एवं बांग्लादेश के बैंक कोड' : lang === 'bn' ? 'বিশ্বের ব্যাংক সমূহের সকল কোড ও ব্রাঞ্চ ডিরেক্টরি' : 'Global Banking Network: USA, Russia, India & Bangladesh Central Directory')}
         </span>
       </div>
 
@@ -94,11 +105,11 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
                 <span className="text-base sm:text-lg leading-none">{tab.flag}</span>
                 <span className="text-xs sm:text-sm font-bold tracking-tight">
                   {lang === 'ru'
-                    ? (tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
+                    ? (tab.id === 'us' ? 'США' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
                     : lang === 'hi'
-                    ? (tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
+                    ? (tab.id === 'us' ? 'यू.एस.ए' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
                     : lang === 'bn'
-                    ? (tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
+                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
                     : tab.nameEn}
                 </span>
               </div>

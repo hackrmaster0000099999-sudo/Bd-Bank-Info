@@ -1,4 +1,5 @@
 import { Bank, Branch, Language } from '../types';
+import { getUsaBankGuide } from '../data/usa/index';
 
 export interface BankGuide {
   title: string;
@@ -30,7 +31,79 @@ export interface BankGuide {
 }
 
 export function getBankGuideContent(bank: Bank, lang: Language): BankGuide {
+  if (bank.country === 'us') {
+    return getUsaBankGuide(bank, lang);
+  }
+
   const isIndia = bank.country === 'in';
+  const isRussia = bank.country === 'ru' || !!bank.bik_code;
+
+  if (lang === 'ru' || isRussia) {
+    const bankName = bank.name_ru || bank.name;
+    return {
+      title: `${bankName} - БИК, Корр. счет, SWIFT и реквизиты отделений 2026`,
+      summary: `Официальные банковские реквизиты ${bankName} (${bank.short_name}): 9-значный БИК (${bank.bik_code || 'все отделения'}), корр. счета, ИНН, КПП, SWIFT/BIC код (${bank.swift_code}) и справочник филиалов по всей России.`,
+      historySection: {
+        heading: `О банке ${bankName} и сеть филиалов`,
+        content: `${bankName} является одним из ведущих участников банковской системы Российской Федерации. Банк имеет генеральную лицензию Банка России и широкую сеть из более чем ${bank.branch_count.toLocaleString()}+ отделений по регионам РФ.`
+      },
+      routingGuideSection: {
+        heading: `Что такое БИК ${bank.short_name} и структура кода`,
+        content: `БИК (Банковский идентификационный код) — это уникальный 9-значный идентификатор банка в платежной системе Банка России (ЦБ РФ):`,
+        steps: [
+          `Первые 2 цифры (04): код платежной системы Российской Федерации.`,
+          `3-я и 4-я цифры: код региона России по классификатору ОКАТО.`,
+          `5-я и 6-я цифры: номер подразделения расчетной сети Банка России.`,
+          `Последние 3 цифры (000–999): условный номер кредитной организации / филиала.`
+        ]
+      },
+      remittanceGuideSection: {
+        heading: `Реквизиты для межбанковских переводов и валютных расчетов`,
+        content: `Для отправки или получения денежного перевода на счет в ${bankName} используйте следующие официальные реквизиты:`,
+        requiredDetails: [
+          { label: 'Наименование банка', value: bank.name },
+          { label: 'БИК Банка', value: bank.bik_code || 'См. конкретное отделение' },
+          { label: 'SWIFT / BIC', value: bank.swift_code },
+          { label: 'Головной офис', value: bank.head_office_ru || bank.head_office },
+          { label: 'Валюта счета', value: 'RUB / CNY / KZT / AED / USD' }
+        ]
+      },
+      transferComparison: [
+        {
+          type: 'СБП (Система быстрых платежей)',
+          speed: 'Мгновенно (24/7)',
+          limit: 'До 100 000 ₽/мес без комиссии',
+          bestFor: 'Мгновенные переводы по номеру телефона'
+        },
+        {
+          type: 'Межбанковский перевод по реквизитам',
+          speed: 'От 15 минут до 1 рабочего дня',
+          limit: 'В соответствии с тарифами банка',
+          bestFor: 'Оплата счетов, налогов и крупных покупок'
+        },
+        {
+          type: 'СПФС / SWIFT Перевод',
+          speed: '1-3 рабочих дня',
+          limit: 'По валютному законодательству РФ',
+          bestFor: 'Международные расчеты и трансграничные переводы'
+        }
+      ],
+      faqs: [
+        {
+          question: `Где узнать БИК и корр. счет отделения ${bank.short_name}?`,
+          answer: `БИК и корреспондентский счет указаны в мобильном приложении банка, в договоре на открытие счета, либо в нашем онлайн-справочнике World Bank Codes при выборе города и филиала.`
+        },
+        {
+          question: `Какой SWIFT код использовать для ${bankName}?`,
+          answer: `Для международных расчетов используется официальный SWIFT код банка: ${bank.swift_code}.`
+        },
+        {
+          question: `Чем отличается БИК от корреспондентского счета?`,
+          answer: `БИК — это 9-значный код самого банка в ЦБ РФ, а корреспондентский счет (20 знаков) — это счет банка в территориальном учреждении Банка России для проведения межбанковских расчетов.`
+        }
+      ]
+    };
+  }
 
   if (lang === 'hi') {
     const bankName = bank.name_hi || bank.name;

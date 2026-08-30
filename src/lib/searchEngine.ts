@@ -3,6 +3,7 @@ import bdBanksData from '../data/banks.json';
 import inBanksData from '../data/indian_banks.json';
 import { allBranches } from '../data/branches/index';
 import { russianBanks, russianBranches } from '../data/russia/index';
+import { usaBanks, usaBranches } from '../data/usa/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -21,7 +22,12 @@ const ruBanks: Bank[] = (russianBanks as any[]).map((b) => ({
   country: 'ru' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks];
+const usBanks: Bank[] = (usaBanks as any[]).map((b) => ({
+  ...b,
+  country: 'us' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -32,6 +38,10 @@ const branches: Branch[] = [
   ...russianBranches.map((br) => ({
     ...br,
     country: 'ru' as const,
+  })),
+  ...usaBranches.map((br) => ({
+    ...br,
+    country: 'us' as const,
   }))
 ];
 

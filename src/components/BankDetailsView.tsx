@@ -78,16 +78,16 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
       <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden border border-slate-700/50">
         <div className="relative z-10 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 whitespace-nowrap shrink-0">
               {bank.type || 'Commercial Bank'}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-slate-200 border border-white/10">
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-slate-200 border border-white/10 whitespace-nowrap shrink-0">
               {bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 whitespace-nowrap shrink-0">
               {bank.branch_count} {isHi ? 'कुल शाखाएं' : isBn ? 'টি শাখা' : 'Branches Total'}
             </span>
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-400" />
               <span>{isHi ? `अद्यतन: ${CURRENT_DATA_VERSION_DATE}` : isBn ? `হালনাগাদ: ${CURRENT_DATA_VERSION_DATE}` : `Updated: ${CURRENT_DATA_VERSION_DATE}`}</span>
             </span>

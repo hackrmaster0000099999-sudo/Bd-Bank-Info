@@ -13,6 +13,7 @@ export interface TranslationDict {
   bangladesh: string;
   india: string;
   russia: string;
+  usa: string;
   allBanks: string;
   allDivisions: string;
   allDistricts: string;
@@ -71,6 +72,7 @@ export const translations: Record<Language, TranslationDict> = {
     bangladesh: 'বাংলাদেশ',
     india: 'ভারত',
     russia: 'রাশিয়া (Russia)',
+    usa: 'যুক্তরাষ্ট্র (USA)',
     allBanks: 'সকল ব্যাংক',
     allDivisions: 'সকল বিভাগ / অঞ্চল',
     divisionState: 'বিভাগ / অঞ্চল',
@@ -127,6 +129,7 @@ export const translations: Record<Language, TranslationDict> = {
     bangladesh: 'Bangladesh',
     india: 'India',
     russia: 'Russia',
+    usa: 'United States',
     allBanks: 'All Banks',
     allDivisions: 'All Regions / Federal Districts',
     divisionState: 'Region / District',
@@ -183,6 +186,7 @@ export const translations: Record<Language, TranslationDict> = {
     bangladesh: 'बांग्लादेश',
     india: 'भारत (India)',
     russia: 'रूस (Russia)',
+    usa: 'संयुक्त राज्य अमेरिका (USA)',
     allBanks: 'सभी बैंक',
     allDivisions: 'सभी राज्य / क्षेत्र',
     divisionState: 'राज्य / क्षेत्र',
@@ -239,6 +243,7 @@ export const translations: Record<Language, TranslationDict> = {
     bangladesh: 'Бангладеш',
     india: 'Индия',
     russia: 'Россия (РФ)',
+    usa: 'США (USA)',
     allBanks: 'Все банки',
     allDivisions: 'Все федеральные округа',
     divisionState: 'Федеральный округ',

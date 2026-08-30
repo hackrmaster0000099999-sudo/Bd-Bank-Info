@@ -11,18 +11,55 @@ try {
   let banks = [];
   let branches = [];
 
-  const banksPath = path.join(__dirname, 'src/data/banks.json');
-  const branchesPath = path.join(__dirname, 'src/data/branches.json');
-
-  if (fs.existsSync(banksPath)) {
+  // 1. Bangladesh Banks
+  const bdBanksPath = path.join(__dirname, 'src/data/banks.json');
+  if (fs.existsSync(bdBanksPath)) {
     try {
-      const raw = fs.readFileSync(banksPath, 'utf8').trim();
-      banks = JSON.parse(raw);
+      const raw = fs.readFileSync(bdBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) banks.push(...list);
     } catch (e) {
-      console.warn('Warning: Could not parse banks.json for sitemap:', e.message);
+      console.warn('Warning: Could not parse banks.json:', e.message);
     }
   }
 
+  // 2. Indian Banks
+  const inBanksPath = path.join(__dirname, 'src/data/indian_banks.json');
+  if (fs.existsSync(inBanksPath)) {
+    try {
+      const raw = fs.readFileSync(inBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse indian_banks.json:', e.message);
+    }
+  }
+
+  // 3. Russian Banks
+  const ruBanksPath = path.join(__dirname, 'src/data/russia/banks.json');
+  if (fs.existsSync(ruBanksPath)) {
+    try {
+      const raw = fs.readFileSync(ruBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse russia/banks.json:', e.message);
+    }
+  }
+
+  // 4. USA Banks
+  const usBanksPath = path.join(__dirname, 'src/data/usa/banks.json');
+  if (fs.existsSync(usBanksPath)) {
+    try {
+      const raw = fs.readFileSync(usBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse usa/banks.json:', e.message);
+    }
+  }
+
+  // 5. BD & India Branches
   const branchesDir = path.join(__dirname, 'src/data/branches');
   if (fs.existsSync(branchesDir)) {
     const files = fs.readdirSync(branchesDir).filter(f => f.endsWith('.json'));
@@ -39,13 +76,37 @@ try {
     }
   }
 
-  // Fallback to branches.json if modular folder was empty
-  if (branches.length === 0 && fs.existsSync(branchesPath)) {
-    try {
-      const raw = fs.readFileSync(branchesPath, 'utf8').trim();
-      branches = JSON.parse(raw);
-    } catch (e) {
-      console.warn('Warning: Could not parse branches.json for sitemap:', e.message);
+  // 6. Russian Branches
+  const ruBranchesDir = path.join(__dirname, 'src/data/russia/branches');
+  if (fs.existsSync(ruBranchesDir)) {
+    const files = fs.readdirSync(ruBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(ruBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          branches.push(...parsed);
+        }
+      } catch (e) {
+        console.warn(`Warning: Could not parse russian branch file ${f}:`, e.message);
+      }
+    }
+  }
+
+  // 7. USA Branches
+  const usBranchesDir = path.join(__dirname, 'src/data/usa/branches');
+  if (fs.existsSync(usBranchesDir)) {
+    const files = fs.readdirSync(usBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(usBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          branches.push(...parsed);
+        }
+      } catch (e) {
+        console.warn(`Warning: Could not parse USA branch file ${f}:`, e.message);
+      }
     }
   }
 
@@ -60,17 +121,31 @@ try {
     { url: '/disclaimer', priority: '0.5', changefreq: 'yearly' },
   ];
 
-  const bankPages = banks.map(bank => ({
+  // Deduplicate banks
+  const uniqueBanks = Array.from(new Map(banks.map(b => [b.id, b])).values());
+  const bankPages = uniqueBanks.map(bank => ({
     url: `/bank/${bank.id}`,
     priority: '0.8',
     changefreq: 'weekly',
   }));
 
-  const branchPages = branches.map(branch => ({
-    url: `/branch/${branch.routing_number}`,
-    priority: '0.7',
-    changefreq: 'monthly',
-  }));
+  // Deduplicate branches by identifier
+  const branchMap = new Map();
+  branches.forEach(branch => {
+    const id = branch.bik_code || branch.ifsc_code || branch.routing_number || branch.id;
+    if (id && !branchMap.has(id)) {
+      branchMap.set(id, branch);
+    }
+  });
+
+  const branchPages = Array.from(branchMap.values()).map(branch => {
+    const identifier = branch.bik_code || branch.ifsc_code || branch.routing_number || branch.id;
+    return {
+      url: `/branch/${identifier}`,
+      priority: '0.7',
+      changefreq: 'monthly',
+    };
+  });
 
   const allPages = [...staticPages, ...bankPages, ...branchPages];
   const currentDate = new Date().toISOString().split('T')[0];
@@ -103,7 +178,7 @@ ${allPages
     fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapXml, 'utf8');
   }
 
-  console.log(`Sitemap generated successfully with ${allPages.length} URLs.`);
+  console.log(`✓ Sitemap generated successfully with ${allPages.length} URLs (Banks: ${uniqueBanks.length}, Branches: ${branchMap.size}).`);
 } catch (err) {
   console.warn('Sitemap generation error caught safely, continuing build:', err);
 }

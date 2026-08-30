@@ -1,4 +1,10 @@
 import { Bank, Branch, Language } from '../types';
+import {
+  getUsaBankMetaTitle,
+  getUsaBankMetaDescription,
+  getUsaBranchMetaTitle,
+  getUsaBranchMetaDescription
+} from '../data/usa/index';
 
 export interface SEOProps {
   title: string;
@@ -10,6 +16,7 @@ export interface SEOProps {
   schemaType?: 'home' | 'bank' | 'branch' | 'general';
   faqs?: Array<{ question: string; answer: string }>;
   dateModified?: string;
+  is404?: boolean;
 }
 
 const BASE_URL = 'https://worldbankcodes.com';
@@ -20,15 +27,15 @@ export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-08-29T00:00:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {
-    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ (Банк России) и SWIFT`;
+    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ (Банк России), US Fed, RBI и SWIFT`;
   }
   if (lang === 'hi') {
-    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • RBI एवं बांग्लादेश बैंक प्रमाणित`;
+    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • US Federal Reserve, RBI एवं बांग्लादेश बैंक प्रमाणित`;
   }
   if (lang === 'bn') {
-    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • বাংলাদেশ ব্যাংক, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
+    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ইউএস ফেডারেল রিজার্ভ, বাংলাদেশ ব্যাংক, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
   }
-  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (CBR, RBI, Bangladesh Bank)`;
+  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (US Fed, CBR, RBI, Bangladesh Bank)`;
 }
 
 export function generateSeoData(
@@ -43,6 +50,14 @@ export function generateSeoData(
   const isRu = lang === 'ru';
 
   if (viewType === 'branch_detail' && branch) {
+    if (branch.country === 'us') {
+      return {
+        title: getUsaBranchMetaTitle(branch, lang),
+        description: getUsaBranchMetaDescription(branch, lang),
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+      };
+    }
+
     const isRussia = branch.country === 'ru' || !!branch.bik_code;
     const isIndia = branch.country === 'in' || !!branch.ifsc_code;
 
@@ -76,6 +91,14 @@ export function generateSeoData(
   }
 
   if (viewType === 'bank_detail' && bank) {
+    if (bank.country === 'us') {
+      return {
+        title: getUsaBankMetaTitle(bank, lang),
+        description: getUsaBankMetaDescription(bank, lang),
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
     const isRussia = bank.country === 'ru';
     const isIndia = bank.country === 'in';
     const bankTitle = isRu ? (bank.name_ru || bank.name) : isHi ? (bank.name_hi || bank.name) : isBn ? bank.name_bn : bank.name;
@@ -221,7 +244,8 @@ export function updateSEOMeta({
   bank,
   branch,
   faqs,
-  dateModified = CURRENT_DATA_VERSION_TIMESTAMP
+  dateModified = CURRENT_DATA_VERSION_TIMESTAMP,
+  is404 = false
 }: SEOProps): void {
   // 1. Update Document Title
   document.title = title;
@@ -239,8 +263,15 @@ export function updateSEOMeta({
 
   // Standard Meta
   setMeta('name', 'description', description);
-  setMeta('name', 'keywords', 'bank routing number, bik code finder, ifsc code finder, swift bic code, russian bik lookup, bank of russia, beftn routing, rbi ifsc codes, neft rtgs imps codes, bangladesh bank routing numbers, bank branches directory, micr code lookup 2026');
-  setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+  setMeta('name', 'keywords', 'bank routing number, aba routing number, fedwire routing, ach direct deposit routing, bik code finder, ifsc code finder, swift bic code, us bank routing directory, russian bik lookup, bank of russia, beftn routing, rbi ifsc codes, neft rtgs imps codes, bangladesh bank routing numbers, bank branches directory, micr code lookup 2026');
+  
+  if (is404) {
+    setMeta('name', 'robots', 'noindex, nofollow, noarchive');
+    setMeta('name', 'googlebot', 'noindex, nofollow, noarchive');
+  } else {
+    setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    setMeta('name', 'googlebot', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+  }
   setMeta('name', 'author', 'World Bank Codes Editorial Team');
   setMeta('name', 'last-modified', dateModified);
   setMeta('name', 'date', CURRENT_DATA_VERSION_DATE);
@@ -284,10 +315,13 @@ export function updateSEOMeta({
   }
 
   const schemaData: object[] = [];
+  const isUS = branch?.country === 'us' || bank?.country === 'us';
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
-  const centralRegulator = isRussia
+  const countryCode = isUS ? 'US' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const centralRegulator = isUS
+    ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
+    : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
     ? 'Reserve Bank of India (RBI)'
@@ -295,7 +329,9 @@ export function updateSEOMeta({
 
   if (branch) {
     let branchDesc = `BEFTN Routing Number: ${branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
-    if (isRussia) {
+    if (isUS) {
+      branchDesc = `Official 9-digit ABA Routing Number: ${branch.routing_number}, ACH Direct Deposit Routing: ${branch.ach_routing || branch.routing_number}, Fedwire Routing: ${branch.wire_routing || branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
+    } else if (isRussia) {
       branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, KPP: ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
       branchDesc = `Official IFSC Code: ${branch.ifsc_code}, MICR Code: ${branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
@@ -315,6 +351,7 @@ export function updateSEOMeta({
         'streetAddress': branch.address,
         'addressLocality': branch.district,
         'addressRegion': branch.division,
+        'postalCode': branch.zip_code || undefined,
         'addressCountry': countryCode
       },
       'dateModified': dateModified,
@@ -340,9 +377,19 @@ export function updateSEOMeta({
           'name': 'IFSC Code',
           'value': branch.ifsc_code
         } : null,
+        branch.ach_routing ? {
+          '@type': 'PropertyValue',
+          'name': 'ACH Routing Number',
+          'value': branch.ach_routing
+        } : null,
+        branch.wire_routing ? {
+          '@type': 'PropertyValue',
+          'name': 'Fedwire Routing Number',
+          'value': branch.wire_routing
+        } : null,
         {
           '@type': 'PropertyValue',
-          'name': isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {
@@ -380,7 +427,9 @@ export function updateSEOMeta({
     });
   } else if (bank) {
     let bankDesc = `${bank.name} branches, BEFTN routing numbers and SWIFT code directory in Bangladesh.`;
-    if (isRussia) {
+    if (isUS) {
+      bankDesc = `${bank.name} 9-digit ABA Routing Numbers, ACH direct deposit, Fedwire and SWIFT codes directory in the United States.`;
+    } else if (isRussia) {
       bankDesc = `${bank.name} Russian banking directory, BIK codes (${bank.bik_code || 'all branches'}), correspondent accounts, INN, and SWIFT codes in the Russian Federation.`;
     } else if (isIndia) {
       bankDesc = `${bank.name} branch IFSC codes, MICR codes, SWIFT BIC codes and official banking directory for India.`;
@@ -408,8 +457,8 @@ export function updateSEOMeta({
         } : null,
         {
           '@type': 'PropertyValue',
-          'name': isRussia ? 'BIK Code' : isIndia ? 'IFSC Prefix' : 'Bank Code',
-          'value': bank.bik_code || bank.ifsc_prefix || bank.bank_code
+          'name': isUS ? 'ABA / Routing Identifier' : isRussia ? 'BIK Code' : isIndia ? 'IFSC Prefix' : 'Bank Code',
+          'value': bank.bik_code || bank.ifsc_prefix || bank.bank_code || bank.id
         },
         {
           '@type': 'PropertyValue',

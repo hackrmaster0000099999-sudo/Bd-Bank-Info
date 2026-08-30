@@ -248,7 +248,8 @@ export default function App() {
       lang: lang,
       bank: selectedBank || undefined,
       branch: selectedBranch || undefined,
-      schemaType: selectedBranch ? 'branch' : selectedBank ? 'bank' : 'general'
+      schemaType: selectedBranch ? 'branch' : selectedBank ? 'bank' : 'general',
+      is404: is404
     });
   }, [selectedBranch, selectedBank, currentTab, is404, lang, query]);
 
@@ -267,7 +268,7 @@ export default function App() {
       {/* Main Body */}
       <main className="flex-1">
         {is404 ? (
-          <NotFoundPage lang={lang} onHome={() => navigate('/')} />
+          <NotFoundPage lang={lang} onHome={() => navigate('/')} onNavigate={(path) => navigate(path)} />
         ) : currentTab === 'about' ? (
           <AboutPage lang={lang} onBack={() => navigate('/')} />
         ) : currentTab === 'contact' ? (

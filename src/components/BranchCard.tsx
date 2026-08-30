@@ -21,6 +21,7 @@ export const BranchCard: React.FC<BranchCardProps> = ({
   onOpenReportModal
 }) => {
   const t = translations[lang] || translations.en;
+  const isUS = branch.country === 'us';
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
 
@@ -53,7 +54,9 @@ export const BranchCard: React.FC<BranchCardProps> = ({
   };
 
   const shareTitle = `${branch.bank_name} - ${branch.name} Branch`;
-  const shareText = isRussia
+  const shareText = isUS
+    ? `ABA Routing: ${branch.routing_number} | ACH: ${branch.ach_routing || branch.routing_number} | City: ${branch.district}, ${branch.division}`
+    : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}`
     : isIndia
     ? `IFSC: ${branch.ifsc_code} | MICR: ${branch.routing_number} | City: ${branch.district}, ${branch.division}`
@@ -65,18 +68,18 @@ export const BranchCard: React.FC<BranchCardProps> = ({
         {/* Top Badges */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div className="flex flex-wrap items-center gap-1.5 min-w-0">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 max-w-full">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 max-w-full whitespace-nowrap shrink-0">
               <Building2 className="w-3.5 h-3.5 mr-1 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="truncate">{getBankName()}</span>
+              <span className="truncate max-w-[140px] sm:max-w-[200px]">{getBankName()}</span>
             </span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 shrink-0">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 shrink-0 whitespace-nowrap">
               {getDistrict()}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-              {isRussia ? '🇷🇺 RU' : isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
+              {isUS ? '🇺🇸 US' : isRussia ? '🇷🇺 RU' : isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
             </span>
             <ShareButton
               title={shareTitle}
@@ -98,8 +101,37 @@ export const BranchCard: React.FC<BranchCardProps> = ({
           {branch.name} • {branch.division}
         </p>
 
-        {/* Primary Code Highlight Box: BIK for Russia, IFSC for India, Routing for BD */}
-        {isRussia ? (
+        {/* Primary Code Highlight Box: ABA for US, BIK for Russia, IFSC for India, Routing for BD */}
+        {isUS ? (
+          <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 sm:p-3.5 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 mb-3 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <div className="flex items-center space-x-1.5 min-w-0">
+                <div className="w-5 h-5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                  <Hash className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                  ABA Routing Number:
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase">
+                ACH & Wire (Fed)
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-800 px-3 py-2 rounded-xl border border-emerald-200/80 dark:border-emerald-700/60 shadow-2xs">
+              <span className="font-mono text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-wider break-all min-w-0">
+                {branch.routing_number}
+              </span>
+              <CopyButton
+                textToCopy={branch.routing_number}
+                label={t.copy}
+                size="sm"
+                lang={lang}
+                className="shrink-0"
+              />
+            </div>
+          </div>
+        ) : isRussia ? (
           <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 sm:p-3.5 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 mb-3 space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-1">
               <div className="flex items-center space-x-1.5 min-w-0">

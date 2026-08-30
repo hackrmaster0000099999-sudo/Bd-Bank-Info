@@ -20,6 +20,14 @@ interface CountryOption {
 
 const COUNTRIES: CountryOption[] = [
   {
+    code: 'us',
+    flag: '🇺🇸',
+    shortCode: 'US',
+    name: 'United States',
+    nameNative: 'USA',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

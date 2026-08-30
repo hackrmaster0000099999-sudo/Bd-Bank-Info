@@ -1,15 +1,18 @@
 export type Language = 'bn' | 'en' | 'hi' | 'ru';
-export type Country = 'all' | 'bd' | 'in' | 'ru';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', or 'sberbank'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', or 'chase-bank'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
-  name_ru?: string; // Russian (e.g. Сбербанк)
+  name_ru?: string; // Russian
   short_name: string;
-  country: 'bd' | 'in' | 'ru'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia
-  bank_code: string; // 3-digit BEFTN bank code, Indian Bank code, or 3-digit Russian Bank code
+  country: 'bd' | 'in' | 'ru' | 'us'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States
+  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, or 4-digit ABA Fed prefix
+  routing_number?: string; // 9-digit ABA routing number for US banks
+  ach_routing?: string; // Electronic / Direct Deposit ACH Routing Number
+  wire_routing?: string; // Fedwire / Wire Transfer Routing Number
   bik_code?: string; // 9-digit Russian BIK (БИК) Code
   corr_account?: string; // 20-digit Russian Correspondent Account (Корр. счет)
   inn?: string; // 10-digit Taxpayer Identification Number (ИНН)
@@ -24,33 +27,35 @@ export interface Bank {
   website: string;
   branch_count: number;
   established?: string;
-  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important';
+  fdic_cert?: string; // US FDIC Certificate Number
+  fed_district?: string; // US Federal Reserve District (e.g. 02 - New York)
+  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important' | 'National Bank' | 'State Commercial Bank' | 'Federal Savings Bank' | 'Universal Bank';
   former_names?: string[]; // Former name for renamed/merged banks
   redirect_to?: string; // Slug for merged bank
 }
 
 export interface Branch {
-  id: string; // e.g., 'sberbank-moscow-main-044525225' or 'sbi-mumbai-main-sbin0000300'
+  id: string; // e.g., 'chase-newyork-main-021000021' or 'sbi-mumbai-main-sbin0000300'
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
   bank_name_hi?: string;
   bank_name_ru?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru';
+  country: 'bd' | 'in' | 'ru' | 'us';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
-  division: string; // Division in BD, State in India, Federal Subject / District in Russia
+  division: string; // Division in BD, State in India/US, Federal Subject in Russia
   division_bn?: string;
   division_hi?: string;
   division_ru?: string;
-  district: string; // District / City in English
+  district: string; // District / County / City in English
   district_bn?: string;
   district_hi?: string;
   district_ru?: string;
-  upazila?: string; // Upazila / City / Locality / District
+  upazila?: string; // Upazila / City / Locality / Borough
   upazila_bn?: string;
   upazila_hi?: string;
   upazila_ru?: string;
@@ -58,7 +63,10 @@ export interface Branch {
   address_bn?: string;
   address_hi?: string;
   address_ru?: string;
-  routing_number: string; // 9-digit BEFTN routing number, 9-digit MICR code, or 9-digit BIK code
+  zip_code?: string; // 5-digit US Zip Code
+  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, or BIK code
+  ach_routing?: string; // Electronic / ACH Routing Number
+  wire_routing?: string; // Fedwire Routing Number
   bik_code?: string; // 9-digit Russian BIK (БИК) Code
   corr_account?: string; // 20-digit Russian Correspondent Account (Корр. счет)
   inn?: string; // 10-digit INN
@@ -67,7 +75,7 @@ export interface Branch {
   micr_code?: string; // 9-digit MICR code
   swift_code?: string; // Branch-specific or head office SWIFT
   uses_head_office_swift?: boolean;
-  branch_code: string; // 4, 6 or 3-digit branch code
+  branch_code: string; // Branch / transit code
   phone?: string;
   email?: string;
   status: 'active' | 'relocated' | 'merged';
@@ -97,7 +105,7 @@ export interface SearchResult {
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru';
+  country: 'bd' | 'in' | 'ru' | 'us';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
