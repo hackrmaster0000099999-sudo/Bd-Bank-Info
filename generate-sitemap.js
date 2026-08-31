@@ -156,17 +156,6 @@ try {
   }
 
   // 9. UK Branches
-  const ukBranchesJson = path.join(__dirname, 'src/data/uk/branches.json');
-  if (fs.existsSync(ukBranchesJson)) {
-    try {
-      const raw = fs.readFileSync(ukBranchesJson, 'utf8').trim();
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) countryData.uk.branches.push(...parsed);
-    } catch (e) {
-      console.warn(`Warning: Could not parse UK branches.json:`, e.message);
-    }
-  }
-
   const ukBranchesDir = path.join(__dirname, 'src/data/uk/branches');
   if (fs.existsSync(ukBranchesDir)) {
     const files = fs.readdirSync(ukBranchesDir).filter(f => f.endsWith('.json'));
