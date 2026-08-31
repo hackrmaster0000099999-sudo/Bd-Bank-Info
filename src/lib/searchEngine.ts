@@ -1,6 +1,6 @@
 import { Bank, Branch, SearchResult, FilterState, Country, Language } from '../types';
 import bdBanksData from '../data/banks.json';
-import inBanksData from '../data/indian_banks.json';
+import { indianBanks, indiaBranches } from '../data/india/index';
 import { allBranches } from '../data/branches/index';
 import { russianBanks, russianBranches } from '../data/russia/index';
 import { usaBanks, usaBranches } from '../data/usa/index';
@@ -13,7 +13,7 @@ const bdBanks: Bank[] = (bdBanksData as any[]).map((b) => ({
   country: 'bd' as const,
 }));
 
-const inBanks: Bank[] = (inBanksData as any[]).map((b) => ({
+const inBanks: Bank[] = (indianBanks as any[]).map((b) => ({
   ...b,
   country: 'in' as const,
 }));
@@ -39,7 +39,11 @@ const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ..
 const branches: Branch[] = [
   ...allBranches.map((br) => ({
     ...br,
-    country: br.country || (br.routing_number && br.routing_number.length === 9 && !br.ifsc_code ? 'bd' : 'in'),
+    country: 'bd' as const,
+  })),
+  ...indiaBranches.map((br) => ({
+    ...br,
+    country: 'in' as const,
   })),
   ...russianBranches.map((br) => ({
     ...br,
@@ -54,6 +58,7 @@ const branches: Branch[] = [
     country: 'uk' as const,
   }))
 ];
+
 
 export function getBanks(country?: Country): Bank[] {
   if (!country || country === 'all') return allBanksList;

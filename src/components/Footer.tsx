@@ -160,8 +160,9 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-6 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} World Bank Codes. All rights reserved.</p>
           <p className="text-[11px] text-slate-500">
-            India & Bangladesh Bank Routing, IFSC & SWIFT Code Directory
+            Global Bank Routing Numbers, IFSC, Sort Codes, BIK & SWIFT Directory
           </p>
+
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import banksData from './banks.json';
-import { ukBranches } from './branches';
+import { ukBranches } from './branches/index';
 import { Bank } from '../../types';
 
 export const ukBanks: Bank[] = banksData as Bank[];

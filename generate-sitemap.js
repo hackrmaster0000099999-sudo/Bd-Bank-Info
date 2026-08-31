@@ -45,14 +45,14 @@ try {
   }
 
   // 2. Indian Banks
-  const inBanksPath = path.join(__dirname, 'src/data/indian_banks.json');
+  const inBanksPath = path.join(__dirname, 'src/data/india/banks.json');
   if (fs.existsSync(inBanksPath)) {
     try {
       const raw = fs.readFileSync(inBanksPath, 'utf8').trim();
       const list = JSON.parse(raw);
       if (Array.isArray(list)) countryData.in.banks.push(...list);
     } catch (e) {
-      console.warn('Warning: Could not parse indian_banks.json:', e.message);
+      console.warn('Warning: Could not parse india/banks.json:', e.message);
     }
   }
 
@@ -92,28 +92,35 @@ try {
     }
   }
 
-  // 6. BD & India Branches
+  // 6. BD Branches
   const branchesDir = path.join(__dirname, 'src/data/branches');
   if (fs.existsSync(branchesDir)) {
-    const files = fs.readdirSync(branchesDir).filter(f => f.endsWith('.json'));
+    const files = fs.readdirSync(branchesDir).filter(f => f.endsWith('.json') && !f.includes('india'));
     for (const f of files) {
       try {
         const raw = fs.readFileSync(path.join(branchesDir, f), 'utf8').trim();
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          parsed.forEach(br => {
-            if (br.country === 'in' || br.ifsc_code) {
-              countryData.in.branches.push(br);
-            } else {
-              countryData.bd.branches.push(br);
-            }
-          });
+          countryData.bd.branches.push(...parsed);
         }
       } catch (e) {
         console.warn(`Warning: Could not parse branch file ${f}:`, e.message);
       }
     }
   }
+
+  // 7. India Branches
+  const inBranchesJson = path.join(__dirname, 'src/data/india/branches.json');
+  if (fs.existsSync(inBranchesJson)) {
+    try {
+      const raw = fs.readFileSync(inBranchesJson, 'utf8').trim();
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) countryData.in.branches.push(...parsed);
+    } catch (e) {
+      console.warn('Warning: Could not parse india/branches.json:', e.message);
+    }
+  }
+
 
   // 7. Russian Branches
   const ruBranchesDir = path.join(__dirname, 'src/data/russia/branches');
@@ -146,6 +153,17 @@ try {
   }
 
   // 9. UK Branches
+  const ukBranchesJson = path.join(__dirname, 'src/data/uk/branches.json');
+  if (fs.existsSync(ukBranchesJson)) {
+    try {
+      const raw = fs.readFileSync(ukBranchesJson, 'utf8').trim();
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) countryData.uk.branches.push(...parsed);
+    } catch (e) {
+      console.warn(`Warning: Could not parse UK branches.json:`, e.message);
+    }
+  }
+
   const ukBranchesDir = path.join(__dirname, 'src/data/uk/branches');
   if (fs.existsSync(ukBranchesDir)) {
     const files = fs.readdirSync(ukBranchesDir).filter(f => f.endsWith('.json'));

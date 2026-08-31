@@ -1,5 +1,11 @@
 import { Bank, Branch, Language } from '../types';
 import {
+  getIndiaBankMetaTitle,
+  getIndiaBankMetaDescription,
+  getIndiaBranchMetaTitle,
+  getIndiaBranchMetaDescription
+} from '../data/india/index';
+import {
   getUsaBankMetaTitle,
   getUsaBankMetaDescription,
   getUsaBranchMetaTitle,
@@ -11,6 +17,7 @@ import {
   getUkBranchMetaTitle,
   getUkBranchMetaDescription
 } from '../data/uk/index';
+
 
 export interface SEOProps {
   title: string;
@@ -72,8 +79,16 @@ export function generateSeoData(
       };
     }
 
+    if (branch.country === 'in' || !!branch.ifsc_code) {
+      return {
+        title: getIndiaBranchMetaTitle(branch, lang),
+        description: getIndiaBranchMetaDescription(branch, lang),
+        canonicalUrl: `${BASE_URL}/branch/${branch.ifsc_code || branch.routing_number}`
+      };
+    }
+
     const isRussia = branch.country === 'ru' || !!branch.bik_code;
-    const isIndia = branch.country === 'in' || !!branch.ifsc_code;
+
 
     if (isRussia) {
       const bName = isRu ? (branch.name_ru || branch.name) : isBn ? (branch.name_bn || branch.name) : branch.name;
@@ -82,16 +97,6 @@ export function generateSeoData(
         title: `${bankTitle} (${bName}) БИК: ${branch.bik_code || branch.routing_number}, Корр. счет, ИНН | World Bank Codes`,
         description: `Официальные банковские реквизиты: БИК ${branch.bik_code || branch.routing_number}, Корр. счет ${branch.corr_account || 'N/A'}, ИНН ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'} для ${branch.bank_name}, ${branch.name}, ${branch.district}, ${branch.division}, Россия. (Актуально 2026)`,
         canonicalUrl: `${BASE_URL}/branch/${branch.bik_code || branch.routing_number}`
-      };
-    }
-
-    if (isIndia) {
-      const bName = isHi ? (branch.name_hi || branch.name) : isBn ? (branch.name_bn || branch.name) : branch.name;
-      const bankTitle = isHi ? (branch.bank_name_hi || branch.bank_name) : isBn ? (branch.bank_name_bn || branch.bank_name) : branch.bank_name;
-      return {
-        title: `${bankTitle} (${bName} Branch) IFSC Code: ${branch.ifsc_code} & MICR | World Bank Codes`,
-        description: `Get official verified IFSC Code: ${branch.ifsc_code}, MICR Code: ${branch.routing_number}, SWIFT: ${branch.swift_code || 'HO'} and branch address for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, ${branch.division}, India. (Updated 2026)`,
-        canonicalUrl: `${BASE_URL}/branch/${branch.ifsc_code || branch.routing_number}`
       };
     }
 
@@ -121,15 +126,20 @@ export function generateSeoData(
       };
     }
 
+    if (bank.country === 'in') {
+      return {
+        title: getIndiaBankMetaTitle(bank, lang),
+        description: getIndiaBankMetaDescription(bank, lang),
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
     const isRussia = bank.country === 'ru';
-    const isIndia = bank.country === 'in';
     const bankTitle = isRu ? (bank.name_ru || bank.name) : isHi ? (bank.name_hi || bank.name) : isBn ? bank.name_bn : bank.name;
     
     let desc = `Explore all branches, BEFTN routing numbers, and SWIFT codes for ${bank.name} in Bangladesh. Fully updated directory with instant search.`;
     if (isRussia) {
       desc = `Справочник реквизитов ${bank.name} в России: БИК (${bank.bik_code || 'все филиалы'}), корр. счета, ИНН, КПП, SWIFT коды и адреса всех отделений. Актуальная база ЦБ РФ 2026.`;
-    } else if (isIndia) {
-      desc = `Explore all branch IFSC codes, MICR, SWIFT codes, and contact details for ${bank.name} in India. Fully updated directory for NEFT, RTGS, IMPS & Wire Transfers.`;
     }
 
     return {
@@ -138,6 +148,7 @@ export function generateSeoData(
       canonicalUrl: `${BASE_URL}/bank/${bank.id}`
     };
   }
+
 
   if (viewType === 'banks') {
     return {
