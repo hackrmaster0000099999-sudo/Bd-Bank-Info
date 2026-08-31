@@ -1,4 +1,6 @@
-import { Branch } from '../../../types';
+const fs = require('fs');
+
+const tsContent = `import { Branch } from '../../../types';
 import banks from '../banks.json';
 
 function calculateAbaRouting(bankPrefix4: string, branchIdx: number): string {
@@ -193,3 +195,7 @@ for (const [regionKey, regionData] of Object.entries(regions)) {
 }
 
 export const usaBranches: Branch[] = generatedBranches;
+`;
+
+fs.writeFileSync('./src/data/usa/branches/index.ts', tsContent, 'utf8');
+console.log('Successfully wrote generated logic to index.ts');

@@ -141,17 +141,39 @@ try {
   }
 
   // 8. USA Branches
-  const usBranchesDir = path.join(__dirname, 'src/data/usa/branches');
-  if (fs.existsSync(usBranchesDir)) {
-    const files = fs.readdirSync(usBranchesDir).filter(f => f.endsWith('.json'));
-    for (const f of files) {
-      try {
-        const raw = fs.readFileSync(path.join(usBranchesDir, f), 'utf8').trim();
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) countryData.us.branches.push(...parsed);
-      } catch (e) {
-        console.warn(`Warning: Could not parse USA branch file ${f}:`, e.message);
+  const usBanksPathForBranches = path.join(__dirname, 'src/data/usa/banks.json');
+  if (fs.existsSync(usBanksPathForBranches)) {
+    try {
+      const banks = JSON.parse(fs.readFileSync(usBanksPathForBranches, 'utf8'));
+      let globalBranchCounter = 1;
+      const cities = [
+        { name: 'New York Wall Street' }, { name: 'New York Midtown Park Ave' }, { name: 'New York Brooklyn Heights' }, { name: 'New York Queens Plaza' }, { name: 'Boston Financial District' }, { name: 'Boston Back Bay' }, { name: 'Philadelphia Center City' }, { name: 'Pittsburgh Downtown' }, { name: 'Jersey City Exchange Place' }, { name: 'Newark Broad Street' }, { name: 'Buffalo Main Place' }, { name: 'Hartford Financial Center' }, { name: 'Stamford Atlantic St' }, { name: 'Providence Citizens Plaza' }, { name: 'Albany State Street' }, { name: 'Rochester Main Street' },
+        { name: 'Charlotte Tryon Financial' }, { name: 'Charlotte SouthPark' }, { name: 'Atlanta Peachtree Center' }, { name: 'Atlanta Buckhead Financial' }, { name: 'Miami Brickell Financial' }, { name: 'Miami Downtown Biscayne' }, { name: 'Orlando Orange Avenue' }, { name: 'Tampa Downtown Franklin' }, { name: 'Fort Lauderdale Las Olas' }, { name: 'Jacksonville Bay Street' }, { name: 'Nashville Broadway Hub' }, { name: 'Tysons Corner Capital One Hub' }, { name: 'Richmond Main Street' }, { name: 'Raleigh Fayetteville St' }, { name: 'Birmingham 5th Avenue' }, { name: 'Charleston Meeting Street' },
+        { name: 'Chicago LaSalle Financial' }, { name: 'Chicago Michigan Avenue' }, { name: 'Chicago West Loop Wacker' }, { name: 'Columbus Capitol Square' }, { name: 'Cincinnati Fountain Square' }, { name: 'Cleveland Public Square' }, { name: 'Detroit Woodward Downtown' }, { name: 'Minneapolis Nicollet Mall' }, { name: 'St Paul Minnesota Street' }, { name: 'Indianapolis Monument Circle' }, { name: 'St Louis Market Street' }, { name: 'Kansas City Main Street' }, { name: 'Milwaukee Water Street' }, { name: 'Grand Rapids Monroe Center' }, { name: 'Toledo Madison Avenue' }, { name: 'Des Moines Locust Street' },
+        { name: 'Dallas Main Downtown' }, { name: 'Dallas Uptown McKinnon' }, { name: 'Houston Texas Ave Financial' }, { name: 'Houston Galleria Post Oak' }, { name: 'Austin Congress Downtown' }, { name: 'San Antonio Houston Street' }, { name: 'Fort Worth Throckmorton' }, { name: 'Westlake Schwab Corporate' }, { name: 'Phoenix Central Financial' }, { name: 'Scottsdale Camelback' }, { name: 'Las Vegas Strip Financial' }, { name: 'Salt Lake City Main St' }, { name: 'Denver 17th Street' }, { name: 'Oklahoma City Broadway' }, { name: 'Albuquerque Central Ave' }, { name: 'Tucson Stone Financial' },
+        { name: 'San Francisco Montgomery Financial' }, { name: 'San Francisco Market Street' }, { name: 'Los Angeles Wilshire Financial' }, { name: 'Los Angeles Century City' }, { name: 'San Diego Broadway Downtown' }, { name: 'San Jose Silicon Valley' }, { name: 'Palo Alto University Ave' }, { name: 'Irvine Spectrum Financial' }, { name: 'Sacramento Capitol Mall' }, { name: 'Seattle 4th Avenue Financial' }, { name: 'Bellevue Financial Center' }, { name: 'Portland 5th Avenue' }, { name: 'Honolulu Bishop Financial' }, { name: 'Anchorage 5th Avenue Hub' }, { name: 'Oakland City Center' }, { name: 'Pasadena Colorado Blvd' }
+      ];
+      
+      const calculateAbaRouting = (bankPrefix4, branchIdx) => {
+        const prefix8 = String(bankPrefix4).padStart(4, '0') + String(branchIdx).padStart(4, '0');
+        const digits = prefix8.split('').map(Number);
+        const weights = [3, 7, 1, 3, 7, 1, 3, 7];
+        let partialSum = 0;
+        for (let i = 0; i < 8; i++) partialSum += digits[i] * weights[i];
+        return prefix8 + (partialSum % 10 === 0 ? 0 : 10 - (partialSum % 10));
+      };
+
+      for (const city of cities) {
+        for (const bank of banks) {
+          const bankCode = bank.bank_code;
+          const branchIndex = (globalBranchCounter * 11) % 9000 + 100;
+          const routingNumber = calculateAbaRouting(bankCode, branchIndex);
+          countryData.us.branches.push({ routing_number: routingNumber });
+          globalBranchCounter++;
+        }
       }
+    } catch (e) {
+      console.warn('Warning: Could not generate USA branches for sitemap:', e.message);
     }
   }
 
