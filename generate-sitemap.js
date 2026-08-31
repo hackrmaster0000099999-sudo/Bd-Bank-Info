@@ -110,14 +110,17 @@ try {
   }
 
   // 7. India Branches
-  const inBranchesJson = path.join(__dirname, 'src/data/india/branches.json');
-  if (fs.existsSync(inBranchesJson)) {
-    try {
-      const raw = fs.readFileSync(inBranchesJson, 'utf8').trim();
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) countryData.in.branches.push(...parsed);
-    } catch (e) {
-      console.warn('Warning: Could not parse india/branches.json:', e.message);
+  const inBranchesDir = path.join(__dirname, 'src/data/india/branches');
+  if (fs.existsSync(inBranchesDir)) {
+    const files = fs.readdirSync(inBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(inBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) countryData.in.branches.push(...parsed);
+      } catch (e) {
+        console.warn(`Warning: Could not parse indian branch file ${f}:`, e.message);
+      }
     }
   }
 
