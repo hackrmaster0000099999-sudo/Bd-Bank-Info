@@ -1,20 +1,19 @@
 import { Branch } from '../../../types';
-import sberbankBranches from './sberbank.json';
-import vtbBranches from './vtb.json';
-import gazprombankBranches from './gazprombank.json';
-import alfabankBranches from './alfabank.json';
-import tinkoffBranches from './tinkoff.json';
-import rosselkhozBranches from './rosselkhozbank.json';
-import sovcomBranches from './sovcombank.json';
-import otherBranches from './other_banks.json';
+import centralBranches from './central.json';
+import northwestBranches from './northwest.json';
+import volgaBranches from './volga.json';
+import southBranches from './south.json';
+import uralBranches from './ural.json';
+import siberiaBranches from './siberia.json';
+import fareastBranches from './fareast.json';
 
 export const russianBranches: Branch[] = [
-  ...(sberbankBranches as Branch[]),
-  ...(vtbBranches as Branch[]),
-  ...(gazprombankBranches as Branch[]),
-  ...(alfabankBranches as Branch[]),
-  ...(tinkoffBranches as Branch[]),
-  ...(rosselkhozBranches as Branch[]),
-  ...(sovcomBranches as Branch[]),
-  ...(otherBranches as Branch[])
+  ...(centralBranches as Branch[]),
+  ...(northwestBranches as Branch[]),
+  ...(volgaBranches as Branch[]),
+  ...(southBranches as Branch[]),
+  ...(uralBranches as Branch[]),
+  ...(siberiaBranches as Branch[]),
+  ...(fareastBranches as Branch[])
 ];
+
