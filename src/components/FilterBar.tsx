@@ -72,6 +72,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           >
             <option value="all" className="dark:bg-slate-800">🌐 {t.allCountries}</option>
             <option value="us" className="dark:bg-slate-800">🇺🇸 {t.usa}</option>
+            <option value="uk" className="dark:bg-slate-800">🇬🇧 {t.uk}</option>
             <option value="ru" className="dark:bg-slate-800">🇷🇺 {t.russia}</option>
             <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
             <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>

@@ -30,6 +30,15 @@ const COUNTRY_TABS: CountryTab[] = [
     badgeNative: 'ABA রাউটিং'
   },
   {
+    id: 'uk',
+    flag: '🇬🇧',
+    code: 'UK',
+    nameEn: 'United Kingdom',
+    nameNative: 'UK',
+    badgeEn: 'Sort Codes & Faster Payments',
+    badgeNative: 'সর্ট কোড ও SWIFT'
+  },
+  {
     id: 'ru',
     flag: '🇷🇺',
     code: 'RU',
@@ -76,6 +85,8 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
         <span className="font-semibold text-[11px] sm:text-xs">
           {country === 'us'
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: মার্কিন যুক্তরাষ্ট্র (ইউএস ফেডারেল রিজার্ভ ও ABA রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त राज्य अमेरिका (US Fed Reserve ABA Routing Database)' : lang === 'ru' ? 'Выбранная страна: США (ФРС США, ABA Routing и SWIFT)' : 'Selected Country: United States (US Federal Reserve ABA Routing & SWIFT Directory)')
+            : country === 'uk'
+            ? (lang === 'bn' ? 'নির্বাচিত দেশ: যুক্তরাজ্য (ব্যাংক অব ইংল্যান্ড ও FCA অনুমোদিত সর্ট কোড ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: यूनाइटेड किंगडम (Bank of England / FCA Sort Codes Database)' : lang === 'ru' ? 'Выбранная страна: Великобритания (Sort Codes, BACS & SWIFT)' : 'Selected Country: United Kingdom (Bank of England & FCA Sort Code Directory)')
             : country === 'ru'
             ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
             : country === 'in'

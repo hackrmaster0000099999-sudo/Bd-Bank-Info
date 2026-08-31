@@ -4,6 +4,7 @@ import inBanksData from '../data/indian_banks.json';
 import { allBranches } from '../data/branches/index';
 import { russianBanks, russianBranches } from '../data/russia/index';
 import { usaBanks, usaBranches } from '../data/usa/index';
+import { ukBanks, ukBranches } from '../data/uk/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -27,7 +28,12 @@ const usBanks: Bank[] = (usaBanks as any[]).map((b) => ({
   country: 'us' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks];
+const unitedKingdomBanks: Bank[] = (ukBanks as any[]).map((b) => ({
+  ...b,
+  country: 'uk' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -42,6 +48,10 @@ const branches: Branch[] = [
   ...usaBranches.map((br) => ({
     ...br,
     country: 'us' as const,
+  })),
+  ...ukBranches.map((br) => ({
+    ...br,
+    country: 'uk' as const,
   }))
 ];
 
@@ -280,20 +290,34 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU)
+    // Check Sort Code (UK)
+    if (!matched && (br.sort_code || br.country === 'uk') && (searchType === 'all' || searchType === 'sortcode' || searchType === 'routing')) {
+      const cleanSort = (br.sort_code || br.routing_number).replace(/\D/g, '');
+      if (cleanSort === normalizedNumQuery || (br.sort_code && br.sort_code.toLowerCase() === normalizedTextQuery)) {
+        matched = true;
+        score += 120; // Exact Sort Code match
+        matchedField = 'UK Sort Code (Exact)';
+      } else if (cleanSort.startsWith(normalizedNumQuery) && normalizedNumQuery.length >= 2) {
+        matched = true;
+        score += 70;
+        matchedField = 'UK Sort Code';
+      }
+    }
+
+    // Check Routing / MICR Number (BD / IN / RU / US)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : 'Routing Number';
       }
     }
 
@@ -354,6 +378,8 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       let codeDisplay = `Routing: ${br.routing_number}`;
       if (br.country === 'ru') {
         codeDisplay = `BIK: ${br.bik_code || br.routing_number} | Corr: ${br.corr_account ? br.corr_account.substring(0, 10) + '...' : 'N/A'}`;
+      } else if (br.country === 'uk') {
+        codeDisplay = `Sort Code: ${br.sort_code || br.routing_number} | SWIFT: ${br.swift_code || 'Head Office'}`;
       } else if (br.ifsc_code) {
         codeDisplay = `IFSC: ${br.ifsc_code} | MICR: ${br.routing_number}`;
       }

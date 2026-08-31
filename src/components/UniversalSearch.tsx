@@ -36,12 +36,12 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({
   }, []);
 
   const popularTags = [
+    { label: '20-00-00', type: 'routing' as const, note: 'Barclays London' },
+    { label: '021000021', type: 'routing' as const, note: 'Chase ABA' },
     { label: 'SBIN0000001', type: 'ifsc' as const, note: 'SBI Mumbai' },
     { label: '044525225', type: 'routing' as const, note: 'Sberbank BIK' },
     { label: '125260123', type: 'routing' as const, note: 'IBBL Dhaka' },
-    { label: 'SBININBB', type: 'swift' as const, note: 'SBI SWIFT' },
-    { label: 'IBBLBDDH', type: 'swift' as const, note: 'IBBL SWIFT' },
-    { label: 'SABRRU2P', type: 'swift' as const, note: 'Sberbank SWIFT' }
+    { label: 'BARCGB22', type: 'swift' as const, note: 'Barclays SWIFT' }
   ];
 
   return (

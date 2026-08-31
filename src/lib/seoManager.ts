@@ -5,6 +5,12 @@ import {
   getUsaBranchMetaTitle,
   getUsaBranchMetaDescription
 } from '../data/usa/index';
+import {
+  getUkBankMetaTitle,
+  getUkBankMetaDescription,
+  getUkBranchMetaTitle,
+  getUkBranchMetaDescription
+} from '../data/uk/index';
 
 export interface SEOProps {
   title: string;
@@ -22,8 +28,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-08-29';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-08-29T00:00:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-08-31';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-08-31T09:03:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {
@@ -55,6 +61,14 @@ export function generateSeoData(
         title: getUsaBranchMetaTitle(branch, lang),
         description: getUsaBranchMetaDescription(branch, lang),
         canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+      };
+    }
+
+    if (branch.country === 'uk' || !!branch.sort_code) {
+      return {
+        title: getUkBranchMetaTitle(branch, lang),
+        description: getUkBranchMetaDescription(branch, lang),
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.sort_code || branch.routing_number}`
       };
     }
 
@@ -95,6 +109,14 @@ export function generateSeoData(
       return {
         title: getUsaBankMetaTitle(bank, lang),
         description: getUsaBankMetaDescription(bank, lang),
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'uk') {
+      return {
+        title: getUkBankMetaTitle(bank, lang),
+        description: getUkBankMetaDescription(bank, lang),
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -316,11 +338,14 @@ export function updateSEOMeta({
 
   const schemaData: object[] = [];
   const isUS = branch?.country === 'us' || bank?.country === 'us';
+  const isUK = branch?.country === 'uk' || bank?.country === 'uk' || !!branch?.sort_code;
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isUS ? 'US' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const countryCode = isUS ? 'US' : isUK ? 'GB' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
   const centralRegulator = isUS
     ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
+    : isUK
+    ? 'Bank of England / Financial Conduct Authority (FCA)'
     : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
@@ -331,6 +356,8 @@ export function updateSEOMeta({
     let branchDesc = `BEFTN Routing Number: ${branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     if (isUS) {
       branchDesc = `Official 9-digit ABA Routing Number: ${branch.routing_number}, ACH Direct Deposit Routing: ${branch.ach_routing || branch.routing_number}, Fedwire Routing: ${branch.wire_routing || branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
+    } else if (isUK) {
+      branchDesc = `Official 6-digit UK Sort Code: ${branch.sort_code || branch.routing_number}, BACS, Faster Payments, Postcode: ${branch.zip_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     } else if (isRussia) {
       branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, KPP: ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
@@ -343,7 +370,7 @@ export function updateSEOMeta({
       'name': `${branch.bank_name} - ${branch.name} Branch`,
       'alternateName': [branch.bank_name_ru, branch.bank_name_bn, branch.bank_name_hi, branch.name_ru, branch.name_bn, branch.name_hi].filter(Boolean),
       'description': branchDesc,
-      'url': `${BASE_URL}/branch/${branch.bik_code || branch.ifsc_code || branch.routing_number}`,
+      'url': `${BASE_URL}/branch/${branch.sort_code || branch.bik_code || branch.ifsc_code || branch.routing_number}`,
       'telephone': branch.phone || undefined,
       'email': branch.email || undefined,
       'address': {
@@ -357,6 +384,11 @@ export function updateSEOMeta({
       'dateModified': dateModified,
       'datePublished': '2026-01-01T00:00:00.000Z',
       'identifier': [
+        branch.sort_code ? {
+          '@type': 'PropertyValue',
+          'name': 'UK Sort Code',
+          'value': branch.sort_code
+        } : null,
         branch.bik_code ? {
           '@type': 'PropertyValue',
           'name': 'BIK (БИК) Code',
@@ -389,7 +421,7 @@ export function updateSEOMeta({
         } : null,
         {
           '@type': 'PropertyValue',
-          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {

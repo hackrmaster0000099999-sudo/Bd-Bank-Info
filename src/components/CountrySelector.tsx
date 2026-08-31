@@ -28,6 +28,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'uk',
+    flag: '🇬🇧',
+    shortCode: 'UK',
+    name: 'United Kingdom',
+    nameNative: 'UK',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

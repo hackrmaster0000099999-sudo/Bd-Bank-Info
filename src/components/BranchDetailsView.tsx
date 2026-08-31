@@ -6,6 +6,7 @@ import { ShareButton } from './ShareButton';
 import { decodeRoutingNumber } from '../lib/routingDecoder';
 import { decodeBik } from '../data/russia/bikDecoder';
 import { validateAbaRouting } from '../data/usa/abaValidator';
+import { validateSortCode } from '../data/uk/sortCodeValidator';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -29,10 +30,12 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const decoded = decodeRoutingNumber(branch.routing_number);
   const bikDecoded = decodeBik(branch.bik_code || branch.routing_number);
   const abaDecoded = branch.country === 'us' ? validateAbaRouting(branch.routing_number) : null;
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const isUS = branch.country === 'us';
+  const isUK = branch.country === 'uk' || !!branch.sort_code;
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
+  const sortCodeDecoded = isUK ? validateSortCode(branch.sort_code || branch.routing_number) : null;
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const getBranchName = () => {
     if (lang === 'ru' && branch.name_ru) return branch.name_ru;
@@ -65,6 +68,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const shareTitle = `${branch.bank_name} (${branch.name} Branch) Code & Details`;
   const shareText = isUS
     ? `ABA Routing: ${branch.routing_number} | ACH: ${branch.ach_routing || branch.routing_number} | City: ${branch.district}, ${branch.division}, USA.`
+    : isUK
+    ? `UK Sort Code: ${branch.sort_code || branch.routing_number} | SWIFT: ${branch.swift_code || 'HO'} | Location: ${branch.district}, ${branch.division}, UK.`
     : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр. счет: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}, Россия.`
     : isIndia
@@ -86,6 +91,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           answer: branch.swift_code
             ? `The international SWIFT code is ${branch.swift_code}. Provide this code to the remitting bank alongside the beneficiary's name and account number.`
             : `Use the main head office SWIFT code for ${branch.bank_name} and specify the branch address.`
+        }
+      ]
+    : isUK
+    ? [
+        {
+          question: `What is the Sort Code for ${branch.bank_name} - ${branch.name}?`,
+          answer: `The official 6-digit Sort Code for this branch is ${branch.sort_code || branch.routing_number}. In the UK, it is formatted as ${sortCodeDecoded?.formattedSortCode || branch.sort_code || branch.routing_number} and used for BACS Direct Debit, Faster Payments, and CHAPS.`
+        },
+        {
+          question: `Does this branch support Faster Payments (FPS) and BACS?`,
+          answer: `Yes, ${branch.bank_name} supports UK Faster Payments for real-time payments, BACS for Direct Debits / Direct Credits, and CHAPS for high-value same-day settlements.`
+        },
+        {
+          question: `Which SWIFT / BIC code is used for international payments to the UK?`,
+          answer: branch.swift_code
+            ? `The official SWIFT code for international transfers to this branch is ${branch.swift_code}.`
+            : `Use the main UK Head Office SWIFT code for ${branch.bank_name} along with the 8-digit UK account number and Sort Code.`
         }
       ]
     : lang === 'ru'
@@ -155,9 +177,13 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
     updateSEOMeta({
       title: isUS
         ? `${branch.name} - ${branch.bank_name} ABA Routing Number ${branch.routing_number}, SWIFT & Address | World Bank Codes`
+        : isUK
+        ? `${branch.bank_name} ${branch.name} Branch Sort Code ${branch.sort_code || branch.routing_number}, SWIFT & Address | World Bank Codes`
         : `${branch.bank_name} ${branch.name} Branch Code & SWIFT | World Bank Codes`,
       description: isUS
         ? `Official 9-digit ABA Routing Number: ${branch.routing_number}, ACH: ${branch.ach_routing || branch.routing_number}, Wire: ${branch.wire_routing || branch.routing_number}, SWIFT: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name}, ${branch.district}, ${branch.division}, USA.`
+        : isUK
+        ? `Official UK 6-digit Sort Code: ${branch.sort_code || branch.routing_number} (${sortCodeDecoded?.formattedSortCode || branch.sort_code || branch.routing_number}), SWIFT: ${branch.swift_code || 'HO'}, Postcode: ${branch.zip_code || 'N/A'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, United Kingdom.`
         : isRussia
         ? `Official BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, Russia.`
         : isIndia
@@ -167,7 +193,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
       branch,
       faqs
     });
-  }, [branch, lang, isUS, isRussia, isIndia, faqs]);
+  }, [branch, lang, isUS, isUK, isRussia, isIndia, faqs]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -212,7 +238,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               {getDistrict()}, {branch.division}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
-              {isUS ? '🇺🇸 United States' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
@@ -230,7 +256,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
 
         {/* Highlighted Code Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Primary Transfer Code Box: ABA for US, BIK for Russia, IFSC for India, Routing for BD */}
+          {/* Primary Transfer Code Box: ABA for US, Sort Code for UK, BIK for Russia, IFSC for India, Routing for BD */}
           {isUS ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
               <div>
@@ -242,6 +268,18 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
                 </span>
               </div>
               <CopyButton textToCopy={branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
+            </div>
+          ) : isUK ? (
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
+                  UK Sort Code (6 Digits)
+                </span>
+                <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {sortCodeDecoded?.formattedSortCode || branch.sort_code || branch.routing_number}
+                </span>
+              </div>
+              <CopyButton textToCopy={branch.sort_code || branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
             </div>
           ) : isRussia ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
@@ -375,6 +413,60 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
                 <CopyButton textToCopy={branch.zip_code} size="sm" lang={lang} />
               </div>
             )}
+          </div>
+        )}
+
+        {/* UK Extra Requisites Section (SWIFT, Postcode, Clearing Network) */}
+        {isUK && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            {branch.swift_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">SWIFT / BIC Code:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.swift_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.swift_code} size="sm" lang={lang} />
+              </div>
+            )}
+            {branch.zip_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">UK Postcode:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.zip_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.zip_code} size="sm" lang={lang} />
+              </div>
+            )}
+            <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+              <div>
+                <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Payment Schemes:</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">Faster Payments, BACS, CHAPS</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* UK Sort Code Structure Card */}
+        {isUK && sortCodeDecoded && (
+          <div className="bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>UK Sort Code & Payment Clearing Information</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Bank Prefix:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{sortCodeDecoded.bankPrefix} ({sortCodeDecoded.possibleBankName || branch.bank_name})</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Standard Format:</span>
+                <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">{sortCodeDecoded.formattedSortCode}</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Regulated By:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Bank of England / FCA</span>
+              </div>
+            </div>
           </div>
         )}
 
