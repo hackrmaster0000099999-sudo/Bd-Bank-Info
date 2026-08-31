@@ -27,11 +27,13 @@ const UK_SORT_CODE_PREFIX_MAP: Record<string, string> = {
   '83': 'Royal Bank of Scotland',
   '11': 'Halifax',
   '07': 'Nationwide Building Society',
+  '77': 'TSB Bank',
   '18': 'Virgin Money',
   '23': 'Metro Bank',
   '04': 'Monzo Bank',
   '06': 'Starling Bank',
-  '66': 'Standard Chartered UK'
+  '66': 'Standard Chartered UK',
+  '98': 'Ulster Bank'
 };
 
 export function cleanSortCode(input: string): string {
