@@ -5,6 +5,7 @@ import { allBranches } from '../data/branches/index';
 import { russianBanks, russianBranches } from '../data/russia/index';
 import { usaBanks, usaBranches } from '../data/usa/index';
 import { ukBanks, ukBranches } from '../data/uk/index';
+import { canadaBanks, canadaBranches } from '../data/canada/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -33,7 +34,12 @@ const unitedKingdomBanks: Bank[] = (ukBanks as any[]).map((b) => ({
   country: 'uk' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks];
+const caBanksList: Bank[] = (canadaBanks as any[]).map((b) => ({
+  ...b,
+  country: 'ca' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -56,6 +62,10 @@ const branches: Branch[] = [
   ...ukBranches.map((br) => ({
     ...br,
     country: 'uk' as const,
+  })),
+  ...canadaBranches.map((br) => ({
+    ...br,
+    country: 'ca' as const,
   }))
 ];
 
@@ -309,20 +319,35 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU / US)
+    // Check Canadian Transit Number / EFT Routing
+    if (!matched && br.country === 'ca' && (searchType === 'all' || searchType === 'routing')) {
+      const cleanTransit = (br.transit_number || '').replace(/\D/g, '');
+      const cleanInst = (br.institution_number || '').replace(/\D/g, '');
+      if (cleanTransit === normalizedNumQuery || cleanTransit.startsWith(normalizedNumQuery)) {
+        matched = true;
+        score += 115;
+        matchedField = 'Canadian Transit Number (5-digit)';
+      } else if (cleanInst === normalizedNumQuery) {
+        matched = true;
+        score += 85;
+        matchedField = 'Institution Number (3-digit)';
+      }
+    }
+
+    // Check Routing / MICR Number (BD / IN / RU / US / CA)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : 'Routing Number';
       }
     }
 
@@ -385,6 +410,8 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
         codeDisplay = `BIK: ${br.bik_code || br.routing_number} | Corr: ${br.corr_account ? br.corr_account.substring(0, 10) + '...' : 'N/A'}`;
       } else if (br.country === 'uk') {
         codeDisplay = `Sort Code: ${br.sort_code || br.routing_number} | SWIFT: ${br.swift_code || 'Head Office'}`;
+      } else if (br.country === 'ca') {
+        codeDisplay = `Transit: ${br.transit_number || br.branch_code} | Inst: ${br.institution_number || '003'} | EFT: ${br.routing_number}`;
       } else if (br.ifsc_code) {
         codeDisplay = `IFSC: ${br.ifsc_code} | MICR: ${br.routing_number}`;
       }

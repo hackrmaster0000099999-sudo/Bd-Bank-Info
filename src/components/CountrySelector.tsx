@@ -36,6 +36,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'ca',
+    flag: '🇨🇦',
+    shortCode: 'CA',
+    name: 'Canada',
+    nameNative: 'Canada',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

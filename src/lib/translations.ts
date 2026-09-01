@@ -16,6 +16,7 @@ export interface TranslationDict {
   russia: string;
   usa: string;
   uk: string;
+  canada: string;
   allBanks: string;
   allDivisions: string;
   allDistricts: string;
@@ -78,6 +79,7 @@ export const translations: Record<Language, TranslationDict> = {
     russia: 'রাশিয়া (Russia)',
     usa: 'যুক্তরাষ্ট্র (USA)',
     uk: 'যুক্তরাজ্য (UK)',
+    canada: 'কানাডা (Canada)',
     allBanks: 'সকল ব্যাংক',
     allDivisions: 'সকল বিভাগ / কাউন্টি / অঞ্চল',
     divisionState: 'বিভাগ / কাউন্টি / অঞ্চল',
@@ -138,6 +140,7 @@ export const translations: Record<Language, TranslationDict> = {
     russia: 'Russia',
     usa: 'United States',
     uk: 'United Kingdom (UK)',
+    canada: 'Canada',
     allBanks: 'All Banks',
     allDivisions: 'All Regions / Counties',
     divisionState: 'Region / County',
@@ -198,6 +201,7 @@ export const translations: Record<Language, TranslationDict> = {
     russia: 'रूस (Russia)',
     usa: 'संयुक्त राज्य अमेरिका (USA)',
     uk: 'यूनाइटेड किंगडम (UK)',
+    canada: 'कनाडा (Canada)',
     allBanks: 'सभी बैंक',
     allDivisions: 'सभी राज्य / क्षेत्र',
     divisionState: 'राज्य / क्षेत्र',
@@ -258,6 +262,7 @@ export const translations: Record<Language, TranslationDict> = {
     russia: 'Россия (РФ)',
     usa: 'США (USA)',
     uk: 'Великобритания (UK)',
+    canada: 'Канада (Canada)',
     allBanks: 'Все банки',
     allDivisions: 'Все федеральные округа / регионы',
     divisionState: 'Федеральный округ / Графство',

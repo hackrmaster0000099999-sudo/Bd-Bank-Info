@@ -1,16 +1,18 @@
 export type Language = 'bn' | 'en' | 'hi' | 'ru';
-export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
   short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom
-  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, or 2-digit UK Prefix
-  routing_number?: string; // 9-digit ABA routing number for US banks or default identifier
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada
+  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, or 3-digit Canadian Institution Number
+  routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada
+  transit_number?: string; // 5-digit Canadian Transit Number (XXXXX)
+  institution_number?: string; // 3-digit Canadian Institution Number (YYY)
   sort_code?: string; // 6-digit UK Sort Code (e.g. 20-00-00)
   ach_routing?: string; // Electronic / Direct Deposit ACH Routing Number
   wire_routing?: string; // Fedwire / Wire Transfer Routing Number
@@ -44,20 +46,20 @@ export interface Branch {
   bank_name_hi?: string;
   bank_name_ru?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
-  division: string; // Division in BD, State in India/US, Federal Subject in Russia, Country/Region in UK (e.g. England, Scotland)
+  division: string; // Division in BD, State in India/US, Federal Subject in Russia, Country/Region in UK, Province in Canada
   division_bn?: string;
   division_hi?: string;
   division_ru?: string;
-  district: string; // District / County / City in English (e.g. Greater London, West Midlands)
+  district: string; // District / County / City in English
   district_bn?: string;
   district_hi?: string;
   district_ru?: string;
-  upazila?: string; // Upazila / City / Locality / Borough (e.g. Westminster, City of London)
+  upazila?: string; // Upazila / City / Locality / Borough
   upazila_bn?: string;
   upazila_hi?: string;
   upazila_ru?: string;
@@ -65,8 +67,10 @@ export interface Branch {
   address_bn?: string;
   address_hi?: string;
   address_ru?: string;
-  zip_code?: string; // US Zip Code or UK Postcode (e.g. EC2P 2AH)
-  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, or 6-digit UK Sort Code
+  zip_code?: string; // US Zip Code, UK Postcode, or Canadian Postal Code (e.g. M5J 2J5)
+  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, or 9-digit Canadian EFT Routing (0YYYXXXXX)
+  transit_number?: string; // 5-digit Canadian Transit Number
+  institution_number?: string; // 3-digit Canadian Institution Number
   sort_code?: string; // 6-digit UK Sort Code (e.g. 20-00-00)
   ach_routing?: string; // Electronic / ACH Routing Number
   wire_routing?: string; // Fedwire Routing Number
@@ -104,12 +108,14 @@ export interface SearchResult {
   subtitle_hi?: string;
   subtitle_ru?: string;
   routing_number?: string;
+  transit_number?: string;
+  institution_number?: string;
   sort_code?: string;
   bik_code?: string;
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;

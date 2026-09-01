@@ -7,6 +7,7 @@ import { decodeRoutingNumber } from '../lib/routingDecoder';
 import { decodeBik } from '../data/russia/bikDecoder';
 import { validateAbaRouting } from '../data/usa/abaValidator';
 import { validateSortCode } from '../data/uk/sortCodeValidator';
+import { decodeCanadaRouting } from '../data/canada/canadaRoutingValidator';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -32,9 +33,11 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const abaDecoded = branch.country === 'us' ? validateAbaRouting(branch.routing_number) : null;
   const isUS = branch.country === 'us';
   const isUK = branch.country === 'uk' || !!branch.sort_code;
+  const isCanada = branch.country === 'ca' || !!branch.transit_number;
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
   const sortCodeDecoded = isUK ? validateSortCode(branch.sort_code || branch.routing_number) : null;
+  const canadaDecoded = isCanada ? decodeCanadaRouting(branch.transit_number ? `${branch.transit_number}-${branch.institution_number || '003'}` : branch.routing_number) : null;
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const getBranchName = () => {
@@ -70,6 +73,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
     ? `ABA Routing: ${branch.routing_number} | ACH: ${branch.ach_routing || branch.routing_number} | City: ${branch.district}, ${branch.division}, USA.`
     : isUK
     ? `UK Sort Code: ${branch.sort_code || branch.routing_number} | SWIFT: ${branch.swift_code || 'HO'} | Location: ${branch.district}, ${branch.division}, UK.`
+    : isCanada
+    ? `Transit Number: ${branch.transit_number || branch.branch_code} | Institution: ${branch.institution_number || '003'} | EFT Routing: ${branch.routing_number} | Canada.`
     : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр. счет: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}, Россия.`
     : isIndia
@@ -108,6 +113,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           answer: branch.swift_code
             ? `The official SWIFT code for international transfers to this branch is ${branch.swift_code}.`
             : `Use the main UK Head Office SWIFT code for ${branch.bank_name} along with the 8-digit UK account number and Sort Code.`
+        }
+      ]
+    : isCanada
+    ? [
+        {
+          question: `What is the Transit Number and Institution Number for ${branch.bank_name} - ${branch.name}?`,
+          answer: `The 5-digit Transit Number is ${branch.transit_number || branch.branch_code} and the 3-digit Institution Number is ${branch.institution_number || '003'}. On a cheque line or direct deposit form, this is written as ${branch.transit_number || branch.branch_code}-${branch.institution_number || '003'}.`
+        },
+        {
+          question: `What is the 9-digit EFT Routing Number for direct deposit and CRA tax refunds?`,
+          answer: `The 9-digit electronic fund transfer (EFT) routing number is ${branch.routing_number} (Format: 0 + Institution Number + Transit Number). It is certified by Payments Canada for ACSS clearing.`
+        },
+        {
+          question: `What SWIFT / BIC code is used for international wire transfers to Canada?`,
+          answer: branch.swift_code
+            ? `The SWIFT code for this financial institution is ${branch.swift_code}. Use this for incoming wires from the US, UK, Europe, or other international accounts.`
+            : `Use the main Canadian Head Office SWIFT code for ${branch.bank_name} and include branch transit ${branch.transit_number || branch.branch_code}.`
         }
       ]
     : lang === 'ru'
@@ -238,7 +260,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               {getDistrict()}, {branch.division}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
-              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
@@ -280,6 +302,18 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
                 </span>
               </div>
               <CopyButton textToCopy={branch.sort_code || branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
+            </div>
+          ) : isCanada ? (
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
+                  Transit & Institution (MICR Cheque Line)
+                </span>
+                <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.transit_number || branch.branch_code}-{branch.institution_number || '003'}
+                </span>
+              </div>
+              <CopyButton textToCopy={`${branch.transit_number || branch.branch_code}-${branch.institution_number || '003'}`} size="md" lang={lang} className="w-full justify-center" />
             </div>
           ) : isRussia ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
@@ -341,6 +375,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               </div>
               <CopyButton
                 textToCopy={branch.ach_routing || branch.routing_number}
+                size="md"
+                lang={lang}
+                className="w-full justify-center"
+              />
+            </div>
+          ) : isCanada ? (
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+                  9-Digit EFT Routing (CRA / Payroll)
+                </span>
+                <span className="font-mono text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.routing_number}
+                </span>
+              </div>
+              <CopyButton
+                textToCopy={branch.routing_number}
                 size="md"
                 lang={lang}
                 className="w-full justify-center"
@@ -465,6 +516,60 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
                 <span className="text-slate-500 dark:text-slate-400 block">Regulated By:</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Bank of England / FCA</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Canada Extra Requisites Section (SWIFT, Postal Code, Province) */}
+        {isCanada && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            {branch.swift_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">SWIFT / BIC Code:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.swift_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.swift_code} size="sm" lang={lang} />
+              </div>
+            )}
+            {branch.zip_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Postal Code:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.zip_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.zip_code} size="sm" lang={lang} />
+              </div>
+            )}
+            <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+              <div>
+                <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Clearing Network:</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">Payments Canada ACSS / Lynx</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Canada ACSS Structure & Direct Deposit Breakdown Card */}
+        {isCanada && canadaDecoded && (
+          <div className="bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Payments Canada ACSS & Direct Deposit Breakdown</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">5-Digit Transit Number:</span>
+                <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{canadaDecoded.transitNumber || branch.transit_number}</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">3-Digit Institution:</span>
+                <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">{canadaDecoded.institutionNumber || branch.institution_number} ({canadaDecoded.bankShortName || canadaDecoded.bankName})</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">EFT Routing (9 Digits):</span>
+                <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">{canadaDecoded.eftRoutingNumber || branch.routing_number}</span>
               </div>
             </div>
           </div>

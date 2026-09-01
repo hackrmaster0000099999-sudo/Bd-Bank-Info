@@ -95,6 +95,31 @@ function detectFromTimezone(): { country: Country; lang: Language } | null {
       return { country: 'uk', lang: 'en' };
     }
 
+    // Canada
+    if (
+      tz.startsWith('America/Toronto') ||
+      tz.startsWith('America/Vancouver') ||
+      tz.startsWith('America/Montreal') ||
+      tz.startsWith('America/Edmonton') ||
+      tz.startsWith('America/Calgary') ||
+      tz.startsWith('America/Winnipeg') ||
+      tz.startsWith('America/Halifax') ||
+      tz.startsWith('America/St_Johns') ||
+      tz.startsWith('America/Regina') ||
+      tz.startsWith('America/Moncton') ||
+      tz.startsWith('America/Yellowknife') ||
+      tz.startsWith('America/Whitehorse') ||
+      tz.startsWith('America/Iqaluit') ||
+      tz === 'Canada/Eastern' ||
+      tz === 'Canada/Pacific' ||
+      tz === 'Canada/Central' ||
+      tz === 'Canada/Mountain' ||
+      tz === 'Canada/Atlantic' ||
+      tz === 'Canada/Newfoundland'
+    ) {
+      return { country: 'ca', lang: 'en' };
+    }
+
     // United States
     if (
       tz.startsWith('America/New_York') ||
@@ -151,6 +176,9 @@ function detectFromLocale(): { country: Country; lang: Language } | null {
       if (l.endsWith('-gb') || l.endsWith('-uk')) {
         return { country: 'uk', lang: 'en' };
       }
+      if (l.endsWith('-ca') || l.includes('ca')) {
+        return { country: 'ca', lang: 'en' };
+      }
       if (l.endsWith('-us')) {
         return { country: 'us', lang: 'en' };
       }
@@ -180,6 +208,7 @@ export async function tryAsyncGeoLookup(): Promise<{ country: Country; lang: Lan
     if (code === 'in') return { country: 'in', lang: 'hi' };
     if (code === 'ru' || code === 'by' || code === 'kz') return { country: 'ru', lang: 'ru' };
     if (code === 'gb' || code === 'uk') return { country: 'uk', lang: 'en' };
+    if (code === 'ca') return { country: 'ca', lang: 'en' };
     if (code === 'us') return { country: 'us', lang: 'en' };
   } catch {
     // Silently continue without error
@@ -208,6 +237,7 @@ export function getDefaultLanguageForCountry(c: Country): Language {
       return 'ru';
     case 'uk':
     case 'us':
+    case 'ca':
     default:
       return 'en';
   }

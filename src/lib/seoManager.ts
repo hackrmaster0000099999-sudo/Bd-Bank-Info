@@ -17,6 +17,11 @@ import {
   getUkBranchMetaTitle,
   getUkBranchMetaDescription
 } from '../data/uk/index';
+import {
+  getCanadaBankSeo,
+  getCanadaBranchSeo,
+  getCanadaHomeSeo
+} from '../data/canada/index';
 
 
 export interface SEOProps {
@@ -35,20 +40,20 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-08-31';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-08-31T09:03:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-01';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-01T04:26:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {
-    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ (Банк России), US Fed, RBI и SWIFT`;
+    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
   }
   if (lang === 'hi') {
-    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • US Federal Reserve, RBI एवं बांग्लादेश बैंक प्रमाणित`;
+    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
   }
   if (lang === 'bn') {
-    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ইউএস ফেডারেল রিজার্ভ, বাংলাদেশ ব্যাংক, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
+    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
   }
-  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (US Fed, CBR, RBI, Bangladesh Bank)`;
+  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
 }
 
 export function generateSeoData(
@@ -76,6 +81,15 @@ export function generateSeoData(
         title: getUkBranchMetaTitle(branch, lang),
         description: getUkBranchMetaDescription(branch, lang),
         canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.sort_code || branch.routing_number}`
+      };
+    }
+
+    if (branch.country === 'ca' || !!branch.transit_number) {
+      const caSeo = getCanadaBranchSeo(branch, lang);
+      return {
+        title: caSeo.title,
+        description: caSeo.description,
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.transit_number || branch.routing_number}`
       };
     }
 
@@ -122,6 +136,15 @@ export function generateSeoData(
       return {
         title: getUkBankMetaTitle(bank, lang),
         description: getUkBankMetaDescription(bank, lang),
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'ca') {
+      const caSeo = getCanadaBankSeo(bank, lang);
+      return {
+        title: caSeo.title,
+        description: caSeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }

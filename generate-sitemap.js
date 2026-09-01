@@ -29,6 +29,7 @@ try {
     in: { name: 'India', filename: 'sitemap-in.xml', banks: [], branches: [] },
     us: { name: 'USA', filename: 'sitemap-us.xml', banks: [], branches: [] },
     uk: { name: 'United Kingdom', filename: 'sitemap-uk.xml', banks: [], branches: [] },
+    ca: { name: 'Canada', filename: 'sitemap-ca.xml', banks: [], branches: [] },
     ru: { name: 'Russia', filename: 'sitemap-ru.xml', banks: [], branches: [] }
   };
 
@@ -92,7 +93,19 @@ try {
     }
   }
 
-  // 6. BD Branches
+  // 6. Canada Banks
+  const caBanksPath = path.join(__dirname, 'src/data/canada/banks.json');
+  if (fs.existsSync(caBanksPath)) {
+    try {
+      const raw = fs.readFileSync(caBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) countryData.ca.banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse canada/banks.json:', e.message);
+    }
+  }
+
+  // 7. BD Branches
   const branchesDir = path.join(__dirname, 'src/data/branches');
   if (fs.existsSync(branchesDir)) {
     const files = fs.readdirSync(branchesDir).filter(f => f.endsWith('.json') && !f.includes('india'));
@@ -188,6 +201,21 @@ try {
         if (Array.isArray(parsed)) countryData.uk.branches.push(...parsed);
       } catch (e) {
         console.warn(`Warning: Could not parse UK branch file ${f}:`, e.message);
+      }
+    }
+  }
+
+  // 10. Canada Branches
+  const caBranchesDir = path.join(__dirname, 'src/data/canada/branches');
+  if (fs.existsSync(caBranchesDir)) {
+    const files = fs.readdirSync(caBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(caBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) countryData.ca.branches.push(...parsed);
+      } catch (e) {
+        console.warn(`Warning: Could not parse Canada branch file ${f}:`, e.message);
       }
     }
   }

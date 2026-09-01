@@ -30,13 +30,14 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
 
   const isBn = lang === 'bn';
   const isHi = lang === 'hi';
+  const isRu = lang === 'ru';
   const allBranches = getBranchesForBank(bank.id);
   const guide = getBankGuideContent(bank, lang);
 
   // Update SEO Meta Tags on view mount
   useEffect(() => {
     updateSEOMeta({
-      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers, IFSC & SWIFT Codes | World Bank Codes`,
+      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers, IFSC, Sort Codes & SWIFT | World Bank Codes`,
       description: guide.summary,
       lang,
       bank,
@@ -56,7 +57,10 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
       br.name.toLowerCase().includes(q) ||
       (br.name_bn && br.name_bn.includes(q)) ||
       (br.name_hi && br.name_hi.includes(q)) ||
+      (br.name_ru && br.name_ru.includes(q)) ||
       (br.routing_number && br.routing_number.includes(q)) ||
+      (br.transit_number && br.transit_number.includes(q)) ||
+      (br.bik_code && br.bik_code.includes(q)) ||
       (br.sort_code && br.sort_code.includes(q)) ||
       (br.ifsc_code && br.ifsc_code.toLowerCase().includes(q)) ||
       (br.swift_code && br.swift_code.toLowerCase().includes(q));
@@ -72,7 +76,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-xs cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-        <span>{isHi ? 'वापस बैंक सूची पर जाएं' : isBn ? 'পূর্ববর্তী পাতায় ফিরে যান' : 'Back to Bank Directory'}</span>
+        <span>{isRu ? 'Назад к справочнику' : isHi ? 'वापस बैंक सूची पर जाएं' : isBn ? 'পূর্ববর্তী পাতায় ফিরে যান' : 'Back to Bank Directory'}</span>
       </button>
 
       {/* Main Bank Header Banner */}
@@ -83,23 +87,23 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
               {bank.type || 'Commercial Bank'}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-slate-200 border border-white/10 whitespace-nowrap shrink-0">
-              {bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : bank.country === 'uk' ? `UK Sort Prefix: ${bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
+              {bank.country === 'ca' ? `Institution: ${bank.bank_code}` : bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : bank.country === 'uk' ? `UK Sort Prefix: ${bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 whitespace-nowrap shrink-0">
-              {bank.branch_count} {isHi ? 'कुल शाखाएं' : isBn ? 'টি শাখা' : 'Branches Total'}
+              {bank.branch_count} {isRu ? 'отделений' : isHi ? 'कुल शाखाएं' : isBn ? 'টি শাখা' : 'Branches Total'}
             </span>
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-              <span>{isHi ? `अद्यतन: ${CURRENT_DATA_VERSION_DATE}` : isBn ? `হালনাগাদ: ${CURRENT_DATA_VERSION_DATE}` : `Updated: ${CURRENT_DATA_VERSION_DATE}`}</span>
+              <span>{isRu ? `Проверено: ${CURRENT_DATA_VERSION_DATE}` : isHi ? `अद्यतन: ${CURRENT_DATA_VERSION_DATE}` : isBn ? `হালনাগাদ: ${CURRENT_DATA_VERSION_DATE}` : `Updated: ${CURRENT_DATA_VERSION_DATE}`}</span>
             </span>
           </div>
 
           <div>
             <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight break-words">
-              {isHi ? (bank.name_hi || bank.name) : isBn ? bank.name_bn : bank.name}
+              {isRu ? (bank.name_ru || bank.name) : isHi ? (bank.name_hi || bank.name) : isBn ? (bank.name_bn || bank.name) : bank.name}
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 break-words">
-              {isHi ? bank.name : isBn ? bank.name : (bank.name_bn || bank.name_hi)}
+              {isRu ? bank.name : isHi ? bank.name : isBn ? bank.name : (bank.name_bn || bank.name_hi || bank.name_ru)}
             </p>
           </div>
 
@@ -108,7 +112,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
             <div className="bg-white/5 backdrop-blur-xs p-4 rounded-2xl border border-white/10 flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <span className="text-slate-400 font-medium block text-[11px]">
-                  {isHi ? 'प्रधान कार्यालय स्विफ्ट/BIC कोड:' : isBn ? 'হেড অফিস সুইফট/BIC কোড:' : 'Head Office SWIFT Code:'}
+                  {isRu ? 'SWIFT / BIC код головного банка:' : isHi ? 'प्रधान कार्यालय स्विफ्ट/BIC कोड:' : isBn ? 'হেড অফিস সুইফট/BIC কোড:' : 'Head Office SWIFT Code:'}
                 </span>
                 <span className="font-mono text-base sm:text-lg font-bold text-white tracking-wider break-all">
                   {bank.swift_code}
@@ -121,7 +125,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
             <div className="bg-white/5 backdrop-blur-xs p-4 rounded-2xl border border-white/10 space-y-1.5">
               <div className="flex items-start space-x-2 text-slate-300">
                 <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span className="break-words">{isHi ? (bank.head_office_hi || bank.head_office) : isBn ? bank.head_office_bn : bank.head_office}</span>
+                <span className="break-words">{isRu ? (bank.head_office_ru || bank.head_office) : isHi ? (bank.head_office_hi || bank.head_office) : isBn ? (bank.head_office_bn || bank.head_office) : bank.head_office}</span>
               </div>
               {bank.website && (
                 <a
@@ -131,7 +135,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
                   className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2 pt-1"
                 >
                   <Globe className="w-3.5 h-3.5" />
-                  <span>{isHi ? 'आधिकारिक वेबसाइट' : isBn ? 'অফিসিয়াল ওয়েবসাইট' : 'Official Website'}</span>
+                  <span>{isRu ? 'Официальный сайт' : isHi ? 'आधिकारिक वेबसाइट' : isBn ? 'অফিসিয়াল ওয়েবসাইট' : 'Official Website'}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               )}
