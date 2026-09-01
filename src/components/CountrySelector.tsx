@@ -44,6 +44,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'au',
+    flag: '🇦🇺',
+    shortCode: 'AU',
+    name: 'Australia',
+    nameNative: 'Australia',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

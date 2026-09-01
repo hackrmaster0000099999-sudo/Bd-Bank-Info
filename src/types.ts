@@ -1,16 +1,17 @@
 export type Language = 'bn' | 'en' | 'hi' | 'ru';
-export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
   short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada
-  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, or 3-digit Canadian Institution Number
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia
+  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, 3-digit Canadian Institution Number, or 2-digit Australian BSB prefix
   routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada
+  bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
   transit_number?: string; // 5-digit Canadian Transit Number (XXXXX)
   institution_number?: string; // 3-digit Canadian Institution Number (YYY)
   sort_code?: string; // 6-digit UK Sort Code (e.g. 20-00-00)
@@ -33,33 +34,34 @@ export interface Bank {
   fdic_cert?: string; // US FDIC Certificate Number
   fed_district?: string; // US Federal Reserve District (e.g. 02 - New York)
   fca_frn?: string; // UK Financial Conduct Authority FRN Number
-  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important' | 'National Bank' | 'State Commercial Bank' | 'Federal Savings Bank' | 'Universal Bank' | 'UK Retail Bank' | 'UK Clearing Bank';
+  apca_code?: string; // Australian Payments Network (APCA) Code
+  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important' | 'National Bank' | 'State Commercial Bank' | 'Federal Savings Bank' | 'Universal Bank' | 'UK Retail Bank' | 'UK Clearing Bank' | 'Australian Major Bank' | 'Australian Regional Bank' | 'Australian Customer-Owned Bank';
   former_names?: string[]; // Former name for renamed/merged banks
   redirect_to?: string; // Slug for merged bank
 }
 
 export interface Branch {
-  id: string; // e.g., 'chase-newyork-main-021000021' or 'barclays-london-main-200000'
+  id: string; // e.g., 'chase-newyork-main-021000021' or 'barclays-london-main-200000' or 'cba-sydney-main-062000'
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
   bank_name_hi?: string;
   bank_name_ru?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
-  division: string; // Division in BD, State in India/US, Federal Subject in Russia, Country/Region in UK, Province in Canada
+  division: string; // Division in BD, State in India/US/Australia, Federal Subject in Russia, Country/Region in UK, Province in Canada
   division_bn?: string;
   division_hi?: string;
   division_ru?: string;
-  district: string; // District / County / City in English
+  district: string; // District / County / City / LGA in English
   district_bn?: string;
   district_hi?: string;
   district_ru?: string;
-  upazila?: string; // Upazila / City / Locality / Borough
+  upazila?: string; // Upazila / City / Locality / Suburb
   upazila_bn?: string;
   upazila_hi?: string;
   upazila_ru?: string;
@@ -67,8 +69,9 @@ export interface Branch {
   address_bn?: string;
   address_hi?: string;
   address_ru?: string;
-  zip_code?: string; // US Zip Code, UK Postcode, or Canadian Postal Code (e.g. M5J 2J5)
-  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, or 9-digit Canadian EFT Routing (0YYYXXXXX)
+  zip_code?: string; // US Zip Code, UK Postcode, Canadian Postal Code, or Australian 4-digit Postcode (e.g. 2000)
+  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, 6-digit Australian BSB, or 9-digit Canadian EFT Routing (0YYYXXXXX)
+  bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
   transit_number?: string; // 5-digit Canadian Transit Number
   institution_number?: string; // 3-digit Canadian Institution Number
   sort_code?: string; // 6-digit UK Sort Code (e.g. 20-00-00)
@@ -82,7 +85,7 @@ export interface Branch {
   micr_code?: string; // 9-digit MICR code
   swift_code?: string; // Branch-specific or head office SWIFT
   uses_head_office_swift?: boolean;
-  branch_code: string; // Branch / transit code
+  branch_code: string; // Branch / transit code / BSB
   phone?: string;
   email?: string;
   status: 'active' | 'relocated' | 'merged';
@@ -93,11 +96,11 @@ export interface FilterState {
   bankId: string;
   division: string;
   district: string;
-  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc' | 'bik' | 'sortcode';
+  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc' | 'bik' | 'sortcode' | 'bsb';
 }
 
 export interface SearchResult {
-  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc' | 'bik' | 'sortcode';
+  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc' | 'bik' | 'sortcode' | 'bsb';
   id: string;
   title: string;
   title_bn?: string;
@@ -108,6 +111,7 @@ export interface SearchResult {
   subtitle_hi?: string;
   subtitle_ru?: string;
   routing_number?: string;
+  bsb_code?: string;
   transit_number?: string;
   institution_number?: string;
   sort_code?: string;
@@ -115,7 +119,7 @@ export interface SearchResult {
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;

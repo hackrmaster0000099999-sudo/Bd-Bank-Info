@@ -6,6 +6,7 @@ import { russianBanks, russianBranches } from '../data/russia/index';
 import { usaBanks, usaBranches } from '../data/usa/index';
 import { ukBanks, ukBranches } from '../data/uk/index';
 import { canadaBanks, canadaBranches } from '../data/canada/index';
+import { australiaBanks, australiaBranches } from '../data/australia/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -39,7 +40,12 @@ const caBanksList: Bank[] = (canadaBanks as any[]).map((b) => ({
   country: 'ca' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList];
+const auBanksList: Bank[] = (australiaBanks as any[]).map((b) => ({
+  ...b,
+  country: 'au' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -66,6 +72,10 @@ const branches: Branch[] = [
   ...canadaBranches.map((br) => ({
     ...br,
     country: 'ca' as const,
+  })),
+  ...australiaBranches.map((br) => ({
+    ...br,
+    country: 'au' as const,
   }))
 ];
 
@@ -319,6 +329,20 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
+    // Check Australian BSB Code (Australia)
+    if (!matched && (br.bsb_code || br.country === 'au') && (searchType === 'all' || searchType === 'bsb' || searchType === 'routing')) {
+      const cleanBsb = (br.bsb_code || br.routing_number).replace(/\D/g, '');
+      if (cleanBsb === normalizedNumQuery || (br.bsb_code && br.bsb_code.toLowerCase() === normalizedTextQuery)) {
+        matched = true;
+        score += 120; // Exact BSB match
+        matchedField = 'Australian BSB (Exact)';
+      } else if (cleanBsb.startsWith(normalizedNumQuery) && normalizedNumQuery.length >= 2) {
+        matched = true;
+        score += 70;
+        matchedField = 'Australian BSB';
+      }
+    }
+
     // Check Canadian Transit Number / EFT Routing
     if (!matched && br.country === 'ca' && (searchType === 'all' || searchType === 'routing')) {
       const cleanTransit = (br.transit_number || '').replace(/\D/g, '');
@@ -334,20 +358,20 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU / US / CA)
+    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : 'Routing Number';
       }
     }
 
@@ -412,6 +436,8 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
         codeDisplay = `Sort Code: ${br.sort_code || br.routing_number} | SWIFT: ${br.swift_code || 'Head Office'}`;
       } else if (br.country === 'ca') {
         codeDisplay = `Transit: ${br.transit_number || br.branch_code} | Inst: ${br.institution_number || '003'} | EFT: ${br.routing_number}`;
+      } else if (br.country === 'au') {
+        codeDisplay = `BSB: ${br.bsb_code || br.routing_number} | SWIFT: ${br.swift_code || 'Head Office'}`;
       } else if (br.ifsc_code) {
         codeDisplay = `IFSC: ${br.ifsc_code} | MICR: ${br.routing_number}`;
       }

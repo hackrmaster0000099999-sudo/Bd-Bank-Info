@@ -120,6 +120,33 @@ function detectFromTimezone(): { country: Country; lang: Language } | null {
       return { country: 'ca', lang: 'en' };
     }
 
+    // Australia
+    if (
+      tz.startsWith('Australia/Sydney') ||
+      tz.startsWith('Australia/Melbourne') ||
+      tz.startsWith('Australia/Brisbane') ||
+      tz.startsWith('Australia/Perth') ||
+      tz.startsWith('Australia/Adelaide') ||
+      tz.startsWith('Australia/Hobart') ||
+      tz.startsWith('Australia/Darwin') ||
+      tz.startsWith('Australia/Canberra') ||
+      tz.startsWith('Australia/Lord_Howe') ||
+      tz.startsWith('Australia/Eucla') ||
+      tz.startsWith('Australia/Broken_Hill') ||
+      tz.startsWith('Australia/Currie') ||
+      tz.startsWith('Australia/Lindeman') ||
+      tz === 'Australia/ACT' ||
+      tz === 'Australia/NSW' ||
+      tz === 'Australia/North' ||
+      tz === 'Australia/Queensland' ||
+      tz === 'Australia/South' ||
+      tz === 'Australia/Tasmania' ||
+      tz === 'Australia/Victoria' ||
+      tz === 'Australia/West'
+    ) {
+      return { country: 'au', lang: 'en' };
+    }
+
     // United States
     if (
       tz.startsWith('America/New_York') ||
@@ -179,6 +206,9 @@ function detectFromLocale(): { country: Country; lang: Language } | null {
       if (l.endsWith('-ca') || l.includes('ca')) {
         return { country: 'ca', lang: 'en' };
       }
+      if (l.endsWith('-au') || l.includes('en-au')) {
+        return { country: 'au', lang: 'en' };
+      }
       if (l.endsWith('-us')) {
         return { country: 'us', lang: 'en' };
       }
@@ -209,6 +239,7 @@ export async function tryAsyncGeoLookup(): Promise<{ country: Country; lang: Lan
     if (code === 'ru' || code === 'by' || code === 'kz') return { country: 'ru', lang: 'ru' };
     if (code === 'gb' || code === 'uk') return { country: 'uk', lang: 'en' };
     if (code === 'ca') return { country: 'ca', lang: 'en' };
+    if (code === 'au') return { country: 'au', lang: 'en' };
     if (code === 'us') return { country: 'us', lang: 'en' };
   } catch {
     // Silently continue without error

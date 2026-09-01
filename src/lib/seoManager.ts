@@ -22,6 +22,11 @@ import {
   getCanadaBranchSeo,
   getCanadaHomeSeo
 } from '../data/canada/index';
+import {
+  getAustraliaBankSeo,
+  getAustraliaBranchSeo,
+  getAustraliaHomeSeo
+} from '../data/australia/index';
 
 
 export interface SEOProps {
@@ -93,6 +98,15 @@ export function generateSeoData(
       };
     }
 
+    if (branch.country === 'au' || !!branch.bsb_code) {
+      const auSeo = getAustraliaBranchSeo(branch, lang);
+      return {
+        title: auSeo.title,
+        description: auSeo.description,
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.bsb_code || branch.routing_number}`
+      };
+    }
+
     if (branch.country === 'in' || !!branch.ifsc_code) {
       return {
         title: getIndiaBranchMetaTitle(branch, lang),
@@ -145,6 +159,15 @@ export function generateSeoData(
       return {
         title: caSeo.title,
         description: caSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'au') {
+      const auSeo = getAustraliaBankSeo(bank, lang);
+      return {
+        title: auSeo.title,
+        description: auSeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -373,13 +396,19 @@ export function updateSEOMeta({
   const schemaData: object[] = [];
   const isUS = branch?.country === 'us' || bank?.country === 'us';
   const isUK = branch?.country === 'uk' || bank?.country === 'uk' || !!branch?.sort_code;
+  const isCA = branch?.country === 'ca' || bank?.country === 'ca' || !!branch?.transit_number;
+  const isAU = branch?.country === 'au' || bank?.country === 'au' || !!branch?.bsb_code;
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isUS ? 'US' : isUK ? 'GB' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
   const centralRegulator = isUS
     ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
     : isUK
     ? 'Bank of England / Financial Conduct Authority (FCA)'
+    : isCA
+    ? 'Bank of Canada / Payments Canada (ACSS)'
+    : isAU
+    ? 'Reserve Bank of Australia (RBA) / Australian Payments Network (AusPayNet)'
     : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
@@ -392,8 +421,12 @@ export function updateSEOMeta({
       branchDesc = `Official 9-digit ABA Routing Number: ${branch.routing_number}, ACH Direct Deposit Routing: ${branch.ach_routing || branch.routing_number}, Fedwire Routing: ${branch.wire_routing || branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     } else if (isUK) {
       branchDesc = `Official 6-digit UK Sort Code: ${branch.sort_code || branch.routing_number}, BACS, Faster Payments, Postcode: ${branch.zip_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
+    } else if (isCA) {
+      branchDesc = `Official 5-digit Transit Number: ${branch.transit_number}, Institution: ${branch.institution_number}, EFT Routing: 0${branch.institution_number}${branch.transit_number}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
+    } else if (isAU) {
+      branchDesc = `Official 6-digit Australian BSB Number: ${branch.bsb_code || branch.routing_number}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, NPP Osko Support. Regulated by ${centralRegulator}.`;
     } else if (isRussia) {
-      branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, KPP: ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
+      branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
       branchDesc = `Official IFSC Code: ${branch.ifsc_code}, MICR Code: ${branch.routing_number}, SWIFT Code: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     }
@@ -453,9 +486,24 @@ export function updateSEOMeta({
           'name': 'Fedwire Routing Number',
           'value': branch.wire_routing
         } : null,
+        branch.transit_number ? {
+          '@type': 'PropertyValue',
+          'name': 'Canadian Transit Number',
+          'value': branch.transit_number
+        } : null,
+        branch.institution_number ? {
+          '@type': 'PropertyValue',
+          'name': 'Financial Institution Number',
+          'value': branch.institution_number
+        } : null,
+        branch.bsb_code ? {
+          '@type': 'PropertyValue',
+          'name': 'Australian BSB Code',
+          'value': branch.bsb_code
+        } : null,
         {
           '@type': 'PropertyValue',
-          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {
@@ -495,6 +543,12 @@ export function updateSEOMeta({
     let bankDesc = `${bank.name} branches, BEFTN routing numbers and SWIFT code directory in Bangladesh.`;
     if (isUS) {
       bankDesc = `${bank.name} 9-digit ABA Routing Numbers, ACH direct deposit, Fedwire and SWIFT codes directory in the United States.`;
+    } else if (isUK) {
+      bankDesc = `${bank.name} 6-digit UK Sort Codes, branch directory and SWIFT BIC codes in the United Kingdom.`;
+    } else if (isCA) {
+      bankDesc = `${bank.name} Canadian transit numbers, institution number, EFT routing, and SWIFT codes directory.`;
+    } else if (isAU) {
+      bankDesc = `${bank.name} Australian BSB codes, branch directory, NPP Osko, and SWIFT/BIC codes in Australia.`;
     } else if (isRussia) {
       bankDesc = `${bank.name} Russian banking directory, BIK codes (${bank.bik_code || 'all branches'}), correspondent accounts, INN, and SWIFT codes in the Russian Federation.`;
     } else if (isIndia) {

@@ -36,6 +36,8 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
 
   const isUS = bank.country === 'us';
   const isUK = bank.country === 'uk';
+  const isCanada = bank.country === 'ca';
+  const isAustralia = bank.country === 'au';
   const isRussia = bank.country === 'ru';
   const isIndia = bank.country === 'in';
 
@@ -54,7 +56,7 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
-                  {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+                  {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isAustralia ? '🇦🇺 Australia' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
                 </span>
                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
                   {bank.type || 'Bank'}
@@ -67,6 +69,10 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
                   <>IFSC Prefix: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.ifsc_prefix}</span></>
                 ) : isUK ? (
                   <>Sort Code: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bank_code}</span></>
+                ) : isCanada ? (
+                  <>Institution: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bank_code}</span></>
+                ) : isAustralia ? (
+                  <>BSB Prefix: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bank_code}</span></>
                 ) : (
                   <>Bank Code: <span className="font-bold text-slate-800 dark:text-slate-200">{bank.bank_code}</span></>
                 )}
@@ -111,7 +117,11 @@ export const BankCard: React.FC<BankCardProps> = ({ bank, lang, onSelectBank }) 
       {/* Footer Action */}
       <div className="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs font-bold text-emerald-700 dark:text-emerald-400 group-hover:text-emerald-800 dark:group-hover:text-emerald-300">
         <span>
-          {isRussia
+          {isAustralia
+            ? (lang === 'bn' ? 'শাখা ও BSB কোড দেখুন' : lang === 'hi' ? 'शाखाएँ व BSB कोड देखें' : lang === 'ru' ? 'Отделения и BSB коды' : 'View Branches & BSB Codes')
+            : isCanada
+            ? (lang === 'bn' ? 'শাখা ও ট্রানজিট নম্বর দেখুন' : lang === 'hi' ? 'शाखाएँ व ट्रांजिट कोड देखें' : lang === 'ru' ? 'Отделения и транзитные коды' : 'View Branches & Transit')
+            : isRussia
             ? (lang === 'ru' ? 'Отделения, БИК и реквизиты' : 'View Branches & BIK Codes')
             : isIndia
             ? (lang === 'hi' ? 'शाखाएँ व IFSC कोड देखें' : 'View Branches & IFSC Codes')
