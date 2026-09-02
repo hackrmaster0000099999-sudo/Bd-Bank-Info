@@ -161,7 +161,12 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
           <div className="flex items-center gap-2 w-full sm:w-auto">
             {/* District Filter Dropdown */}
             <div className="relative w-full sm:w-52">
+              <label htmlFor="bank-details-district-select" className="sr-only">
+                {isHi ? 'जिला या शहर चुनें' : isBn ? 'জেলা বা শহর নির্বাচন করুন' : 'Filter by District or City'}
+              </label>
               <select
+                id="bank-details-district-select"
+                aria-label={isHi ? 'जिला या शहर चुनें' : isBn ? 'জেলা বা শহর নির্বাচন করুন' : 'Filter by District or City'}
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
                 className="w-full px-3 py-2 text-xs font-medium bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"

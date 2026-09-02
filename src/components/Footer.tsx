@@ -27,15 +27,21 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Brand & Purpose */}
           <div className="sm:col-span-2 md:col-span-1 space-y-3">
             <Link to="/" className="inline-block group">
-              <img 
-                src="/logo.png" 
-                alt="World Bank Codes" 
-                className="h-11 sm:h-12 w-auto max-w-[240px] object-contain rounded-lg drop-shadow-sm group-hover:opacity-95 transition-opacity"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.parentElement?.querySelector('.footer-fallback-logo')?.classList.remove('hidden');
-                }}
-              />
+              <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
+                <img 
+                  src="/logo.png" 
+                  alt="World Bank Codes" 
+                  width="240"
+                  height="48"
+                  loading="lazy"
+                  className="h-11 sm:h-12 w-auto max-w-[240px] object-contain rounded-lg drop-shadow-sm group-hover:opacity-95 transition-opacity"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement?.parentElement?.querySelector('.footer-fallback-logo')?.classList.remove('hidden');
+                  }}
+                />
+              </picture>
               <div className="footer-fallback-logo hidden flex items-center space-x-2.5">
                 <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-md shadow-emerald-600/30">
                   WBC

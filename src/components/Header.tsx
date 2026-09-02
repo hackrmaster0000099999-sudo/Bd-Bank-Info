@@ -33,15 +33,22 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Logo on Left */}
           <Link to="/" className="flex items-center cursor-pointer group shrink-0 py-1" id="header-logo-link">
             <div className="flex items-center justify-start group-hover:opacity-95 transition-opacity">
-              <img
-                src="/logo.png"
-                alt="World Bank Codes"
-                className="h-10 sm:h-12 md:h-14 w-auto max-w-[200px] sm:max-w-[280px] md:max-w-[340px] object-contain drop-shadow-2xs"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.parentElement?.querySelector('.fallback-brand-text')?.classList.remove('hidden');
-                }}
-              />
+              <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
+                <img
+                  src="/logo.png"
+                  alt="World Bank Codes"
+                  width="240"
+                  height="48"
+                  // @ts-ignore
+                  fetchPriority="high"
+                  className="h-10 sm:h-12 md:h-14 w-auto max-w-[200px] sm:max-w-[280px] md:max-w-[340px] object-contain drop-shadow-2xs"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement?.parentElement?.querySelector('.fallback-brand-text')?.classList.remove('hidden');
+                  }}
+                />
+              </picture>
               <div className="fallback-brand-text hidden flex items-center space-x-2.5">
                 <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
                   <Building2 className="w-5 h-5 text-white" />

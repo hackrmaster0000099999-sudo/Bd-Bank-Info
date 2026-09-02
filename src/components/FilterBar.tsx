@@ -60,7 +60,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
         {/* Country Dropdown */}
         <div className="relative">
+          <label htmlFor="filter-country-select" className="sr-only">{t.allCountries}</label>
           <select
+            id="filter-country-select"
+            aria-label={t.allCountries}
             value={filters.country}
             onChange={(e) => {
               onChangeFilter('country', e.target.value);
@@ -75,6 +78,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <option value="uk" className="dark:bg-slate-800">🇬🇧 {t.uk}</option>
             <option value="ca" className="dark:bg-slate-800">🇨🇦 {t.canada}</option>
             <option value="au" className="dark:bg-slate-800">🇦🇺 {t.australia}</option>
+            <option value="ae" className="dark:bg-slate-800">🇦🇪 {t.uae || 'United Arab Emirates'}</option>
             <option value="ru" className="dark:bg-slate-800">🇷🇺 {t.russia}</option>
             <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>
             <option value="bd" className="dark:bg-slate-800">🇧🇩 {t.bangladesh}</option>
@@ -84,7 +88,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* Bank Dropdown */}
         <div className="relative">
+          <label htmlFor="filter-bank-select" className="sr-only">{t.allBanks}</label>
           <select
+            id="filter-bank-select"
+            aria-label={t.allBanks}
             value={filters.bankId}
             onChange={(e) => onChangeFilter('bankId', e.target.value)}
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-semibold bg-slate-50/80 dark:bg-slate-700/60 border border-slate-200/80 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:bg-slate-700 appearance-none cursor-pointer transition-all"
@@ -101,7 +108,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* Division/State Dropdown */}
         <div className="relative">
+          <label htmlFor="filter-division-select" className="sr-only">{t.allDivisions}</label>
           <select
+            id="filter-division-select"
+            aria-label={t.allDivisions}
             value={filters.division}
             onChange={(e) => {
               onChangeFilter('division', e.target.value);
@@ -121,7 +131,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* District/City Dropdown */}
         <div className="relative">
+          <label htmlFor="filter-district-select" className="sr-only">{t.allDistricts}</label>
           <select
+            id="filter-district-select"
+            aria-label={t.allDistricts}
             value={filters.district}
             onChange={(e) => onChangeFilter('district', e.target.value)}
             className="w-full pl-3.5 pr-8 py-2.5 text-xs font-semibold bg-slate-50/80 dark:bg-slate-700/60 border border-slate-200/80 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:bg-slate-700 appearance-none cursor-pointer transition-all"

@@ -1,0 +1,36 @@
+# World Bank Codes
+
+> Official global directory for US ABA Routing Numbers, UK Sort Codes, Australian BSB Numbers, Canadian Transit/EFT Codes, Indian IFSC & MICR, Russian BIK Codes, UAE CBUAE Routing, Bangladesh BEFTN Routing & SWIFT/BIC Codes.
+
+## Overview
+World Bank Codes is an open financial directory providing verified banking routing and clearing identifiers for over 8 countries and 10,000+ financial institutions and branches worldwide.
+
+## Key Capabilities & Tools
+- **Global Search**: Instant lookup by bank name, branch name, state, city, IFSC, ABA Routing, Sort Code, BSB, BIK, CBUAE, or SWIFT/BIC.
+- **Routing Number Validators**: Real-time checksum verification and structure validation for national clearing codes.
+- **SWIFT / BIC Code Finder**: ISO 9362 international SWIFT code decoder and directory.
+- **Branch Directory**: Granular branch addresses, phone numbers, localized names, and clearing network support.
+
+## Supported Countries & Code Systems
+- **United States (US)**: 9-digit ABA Routing Transit Numbers (Fedwire & ACH)
+- **United Kingdom (UK)**: 6-digit Bank Sort Codes & CHAPS/Faster Payments
+- **Canada (CA)**: 5-digit Transit, 3-digit Institution & 9-digit EFT Routing
+- **Australia (AU)**: 6-digit BSB (Bank State Branch) Numbers & APCA Clearing
+- **United Arab Emirates (AE)**: 9-digit CBUAE Routing, UAEFTS & 23-character IBAN
+- **India (IN)**: 11-character RBI IFSC Codes, 9-digit MICR Codes
+- **Bangladesh (BD)**: 9-digit BEFTN Routing Numbers & BACPS Clearing
+- **Russia (RU)**: 9-digit BIK (БИК) Codes & Correspondent Accounts
+
+## Documentation & Sitemap Index
+- [Sitemap Index](https://worldbankcodes.com/sitemap_index.xml): Complete listing of all country-specific sitemaps.
+- [USA Bank Directory](https://worldbankcodes.com/banks?country=us): US ABA Routing numbers and branches.
+- [UK Bank Directory](https://worldbankcodes.com/banks?country=uk): UK Sort codes and branches.
+- [Canada Bank Directory](https://worldbankcodes.com/banks?country=ca): Canadian transit and institution codes.
+- [Australia Bank Directory](https://worldbankcodes.com/banks?country=au): Australian BSB codes.
+- [UAE Bank Directory](https://worldbankcodes.com/banks?country=ae): UAE CBUAE routing and branches.
+- [India Bank Directory](https://worldbankcodes.com/banks?country=in): Indian IFSC, MICR, and branches.
+- [Bangladesh Bank Directory](https://worldbankcodes.com/banks?country=bd): Bangladesh BEFTN routing and branches.
+- [Russia Bank Directory](https://worldbankcodes.com/banks?country=ru): Russian BIK and correspondent accounts.
+- [SWIFT Directory](https://worldbankcodes.com/swift): International SWIFT/BIC codes.
+- [About Us](https://worldbankcodes.com/about): Editorial guidelines and accuracy commitments.
+- [Contact Us](https://worldbankcodes.com/contact): Inquiries and data updates.

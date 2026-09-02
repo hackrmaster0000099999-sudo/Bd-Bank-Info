@@ -1,0 +1,24 @@
+# World Bank Codes — Comprehensive Agent Documentation
+
+> Full specification, directory hierarchy, and verification algorithms for World Bank Codes (worldbankcodes.com).
+
+## System Architecture
+World Bank Codes provides an indexed relational architecture of financial institution data across 8 countries. Every entity is mapped with its verified regulatory identifier, regional administrative hierarchy, and international settlement endpoints.
+
+### National Clearing Code Types
+1. **US ABA Routing Transit Number (RTN)**: 9 digits. Modulo 10 weighted checksum: `(3*(d1+d4+d7) + 7*(d2+d5+d8) + 1*(d3+d6+d9)) % 10 === 0`.
+2. **UK Sort Code**: 6 digits formatted as `XX-XX-XX`. First 2 digits identify the clearing bank, next 4 identify branch.
+3. **Australia BSB Code**: 6 digits formatted as `XXX-XXX`. First 2 digits bank code, 3rd digit state code, last 3 branch code.
+4. **Canada Transit & EFT Routing**: 5-digit Branch Transit, 3-digit Financial Institution Number, and combined 9-digit EFT (`0YYYXXXXX`).
+5. **UAE CBUAE Routing**: 9-digit Central Bank routing and 23-character UAE IBAN (`AEkk...`).
+6. **India IFSC Code**: 11 characters. 4-letter bank code + 5th character '0' + 6 alphanumeric branch code.
+7. **Bangladesh BEFTN Routing**: 9 digits. First 3 bank code, next 3 district code, last 3 branch code.
+8. **Russia BIK (БИК)**: 9 digits starting with `04`. Modulo checksum validation with 9th control digit.
+
+### Canonical Endpoints
+- Homepage: `https://worldbankcodes.com/`
+- Bank Details: `https://worldbankcodes.com/bank/:bankId`
+- Branch Details: `https://worldbankcodes.com/branch/:code`
+- Country Banks: `https://worldbankcodes.com/banks?country=:countryCode`
+- SWIFT Finder: `https://worldbankcodes.com/swift`
+- Sitemaps: `https://worldbankcodes.com/sitemap_index.xml`

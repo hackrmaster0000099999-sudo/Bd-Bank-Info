@@ -194,10 +194,12 @@ export const ReportIssueModal: React.FC<ReportIssueModalProps> = ({
 
             {/* Issue Type */}
             <div>
-              <label className="font-bold text-slate-800 dark:text-slate-200 block mb-1">
+              <label htmlFor="report-issue-type-select" className="font-bold text-slate-800 dark:text-slate-200 block mb-1">
                 {t.issueType}
               </label>
               <select
+                id="report-issue-type-select"
+                aria-label={t.issueType}
                 value={issueType}
                 onChange={(e) => setIssueType(e.target.value)}
                 className="w-full p-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600/80 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium cursor-pointer"
