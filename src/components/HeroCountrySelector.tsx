@@ -57,6 +57,15 @@ const COUNTRY_TABS: CountryTab[] = [
     badgeNative: 'BSB কোড ও SWIFT'
   },
   {
+    id: 'ae',
+    flag: '🇦🇪',
+    code: 'AE',
+    nameEn: 'United Arab Emirates',
+    nameNative: 'সংযুক্ত আরব আমিরাত',
+    badgeEn: 'CBUAE & Routing',
+    badgeNative: 'CBUAE ও রাউটিং'
+  },
+  {
     id: 'ru',
     flag: '🇷🇺',
     code: 'RU',
@@ -109,6 +118,8 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: কানাডা (পেমেন্টস কানাডা ACSS, ট্রানজিট নম্বর ও EFT রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: कनाडा (Payments Canada ACSS, ट्रांजिट कोड व EFT राउटिंग)' : lang === 'ru' ? 'Выбранная страна: Канада (Payments Canada, Transit и EFT Routing)' : 'Selected Country: Canada (Payments Canada ACSS Transit, Institution & EFT Routing Directory)')
             : country === 'au'
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: অস্ট্রেলিয়া (অস্ট্রেলিয়ান পেমেন্টস নেটওয়ার্ক BSB ও SWIFT ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: ऑस्ट्रेलिया (AusPayNet BSB एवं SWIFT डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Австралия (AusPayNet BSB и SWIFT справочник)' : 'Selected Country: Australia (AusPayNet BSB Directory & SWIFT Codes)')
+            : country === 'ae'
+            ? (lang === 'bn' ? 'নির্বাচিত দেশ: সংযুক্ত আরব আমিরাত (সেন্ট্রাল ব্যাংক অব দ্য ইউএই CBUAE রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त अरब अमीरात (CBUAE राउटिंग एवं SWIFT डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: ОАЭ (CBUAE Routing и SWIFT коды)' : 'Selected Country: United Arab Emirates (CBUAE Routing & SWIFT Directory)')
             : country === 'ru'
             ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
             : country === 'in'
@@ -136,13 +147,13 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
             >
               <div className="flex items-center gap-1.5">
                 <span className="text-base sm:text-lg leading-none">{tab.flag}</span>
-                <span className="text-xs sm:text-sm font-bold tracking-tight">
+                <span className="text-xs sm:text-sm font-bold tracking-tight whitespace-nowrap">
                   {lang === 'ru'
-                    ? (tab.id === 'us' ? 'США' : tab.id === 'uk' ? 'Великобритания' : tab.id === 'ca' ? 'Канада' : tab.id === 'au' ? 'Австралия' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
+                    ? (tab.id === 'us' ? 'США' : tab.id === 'uk' ? 'Великобритания' : tab.id === 'ca' ? 'Канада' : tab.id === 'au' ? 'Австралия' : tab.id === 'ae' ? 'ОАЭ (Эмираты)' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
                     : lang === 'hi'
-                    ? (tab.id === 'us' ? 'यू.एस.ए' : tab.id === 'uk' ? 'यूके' : tab.id === 'ca' ? 'कनाडा' : tab.id === 'au' ? 'ऑस्ट्रेलिया' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
+                    ? (tab.id === 'us' ? 'संयुक्त राज्य अमेरिका' : tab.id === 'uk' ? 'यूनाइटेड किंगडम' : tab.id === 'ca' ? 'कनाडा' : tab.id === 'au' ? 'ऑस्ट्रेलिया' : tab.id === 'ae' ? 'संयुक्त अरब अमीरात' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
                     : lang === 'bn'
-                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'uk' ? 'যুক্তরাজ্য' : tab.id === 'ca' ? 'কানাডা' : tab.id === 'au' ? 'অস্ট্রেলিয়া' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
+                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'uk' ? 'যুক্তরাজ্য' : tab.id === 'ca' ? 'কানাডা' : tab.id === 'au' ? 'অস্ট্রেলিয়া' : tab.id === 'ae' ? 'সংযুক্ত আরব আমিরাত' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
                     : tab.nameEn}
                 </span>
               </div>

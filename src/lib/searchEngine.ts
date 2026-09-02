@@ -7,6 +7,7 @@ import { usaBanks, usaBranches } from '../data/usa/index';
 import { ukBanks, ukBranches } from '../data/uk/index';
 import { canadaBanks, canadaBranches } from '../data/canada/index';
 import { australiaBanks, australiaBranches } from '../data/australia/index';
+import { uaeBanks, uaeBranches } from '../data/uae/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -45,7 +46,12 @@ const auBanksList: Bank[] = (australiaBanks as any[]).map((b) => ({
   country: 'au' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList];
+const aeBanksList: Bank[] = (uaeBanks as any[]).map((b) => ({
+  ...b,
+  country: 'ae' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -76,6 +82,10 @@ const branches: Branch[] = [
   ...australiaBranches.map((br) => ({
     ...br,
     country: 'au' as const,
+  })),
+  ...uaeBranches.map((br) => ({
+    ...br,
+    country: 'ae' as const,
   }))
 ];
 
@@ -358,20 +368,30 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU)
+    // Check UAE CBUAE Bank Code (3-digit) & CBUAE Routing (9-digit)
+    if (!matched && br.country === 'ae' && (searchType === 'all' || searchType === 'routing')) {
+      const cleanCbuae = (br.cbuae_code || '').replace(/\D/g, '');
+      if (cleanCbuae === normalizedNumQuery) {
+        matched = true;
+        score += 90;
+        matchedField = 'CBUAE Bank Code (3-digit)';
+      }
+    }
+
+    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU / AE)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : br.country === 'ae' ? 'CBUAE Routing (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : 'Routing Number';
       }
     }
 

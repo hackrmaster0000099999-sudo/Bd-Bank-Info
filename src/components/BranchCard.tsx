@@ -25,6 +25,7 @@ export const BranchCard: React.FC<BranchCardProps> = ({
   const isUK = branch.country === 'uk' || !!branch.sort_code;
   const isCanada = branch.country === 'ca' || !!branch.transit_number;
   const isAustralia = branch.country === 'au' || !!branch.bsb_code;
+  const isUAE = branch.country === 'ae' || !!branch.cbuae_code;
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
 
@@ -65,6 +66,8 @@ export const BranchCard: React.FC<BranchCardProps> = ({
     ? `Transit: ${branch.transit_number || branch.branch_code} | Institution: ${branch.institution_number || '003'} | EFT: ${branch.routing_number} | Canada`
     : isAustralia
     ? `BSB Code: ${branch.bsb_code || branch.routing_number} | SWIFT: ${branch.swift_code || 'N/A'} | City: ${branch.district}, ${branch.division}, Australia`
+    : isUAE
+    ? `CBUAE Routing: ${branch.routing_number} | CBUAE Code: ${branch.cbuae_code || 'N/A'} | SWIFT: ${branch.swift_code || 'N/A'} | Emirate: ${branch.district}, UAE`
     : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}`
     : isIndia
@@ -88,7 +91,7 @@ export const BranchCard: React.FC<BranchCardProps> = ({
 
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-              {isUS ? '🇺🇸 US' : isUK ? '🇬🇧 UK' : isCanada ? '🇨🇦 CA' : isAustralia ? '🇦🇺 AU' : isRussia ? '🇷🇺 RU' : isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
+              {isUS ? '🇺🇸 US' : isUK ? '🇬🇧 UK' : isCanada ? '🇨🇦 CA' : isAustralia ? '🇦🇺 AU' : isUAE ? '🇦🇪 AE' : isRussia ? '🇷🇺 RU' : isIndia ? '🇮🇳 IN' : '🇧🇩 BD'}
             </span>
             <ShareButton
               title={shareTitle}
@@ -220,6 +223,35 @@ export const BranchCard: React.FC<BranchCardProps> = ({
               </span>
               <CopyButton
                 textToCopy={branch.bsb_code || branch.routing_number}
+                label={t.copy}
+                size="sm"
+                lang={lang}
+                className="shrink-0"
+              />
+            </div>
+          </div>
+        ) : isUAE ? (
+          <div className="bg-emerald-50/70 dark:bg-emerald-950/40 p-3 sm:p-3.5 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 mb-3 space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <div className="flex items-center space-x-1.5 min-w-0">
+                <div className="w-5 h-5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                  <Hash className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                  CBUAE Routing Number:
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase">
+                UAEFTS • IPP Aani
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-800 px-3 py-2 rounded-xl border border-emerald-200/80 dark:border-emerald-700/60 shadow-2xs">
+              <span className="font-mono text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-wider break-all min-w-0">
+                {branch.routing_number}
+              </span>
+              <CopyButton
+                textToCopy={branch.routing_number}
                 label={t.copy}
                 size="sm"
                 lang={lang}

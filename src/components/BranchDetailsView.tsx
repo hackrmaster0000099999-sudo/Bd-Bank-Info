@@ -36,6 +36,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const isUK = branch.country === 'uk' || !!branch.sort_code;
   const isCanada = branch.country === 'ca' || !!branch.transit_number;
   const isAustralia = branch.country === 'au' || !!branch.bsb_code;
+  const isUAE = branch.country === 'ae' || !!branch.cbuae_code;
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
   const sortCodeDecoded = isUK ? validateSortCode(branch.sort_code || branch.routing_number) : null;
@@ -80,6 +81,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
     ? `Transit Number: ${branch.transit_number || branch.branch_code} | Institution: ${branch.institution_number || '003'} | EFT Routing: ${branch.routing_number} | Canada.`
     : isAustralia
     ? `BSB Code: ${branch.bsb_code || branch.routing_number} | SWIFT: ${branch.swift_code || 'HO'} | City: ${branch.district}, ${branch.division}, Australia.`
+    : isUAE
+    ? `UAE CBUAE Routing: ${branch.routing_number} | CBUAE Code: ${branch.cbuae_code || 'N/A'} | SWIFT: ${branch.swift_code || 'HO'} | Emirate: ${branch.district}, UAE.`
     : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр. счет: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}, Россия.`
     : isIndia
@@ -152,6 +155,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           answer: branch.swift_code
             ? `The official SWIFT/BIC code for international wire transfers to this branch is ${branch.swift_code}. Provide this code to the sender alongside your Australian account number.`
             : `Use the main Australian Head Office SWIFT code for ${branch.bank_name} and specify "${branch.name}" as the beneficiary branch.`
+        }
+      ]
+    : isUAE
+    ? [
+        {
+          question: `What is the Central Bank of the UAE routing number for ${branch.bank_name} - ${branch.name}?`,
+          answer: `The official 9-digit UAE central bank routing number is ${branch.routing_number} (CBUAE Code: ${branch.cbuae_code || branch.bank_code}). It is registered with the Central Bank of the UAE (CBUAE) for UAEFTS clearing and IPP (Instant Payments Platform).`
+        },
+        {
+          question: `What is the UAE IBAN structure for ${branch.bank_name}?`,
+          answer: `UAE IBANs consist of 23 alphanumeric characters starting with 'AE' followed by 2 check digits, the 3-digit bank code (${branch.cbuae_code || 'XXX'}), and the 16-digit account number.`
+        },
+        {
+          question: `Which SWIFT / BIC code is used for international money transfers to UAE?`,
+          answer: branch.swift_code
+            ? `The official SWIFT / BIC code for international wire transfers to this branch is ${branch.swift_code}. Provide this code to the sender along with your 23-digit UAE IBAN.`
+            : `Use the main UAE Head Office SWIFT code for ${branch.bank_name} and include your 23-digit UAE IBAN.`
         }
       ]
     : lang === 'ru'
@@ -290,7 +310,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               {getDistrict()}, {branch.division}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
-              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isAustralia ? '🇦🇺 Australia' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isAustralia ? '🇦🇺 Australia' : isUAE ? '🇦🇪 United Arab Emirates' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
@@ -356,6 +376,18 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
                 </span>
               </div>
               <CopyButton textToCopy={branch.bsb_code || branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
+            </div>
+          ) : isUAE ? (
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
+                  CBUAE Routing Number (9 Digits)
+                </span>
+                <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.routing_number}
+                </span>
+              </div>
+              <CopyButton textToCopy={branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
             </div>
           ) : isRussia ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
@@ -666,6 +698,60 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
                 <span className="text-slate-500 dark:text-slate-400 block">Branch Identifier (Digits 4-6):</span>
                 <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">{auDecoded.branchCode || (branch.bsb_code ? branch.bsb_code.slice(3) : '000')}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* UAE Extra Requisites Section (SWIFT, PO Box, Clearing Network) */}
+        {isUAE && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            {branch.swift_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">SWIFT / BIC:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{branch.swift_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.swift_code} size="sm" lang={lang} />
+              </div>
+            )}
+            {branch.zip_code && (
+              <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">P.O. Box:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">PO Box {branch.zip_code}</span>
+                </div>
+                <CopyButton textToCopy={branch.zip_code} size="sm" lang={lang} />
+              </div>
+            )}
+            <div className="bg-slate-50 dark:bg-slate-700/30 p-3 rounded-xl border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
+              <div>
+                <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Payment Schemes:</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">UAEFTS, IPP, Aani, UAE Direct Debit</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* UAE CBUAE Routing & IBAN Card */}
+        {isUAE && (
+          <div className="bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>Central Bank of the UAE (CBUAE) & IBAN Clearance</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">CBUAE Bank Code:</span>
+                <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{branch.cbuae_code || branch.bank_code || '021'} ({branch.bank_name})</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">Emirate / Jurisdiction:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{branch.division} ({branch.district})</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">UAE IBAN Format:</span>
+                <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">AEkk {branch.cbuae_code || '021'} cccc cccc cccc cccc (23 Chars)</span>
               </div>
             </div>
           </div>

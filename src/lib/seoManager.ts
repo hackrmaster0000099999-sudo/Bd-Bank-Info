@@ -27,6 +27,11 @@ import {
   getAustraliaBranchSeo,
   getAustraliaHomeSeo
 } from '../data/australia/index';
+import {
+  getUaeBankSeo,
+  getUaeBranchSeo,
+  getUaeHomeSeo
+} from '../data/uae/index';
 
 
 export interface SEOProps {
@@ -45,8 +50,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-01';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-01T04:26:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-02';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-02T01:10:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {
@@ -104,6 +109,15 @@ export function generateSeoData(
         title: auSeo.title,
         description: auSeo.description,
         canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.bsb_code || branch.routing_number}`
+      };
+    }
+
+    if (branch.country === 'ae' || !!branch.cbuae_code) {
+      const aeSeo = getUaeBranchSeo(branch, lang);
+      return {
+        title: aeSeo.title,
+        description: aeSeo.description,
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
       };
     }
 
@@ -168,6 +182,15 @@ export function generateSeoData(
       return {
         title: auSeo.title,
         description: auSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'ae') {
+      const aeSeo = getUaeBankSeo(bank, lang);
+      return {
+        title: aeSeo.title,
+        description: aeSeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -398,9 +421,10 @@ export function updateSEOMeta({
   const isUK = branch?.country === 'uk' || bank?.country === 'uk' || !!branch?.sort_code;
   const isCA = branch?.country === 'ca' || bank?.country === 'ca' || !!branch?.transit_number;
   const isAU = branch?.country === 'au' || bank?.country === 'au' || !!branch?.bsb_code;
+  const isAE = branch?.country === 'ae' || bank?.country === 'ae' || !!branch?.cbuae_code;
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isAE ? 'AE' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
   const centralRegulator = isUS
     ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
     : isUK
@@ -409,6 +433,8 @@ export function updateSEOMeta({
     ? 'Bank of Canada / Payments Canada (ACSS)'
     : isAU
     ? 'Reserve Bank of Australia (RBA) / Australian Payments Network (AusPayNet)'
+    : isAE
+    ? 'Central Bank of the UAE (CBUAE) / UAEFTS'
     : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
@@ -425,6 +451,8 @@ export function updateSEOMeta({
       branchDesc = `Official 5-digit Transit Number: ${branch.transit_number}, Institution: ${branch.institution_number}, EFT Routing: 0${branch.institution_number}${branch.transit_number}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     } else if (isAU) {
       branchDesc = `Official 6-digit Australian BSB Number: ${branch.bsb_code || branch.routing_number}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, NPP Osko Support. Regulated by ${centralRegulator}.`;
+    } else if (isAE) {
+      branchDesc = `Official 9-digit UAE Central Bank Routing Number: ${branch.routing_number}, CBUAE Code: ${branch.cbuae_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     } else if (isRussia) {
       branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
@@ -501,9 +529,14 @@ export function updateSEOMeta({
           'name': 'Australian BSB Code',
           'value': branch.bsb_code
         } : null,
+        branch.cbuae_code ? {
+          '@type': 'PropertyValue',
+          'name': 'CBUAE Bank Code',
+          'value': branch.cbuae_code
+        } : null,
         {
           '@type': 'PropertyValue',
-          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isAE ? 'CBUAE Routing Number' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {
@@ -549,6 +582,8 @@ export function updateSEOMeta({
       bankDesc = `${bank.name} Canadian transit numbers, institution number, EFT routing, and SWIFT codes directory.`;
     } else if (isAU) {
       bankDesc = `${bank.name} Australian BSB codes, branch directory, NPP Osko, and SWIFT/BIC codes in Australia.`;
+    } else if (isAE) {
+      bankDesc = `${bank.name} CBUAE routing numbers (${bank.cbuae_code || bank.bank_code}), branch directory, UAE IBAN formats, and SWIFT/BIC codes in the UAE.`;
     } else if (isRussia) {
       bankDesc = `${bank.name} Russian banking directory, BIK codes (${bank.bik_code || 'all branches'}), correspondent accounts, INN, and SWIFT codes in the Russian Federation.`;
     } else if (isIndia) {

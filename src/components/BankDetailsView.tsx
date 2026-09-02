@@ -87,7 +87,7 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
               {bank.type || 'Commercial Bank'}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-slate-200 border border-white/10 whitespace-nowrap shrink-0">
-              {bank.country === 'ca' ? `Institution: ${bank.bank_code}` : bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : bank.country === 'uk' ? `UK Sort Prefix: ${bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
+              {bank.country === 'ca' ? `Institution: ${bank.bank_code}` : bank.country === 'in' ? `IFSC Prefix: ${bank.ifsc_prefix || bank.bank_code}` : bank.country === 'uk' ? `UK Sort Prefix: ${bank.bank_code}` : bank.country === 'ae' ? `CBUAE Code: ${bank.cbuae_code || bank.bank_code}` : `Bank Code: ${bank.bank_code}`}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 whitespace-nowrap shrink-0">
               {bank.branch_count} {isRu ? 'отделений' : isHi ? 'कुल शाखाएं' : isBn ? 'টি শাখা' : 'Branches Total'}

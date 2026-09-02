@@ -52,6 +52,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'ae',
+    flag: '🇦🇪',
+    shortCode: 'AE',
+    name: 'United Arab Emirates',
+    nameNative: 'সংযুক্ত আরব আমিরাত / الإمارات',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

@@ -31,6 +31,7 @@ try {
     uk: { name: 'United Kingdom', filename: 'sitemap-uk.xml', banks: [], branches: [] },
     ca: { name: 'Canada', filename: 'sitemap-ca.xml', banks: [], branches: [] },
     au: { name: 'Australia', filename: 'sitemap-au.xml', banks: [], branches: [] },
+    ae: { name: 'United Arab Emirates', filename: 'sitemap-ae.xml', banks: [], branches: [] },
     ru: { name: 'Russia', filename: 'sitemap-ru.xml', banks: [], branches: [] }
   };
 
@@ -115,6 +116,18 @@ try {
       if (Array.isArray(list)) countryData.au.banks.push(...list);
     } catch (e) {
       console.warn('Warning: Could not parse australia/banks.json:', e.message);
+    }
+  }
+
+  // 6c. UAE Banks
+  const aeBanksPath = path.join(__dirname, 'src/data/uae/banks.json');
+  if (fs.existsSync(aeBanksPath)) {
+    try {
+      const raw = fs.readFileSync(aeBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) countryData.ae.banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse uae/banks.json:', e.message);
     }
   }
 
@@ -244,6 +257,21 @@ try {
         if (Array.isArray(parsed)) countryData.au.branches.push(...parsed);
       } catch (e) {
         console.warn(`Warning: Could not parse Australia branch file ${f}:`, e.message);
+      }
+    }
+  }
+
+  // 12. UAE Branches
+  const aeBranchesDir = path.join(__dirname, 'src/data/uae/branches');
+  if (fs.existsSync(aeBranchesDir)) {
+    const files = fs.readdirSync(aeBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(aeBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) countryData.ae.branches.push(...parsed);
+      } catch (e) {
+        console.warn(`Warning: Could not parse UAE branch file ${f}:`, e.message);
       }
     }
   }
