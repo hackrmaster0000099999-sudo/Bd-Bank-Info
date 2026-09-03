@@ -55,8 +55,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-02';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-02T14:18:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-03';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-03T10:17:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {

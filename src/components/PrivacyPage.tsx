@@ -58,12 +58,21 @@ export const PrivacyPage: React.FC<PageProps> = ({ lang, onBack }) => {
           </h2>
           <p>
             {isBn
-              ? 'আমাদের ওয়েবসাইট ব্যবহারের সময় ভিজিটর অভিজ্ঞতা এবং ট্রাফিক বিশ্লেষণ করার জন্য Google Analytics ব্যবহারের সুযোগ রয়েছে।'
+              ? 'আমাদের ওয়েবসাইট ব্যবহারের সময় ভিজিটর অভিজ্ঞতা এবং ট্রাফিক বিশ্লেষণ করার জন্য Google Analytics ব্যবহারের সুযোগ রয়েছে। সাইটের ভাষা ও ডার্ক মোড পছন্দ সংরক্ষণে ব্রাউজার লোকাল স্টোরেজ ব্যবহার করা হয়।'
               : 'We use standard browser cookies to store user preferences (e.g. language selection, dark mode preferences). Third-party vendors like Google Analytics process aggregate traffic metrics.'}
           </p>
 
           <h2 className="text-sm font-bold text-slate-900 dark:text-white pt-2">
-            {isBn ? '৩. থার্ড-পার্টি লিংকসমূহ (Third-Party Links)' : '3. Third-Party Links'}
+            {isBn ? '৩. গুগল অ্যাডসেন্স ও বিজ্ঞাপন নীতি (Google AdSense & DoubleClick DART Cookie)' : '3. Google AdSense & Advertising Policy'}
+          </h2>
+          <p>
+            {isBn
+              ? 'Google আমাদের সাইটে একজন তৃতীয় পক্ষ ভেন্ডর (Third-party vendor) হিসেবে বিজ্ঞাপন পরিবেশনের জন্য কুকিজ (যেমন DART Cookies) ব্যবহার করতে পারে। ব্যবহারকারীরা ইন্টারনেটে অন্যান্য ওয়েবসাইট পরিদর্শনের ওপর ভিত্তি করে প্রাসঙ্গিক বিজ্ঞাপন দেখতে পান। ব্যবহারকারীরা Google Ad and Content Network Privacy Policy পরিদর্শনের মাধ্যমে DART কুকিজের ব্যবহার নিয়ন্ত্রণ বা অপ্ট-আউট করতে পারেন।'
+              : 'Google is a third-party vendor on our site. It uses cookies, known as DART cookies, to serve ads to our site visitors based on their visit to our site and other sites on the internet. Visitors may choose to decline the use of DART cookies by visiting the Google Ad and Content Network Privacy Policy.'}
+          </p>
+
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white pt-2">
+            {isBn ? '৪. থার্ড-পার্টি লিংকসমূহ (Third-Party Links)' : '4. Third-Party Links'}
           </h2>
           <p>
             {isBn
