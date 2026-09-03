@@ -60,6 +60,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'sg',
+    flag: '🇸🇬',
+    shortCode: 'SG',
+    name: 'Singapore',
+    nameNative: 'Singapore / சிங்கப்பூர்',
+    defaultLang: 'en'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',

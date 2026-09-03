@@ -1,14 +1,14 @@
 export type Language = 'bn' | 'en' | 'hi' | 'ru';
-export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd', 'dbs-bank-singapore'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
   short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates, 'sg' for Singapore
   bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, 3-digit Canadian Institution Number, 2-digit Australian BSB prefix, or 3-digit UAE CBUAE code
   routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada / 9-digit UAE Central Bank Routing
   bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
@@ -49,7 +49,7 @@ export interface Branch {
   bank_name_hi?: string;
   bank_name_ru?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
@@ -73,6 +73,8 @@ export interface Branch {
   zip_code?: string; // US Zip Code, UK Postcode, Canadian Postal Code, Australian 4-digit Postcode, or UAE PO Box
   routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, 6-digit Australian BSB, 9-digit Canadian EFT Routing, or 9-digit UAE CBUAE Routing (023010001)
   bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
+  clearing_code?: string; // 7-digit Singapore Clearing Code (e.g. 7171-001)
+  bank_code?: string; // 4-digit Singapore Bank Code or 3-digit CBUAE code
   cbuae_code?: string; // 3-digit CBUAE Bank Code
   transit_number?: string; // 5-digit Canadian Transit Number
   institution_number?: string; // 3-digit Canadian Institution Number
@@ -121,7 +123,7 @@ export interface SearchResult {
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;

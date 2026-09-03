@@ -32,6 +32,7 @@ try {
     ca: { name: 'Canada', filename: 'sitemap-ca.xml', banks: [], branches: [] },
     au: { name: 'Australia', filename: 'sitemap-au.xml', banks: [], branches: [] },
     ae: { name: 'United Arab Emirates', filename: 'sitemap-ae.xml', banks: [], branches: [] },
+    sg: { name: 'Singapore', filename: 'sitemap-sg.xml', banks: [], branches: [] },
     ru: { name: 'Russia', filename: 'sitemap-ru.xml', banks: [], branches: [] }
   };
 
@@ -128,6 +129,18 @@ try {
       if (Array.isArray(list)) countryData.ae.banks.push(...list);
     } catch (e) {
       console.warn('Warning: Could not parse uae/banks.json:', e.message);
+    }
+  }
+
+  // 6d. Singapore Banks
+  const sgBanksPath = path.join(__dirname, 'src/data/singapore/banks.json');
+  if (fs.existsSync(sgBanksPath)) {
+    try {
+      const raw = fs.readFileSync(sgBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) countryData.sg.banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse singapore/banks.json:', e.message);
     }
   }
 
@@ -276,6 +289,21 @@ try {
     }
   }
 
+  // 13. Singapore Branches
+  const sgBranchesDir = path.join(__dirname, 'src/data/singapore/branches');
+  if (fs.existsSync(sgBranchesDir)) {
+    const files = fs.readdirSync(sgBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(sgBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) countryData.sg.branches.push(...parsed);
+      } catch (e) {
+        console.warn(`Warning: Could not parse Singapore branch file ${f}:`, e.message);
+      }
+    }
+  }
+
   const generatedSitemaps = [];
 
   const publicDir = path.join(__dirname, 'public');
@@ -326,14 +354,14 @@ ${pages
 
     const branchMap = new Map();
     (info.branches || []).forEach(branch => {
-      const id = branch.bsb_code || branch.transit_number || branch.bik_code || branch.ifsc_code || branch.sort_code || branch.routing_number || branch.id;
+      const id = branch.clearing_code || branch.bsb_code || branch.transit_number || branch.bik_code || branch.ifsc_code || branch.sort_code || branch.routing_number || branch.id;
       if (id && !branchMap.has(id)) {
         branchMap.set(id, branch);
       }
     });
 
     const branchPages = Array.from(branchMap.values()).map(branch => {
-      const identifier = branch.bsb_code || branch.transit_number || branch.bik_code || branch.ifsc_code || branch.sort_code || branch.routing_number || branch.id;
+      const identifier = branch.clearing_code || branch.bsb_code || branch.transit_number || branch.bik_code || branch.ifsc_code || branch.sort_code || branch.routing_number || branch.id;
       return {
         url: `/branch/${identifier}`,
         priority: '0.7',

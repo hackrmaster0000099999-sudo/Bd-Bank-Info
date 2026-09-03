@@ -21,6 +21,7 @@ export interface TranslationDict {
   canada: string;
   australia: string;
   uae: string;
+  singapore: string;
   allBanks: string;
   allDivisions: string;
   allDistricts: string;
@@ -89,6 +90,7 @@ export const translations: Record<Language, TranslationDict> = {
     canada: 'কানাডা (Canada)',
     australia: 'অস্ট্রেলিয়া (Australia)',
     uae: 'সংযুক্ত আরব আমিরাত (UAE)',
+    singapore: 'সিঙ্গাপুর (Singapore)',
     allBanks: 'সকল ব্যাংক',
     allDivisions: 'সকল বিভাগ / প্রদেশ / স্টেট',
     divisionState: 'বিভাগ / প্রদেশ / স্টেট',
@@ -155,6 +157,7 @@ export const translations: Record<Language, TranslationDict> = {
     canada: 'Canada',
     australia: 'Australia',
     uae: 'United Arab Emirates (UAE)',
+    singapore: 'Singapore',
     allBanks: 'All Banks',
     allDivisions: 'All States / Provinces / Regions',
     divisionState: 'State / Province / Region',
@@ -221,6 +224,7 @@ export const translations: Record<Language, TranslationDict> = {
     canada: 'कनाडा (Canada)',
     australia: 'ऑस्ट्रेलिया (Australia)',
     uae: 'संयुक्त अरब अमीरात (UAE)',
+    singapore: 'सिंगापुर (Singapore)',
     allBanks: 'सभी बैंक',
     allDivisions: 'सभी राज्य / प्रांत / क्षेत्र',
     divisionState: 'राज्य / प्रांत / क्षेत्र',
@@ -287,6 +291,7 @@ export const translations: Record<Language, TranslationDict> = {
     canada: 'Канада (Canada)',
     australia: 'Австралия (Australia)',
     uae: 'ОАЭ (UAE / Эмираты)',
+    singapore: 'Сингапур (Singapore)',
     allBanks: 'Все банки',
     allDivisions: 'Все штаты / округа / провинции',
     divisionState: 'Штат / Провинция / Округ',

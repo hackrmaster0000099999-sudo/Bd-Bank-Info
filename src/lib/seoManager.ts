@@ -32,6 +32,11 @@ import {
   getUaeBranchSeo,
   getUaeHomeSeo
 } from '../data/uae/index';
+import {
+  getSingaporeBankSeo,
+  getSingaporeBranchSeo,
+  getSingaporeHomeSeo
+} from '../data/singapore/index';
 
 
 export interface SEOProps {
@@ -51,19 +56,19 @@ const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
 export const CURRENT_DATA_VERSION_DATE = '2026-09-02';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-02T01:10:00.000Z';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-02T14:18:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ru') {
-    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
+    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ, MAS Сингапур, CBUAE, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
   }
   if (lang === 'hi') {
-    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
+    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • MAS सिंगापुर, CBUAE, US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
   }
   if (lang === 'bn') {
-    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
+    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • মনিটারি অথরিটি অব সিঙ্গাপুর (MAS), ইউএই CBUAE, ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
   }
-  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
+  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (MAS Singapore, CBUAE, US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
 }
 
 export function generateSeoData(
@@ -117,6 +122,15 @@ export function generateSeoData(
       return {
         title: aeSeo.title,
         description: aeSeo.description,
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+      };
+    }
+
+    if (branch.country === 'sg') {
+      const sgSeo = getSingaporeBranchSeo(branch, lang);
+      return {
+        title: sgSeo.title,
+        description: sgSeo.description,
         canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
       };
     }
@@ -191,6 +205,15 @@ export function generateSeoData(
       return {
         title: aeSeo.title,
         description: aeSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'sg') {
+      const sgSeo = getSingaporeBankSeo(bank, lang);
+      return {
+        title: sgSeo.title,
+        description: sgSeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -422,9 +445,10 @@ export function updateSEOMeta({
   const isCA = branch?.country === 'ca' || bank?.country === 'ca' || !!branch?.transit_number;
   const isAU = branch?.country === 'au' || bank?.country === 'au' || !!branch?.bsb_code;
   const isAE = branch?.country === 'ae' || bank?.country === 'ae' || !!branch?.cbuae_code;
+  const isSG = branch?.country === 'sg' || bank?.country === 'sg' || !!branch?.clearing_code;
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isAE ? 'AE' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isAE ? 'AE' : isSG ? 'SG' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
   const centralRegulator = isUS
     ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
     : isUK
@@ -435,6 +459,8 @@ export function updateSEOMeta({
     ? 'Reserve Bank of Australia (RBA) / Australian Payments Network (AusPayNet)'
     : isAE
     ? 'Central Bank of the UAE (CBUAE) / UAEFTS'
+    : isSG
+    ? 'Monetary Authority of Singapore (MAS) / MEPS+ & FAST'
     : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
@@ -453,6 +479,8 @@ export function updateSEOMeta({
       branchDesc = `Official 6-digit Australian BSB Number: ${branch.bsb_code || branch.routing_number}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, NPP Osko Support. Regulated by ${centralRegulator}.`;
     } else if (isAE) {
       branchDesc = `Official 9-digit UAE Central Bank Routing Number: ${branch.routing_number}, CBUAE Code: ${branch.cbuae_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
+    } else if (isSG) {
+      branchDesc = `Official 7-digit Singapore Clearing Code: ${branch.clearing_code || branch.routing_number}, Bank Code: ${branch.bank_code || 'N/A'}, Branch Code: ${branch.branch_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, FAST & PayNow enabled. Regulated by ${centralRegulator}.`;
     } else if (isRussia) {
       branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
@@ -534,9 +562,14 @@ export function updateSEOMeta({
           'name': 'CBUAE Bank Code',
           'value': branch.cbuae_code
         } : null,
+        branch.clearing_code ? {
+          '@type': 'PropertyValue',
+          'name': 'Singapore Clearing Code',
+          'value': branch.clearing_code
+        } : null,
         {
           '@type': 'PropertyValue',
-          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isAE ? 'CBUAE Routing Number' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isAE ? 'CBUAE Routing Number' : isSG ? 'Singapore Clearing Code' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {
@@ -584,6 +617,8 @@ export function updateSEOMeta({
       bankDesc = `${bank.name} Australian BSB codes, branch directory, NPP Osko, and SWIFT/BIC codes in Australia.`;
     } else if (isAE) {
       bankDesc = `${bank.name} CBUAE routing numbers (${bank.cbuae_code || bank.bank_code}), branch directory, UAE IBAN formats, and SWIFT/BIC codes in the UAE.`;
+    } else if (isSG) {
+      bankDesc = `${bank.name} 7-digit MAS clearing codes (${bank.bank_code || 'all branches'}), Singapore branch directory, FAST, PayNow and SWIFT codes.`;
     } else if (isRussia) {
       bankDesc = `${bank.name} Russian banking directory, BIK codes (${bank.bik_code || 'all branches'}), correspondent accounts, INN, and SWIFT codes in the Russian Federation.`;
     } else if (isIndia) {

@@ -62,6 +62,11 @@ function detectFromTimezone(): { country: Country; lang: Language } | null {
       return { country: 'ae', lang: 'en' };
     }
 
+    // Singapore
+    if (tz === 'Asia/Singapore') {
+      return { country: 'sg', lang: 'en' };
+    }
+
     // India
     if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta' || tz === 'Asia/Colombo') {
       return { country: 'in', lang: 'hi' };
@@ -211,6 +216,9 @@ function detectFromLocale(): { country: Country; lang: Language } | null {
       if (l.endsWith('-ae') || l.includes('ae')) {
         return { country: 'ae', lang: 'en' };
       }
+      if (l.endsWith('-sg') || l.includes('sg')) {
+        return { country: 'sg', lang: 'en' };
+      }
       if (l.endsWith('-ca') || l.includes('ca')) {
         return { country: 'ca', lang: 'en' };
       }
@@ -247,6 +255,7 @@ export async function tryAsyncGeoLookup(): Promise<{ country: Country; lang: Lan
     if (code === 'ru' || code === 'by' || code === 'kz') return { country: 'ru', lang: 'ru' };
     if (code === 'gb' || code === 'uk') return { country: 'uk', lang: 'en' };
     if (code === 'ae') return { country: 'ae', lang: 'en' };
+    if (code === 'sg') return { country: 'sg', lang: 'en' };
     if (code === 'ca') return { country: 'ca', lang: 'en' };
     if (code === 'au') return { country: 'au', lang: 'en' };
     if (code === 'us') return { country: 'us', lang: 'en' };
@@ -275,6 +284,7 @@ export function getDefaultLanguageForCountry(c: Country): Language {
       return 'hi';
     case 'ru':
       return 'ru';
+    case 'sg':
     case 'ae':
     case 'uk':
     case 'us':

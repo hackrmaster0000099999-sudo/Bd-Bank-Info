@@ -8,6 +8,7 @@ import { ukBanks, ukBranches } from '../data/uk/index';
 import { canadaBanks, canadaBranches } from '../data/canada/index';
 import { australiaBanks, australiaBranches } from '../data/australia/index';
 import { uaeBanks, uaeBranches } from '../data/uae/index';
+import { singaporeBanks, singaporeBranches } from '../data/singapore/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -51,7 +52,12 @@ const aeBanksList: Bank[] = (uaeBanks as any[]).map((b) => ({
   country: 'ae' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList];
+const sgBanksList: Bank[] = (singaporeBanks as any[]).map((b) => ({
+  ...b,
+  country: 'sg' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList, ...sgBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -86,6 +92,10 @@ const branches: Branch[] = [
   ...uaeBranches.map((br) => ({
     ...br,
     country: 'ae' as const,
+  })),
+  ...singaporeBranches.map((br) => ({
+    ...br,
+    country: 'sg' as const,
   }))
 ];
 
@@ -378,20 +388,30 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU / AE)
+    // Check Singapore MAS / Clearing Bank Code (4-digit)
+    if (!matched && br.country === 'sg' && (searchType === 'all' || searchType === 'routing')) {
+      const cleanSgBankCode = (br.bank_code || br.routing_number.slice(0, 4) || '').replace(/\D/g, '');
+      if (cleanSgBankCode === normalizedNumQuery) {
+        matched = true;
+        score += 95;
+        matchedField = 'Singapore Bank Code (4-digit)';
+      }
+    }
+
+    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU / AE / SG)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : br.country === 'ae' ? 'CBUAE Routing (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : br.country === 'ae' ? 'CBUAE Routing (Exact)' : br.country === 'sg' ? 'MEPS+ / FAST Routing (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : 'Routing Number';
       }
     }
 
