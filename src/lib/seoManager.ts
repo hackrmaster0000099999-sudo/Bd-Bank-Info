@@ -42,6 +42,18 @@ import {
   getGermanyBranchSeo,
   getGermanyHomeSeo
 } from '../data/germany/index';
+import {
+  getRussiaBankSeo,
+  getRussiaBranchSeo,
+  getRussiaHomeSeo
+} from '../data/russia/index';
+import {
+  getBdBankMetaTitle,
+  getBdBankMetaDescription,
+  getBdBranchesMetaTitle,
+  getBdBranchesMetaDescription,
+  getBdHomeSeo
+} from '../data/bd/index';
 
 
 export interface SEOProps {
@@ -161,23 +173,19 @@ export function generateSeoData(
     }
 
     const isRussia = branch.country === 'ru' || !!branch.bik_code;
-
-
     if (isRussia) {
-      const bName = isRu ? (branch.name_ru || branch.name) : isBn ? (branch.name_bn || branch.name) : branch.name;
-      const bankTitle = isRu ? (branch.bank_name_ru || branch.bank_name) : isBn ? (branch.bank_name_bn || branch.bank_name) : branch.bank_name;
+      const ruSeo = getRussiaBranchSeo(branch, lang);
       return {
-        title: `${bankTitle} (${bName}) БИК: ${branch.bik_code || branch.routing_number}, Корр. счет, ИНН | World Bank Codes`,
-        description: `Официальные банковские реквизиты: БИК ${branch.bik_code || branch.routing_number}, Корр. счет ${branch.corr_account || 'N/A'}, ИНН ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'} для ${branch.bank_name}, ${branch.name}, ${branch.district}, ${branch.division}, Россия. (Актуально 2026)`,
+        title: ruSeo.title,
+        description: ruSeo.description,
         canonicalUrl: `${BASE_URL}/branch/${branch.bik_code || branch.routing_number}`
       };
     }
 
-    const bName = isBn ? branch.name_bn : branch.name;
-    const bankTitle = isBn ? branch.bank_name_bn : branch.bank_name;
+    // Bangladesh Branch SEO (High CTR keyword optimized)
     return {
-      title: `${bankTitle} (${bName} Branch) Routing Number: ${branch.routing_number} & SWIFT | World Bank Codes`,
-      description: `Official BEFTN Routing Number: ${branch.routing_number}, SWIFT Code: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, Bangladesh. 100% verified updated records.`,
+      title: getBdBranchesMetaTitle(branch, lang),
+      description: getBdBranchesMetaDescription(branch, lang),
       canonicalUrl: `${BASE_URL}/branch/${branch.routing_number}`
     };
   }
@@ -252,17 +260,19 @@ export function generateSeoData(
       };
     }
 
-    const isRussia = bank.country === 'ru';
-    const bankTitle = isRu ? (bank.name_ru || bank.name) : isHi ? (bank.name_hi || bank.name) : isBn ? bank.name_bn : bank.name;
-    
-    let desc = `Explore all branches, BEFTN routing numbers, and SWIFT codes for ${bank.name} in Bangladesh. Fully updated directory with instant search.`;
-    if (isRussia) {
-      desc = `Справочник реквизитов ${bank.name} в России: БИК (${bank.bik_code || 'все филиалы'}), корр. счета, ИНН, КПП, SWIFT коды и адреса всех отделений. Актуальная база ЦБ РФ 2026.`;
+    if (bank.country === 'ru') {
+      const ruSeo = getRussiaBankSeo(bank, lang);
+      return {
+        title: ruSeo.title,
+        description: ruSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
     }
 
+    // Bangladesh Bank SEO (High CTR keyword optimized)
     return {
-      title: `${bankTitle} (${bank.short_name}) All Branches BIK, IFSC, Routing Numbers & SWIFT Codes | World Bank Codes`,
-      description: desc,
+      title: getBdBankMetaTitle(bank, lang),
+      description: getBdBankMetaDescription(bank, lang),
       canonicalUrl: `${BASE_URL}/bank/${bank.id}`
     };
   }
@@ -270,59 +280,59 @@ export function generateSeoData(
 
   if (viewType === 'banks') {
     return {
-      title: isRu
+      title: isBn
+        ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নাম্বার ও ব্রাঞ্চ তালিকা (২০২৬ আপডেট) | World Bank Codes'
+        : isRu
         ? 'Справочник банков России, Индии и Бангладеш (БИК, SWIFT, Реквизиты 2026) | World Bank Codes'
         : isHi
         ? 'सभी अनुसूचित बैंक सूची, IFSC एवं स्विफ्ट कोड (2026 अपडेटेड) | World Bank Codes'
-        : isBn
-        ? 'সকল তফসিলি ব্যাংক তালিকা, রাউটিং ও সুইফট কোড (২০২৬ আপডেট) | World Bank Codes'
-        : 'All Scheduled Banks List, BIK, IFSC & SWIFT Codes Directory (Updated 2026) | World Bank Codes',
-      description: isRu
+        : 'All Scheduled Banks List, Routing Numbers & SWIFT Codes Directory (2026) | World Bank Codes',
+      description: isBn
+        ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের সকল তফসিলি ব্যাংকের ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড ও জেলা ভিত্তিক পূর্ণাঙ্গ শাখা তালিকা ২০২৬।'
+        : isRu
         ? 'Полный каталог действующих банков РФ, Индии и Бангладеш с официальными БИК, SWIFT кодами, корр. счетами и списком отделений.'
         : isHi
         ? 'भारत एवं बांग्लादेश के सभी प्रमुख सरकारी एवं निजी बैंकों की अद्यतन सूची, प्रधान कार्यालय स्विफ्ट कोड और शाखा निर्देशिका।'
-        : isBn
-        ? 'বাংলাদেশ, ভারত ও রাশিয়ার সকল বাণিজ্যিক ব্যাংকের সর্বশেষ হালনাগাদকৃত শাখা তালিকা, BIK, রাউটিং ও সুইফট কোড।'
-        : 'Complete verified directory of scheduled banks, Russian BIK codes, Indian IFSC prefixes, routing numbers, and international SWIFT codes.',
+        : 'Complete verified directory of scheduled banks, BEFTN routing numbers, ABA routing, IFSC, Sort Codes, BIK, BLZ and international SWIFT codes.',
       canonicalUrl: `${BASE_URL}/banks`
     };
   }
 
   if (viewType === 'routing') {
     return {
-      title: isRu
+      title: isBn
+        ? 'সকল ব্যাংকের রাউটিং নাম্বার ও BEFTN কোড সার্চ ২০২৬ | World Bank Codes'
+        : isRu
         ? 'Поиск БИК Банка России, Корр. счетов и Маршрутизации 2026 | World Bank Codes'
         : isHi
         ? 'IFSC कोड एवं बैंक राউটিং নম্বর ডিরেক্টরি (Updated 2026) | World Bank Codes'
-        : isBn
-        ? 'ব্যাংক রাউটিং নম্বর, BIK ও IFSC কোড ডিরেক্টরি (২০২৬ আপডেট) | World Bank Codes'
-        : 'Bank Routing Numbers, Russian BIK & IFSC Code Directory (2026 Updated) | World Bank Codes',
-      description: isRu
+        : 'Bank Routing Numbers, BEFTN & Clearing Code Directory 2026 | World Bank Codes',
+      description: isBn
+        ? 'বাংলাদেশের যে কোনো ব্যাংক ও শাখার ৯-সংখ্যার BEFTN রাউটিং নম্বর, জেলা, শাখা কোড এবং ঠিকানা তাৎক্ষণিক সার্চ করুন। বাংলাদেশ ব্যাংক অনুমোদিত ২০২৬ হালনাগাদ ডাটাবেজ।'
+        : isRu
         ? 'Мгновенный поиск по 9-значному БИК Банка России, номеру корр. счета, 11-значному IFSC или BEFTN маршрутизации.'
         : isHi
         ? '9-अंकीय MICR / 11-अंकीय IFSC कोड से तुरंत बैंक शाखा और विवरण खोजें।'
-        : isBn
-        ? '৯-ডিজিটের রাউটিং নম্বর, রাশিয়ান BIK বা ১১-ডিজিটের IFSC দিয়ে ব্যাংক ও শাখা তাৎক্ষণিক খুঁজে নিন।'
-        : 'Lookup bank branches instantly by 9-digit Russian BIK, 9-digit BEFTN Routing Number, 11-character IFSC Code, MICR, or Branch Name.',
+        : 'Instant lookup for 9-digit BEFTN Routing Numbers, US ABA Routing, Indian IFSC, UK Sort Codes, Russian BIK and Australian BSB codes.',
       canonicalUrl: `${BASE_URL}/routing`
     };
   }
 
   if (viewType === 'swift') {
     return {
-      title: isRu
+      title: isBn
+        ? 'সকল ব্যাংকের সুইফট কোড (SWIFT / BIC) ডিরেক্টরি ২০২৬ | World Bank Codes'
+        : isRu
         ? 'Справочник SWIFT / BIC кодов банков 2026 | World Bank Codes'
         : isHi
         ? 'स्विफ्ट कोड (SWIFT / BIC) डायरेक्टरी 2026 | World Bank Codes'
-        : isBn
-        ? 'সুইফট কোড (SWIFT BIC) ডিরেক্টরি ২০২৬ | World Bank Codes'
         : 'Global SWIFT Code (BIC) Directory (2026 Updated) | World Bank Codes',
-      description: isRu
+      description: isBn
+        ? 'বৈদেশিক রেমিট্যান্স, ফ্রিল্যান্সিং পেমেন্ট ও আন্তর্জাতিক ব্যাংক ট্রান্সফারের জন্য বাংলাদেশ ও বিশ্বের সকল ব্যাংকের অফিশিয়াল ৮ ও ১১ ডিজিটের সুইফট/BIC কোড।'
+        : isRu
         ? 'Официальные 8 и 11-значные SWIFT / BIC коды для международных переводов и валютных платежей.'
         : isHi
         ? 'अंतर्राष्ट्रीय धन प्रेषण (Remittance) एवं विदेशी वायर ट्रांसफर के लिए आधिकारिक स्विफ्ट / BIC कोड सूची।'
-        : isBn
-        ? 'আন্তর্জাতিক রেমিট্যান্স ও বৈদেশিক লেনদেনের জন্য ব্যাংকগুলোর অফিশিয়াল সুইফট কোড নির্দেশিকা।'
         : 'Find official 8 or 11-character SWIFT / BIC codes for international remittances and foreign wire transfers worldwide.',
       canonicalUrl: `${BASE_URL}/swift`
     };
@@ -369,20 +379,20 @@ export function generateSeoData(
   }
 
   return {
-    title: isRu
+    title: isBn
+      ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নাম্বার, BEFTN কোড ও সুইফট ডিরেক্টরি ২০২৬ | World Bank Codes'
+      : isRu
       ? 'World Bank Codes - БИК, Корр. счета, IFSC и SWIFT коды банков (2026)'
       : isHi
       ? 'World Bank Codes - बैंक IFSC, राউটিং নম্বর ও সুইফট কোড ফাইন্ডার'
-      : isBn
-      ? 'World Bank Codes - ব্যাংক রাউটিং ও সুইফট কোড ফাইন্ডার (২০২৬ আপডেট)'
-      : 'World Bank Codes - Global Bank Routing, BIK, IFSC & SWIFT Code Finder (2026)',
-    description: isRu
+      : 'World Bank Codes - Global Bank Routing Numbers, BEFTN, IFSC & SWIFT Code Finder 2026',
+    description: isBn
+      ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের ৬১টি তফসিলি ব্যাংকের সকল শাখার অফিশিয়াল ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড (SWIFT/BIC), জেলা ভিত্তিক শাখা তালিকা ও ঠিকানা। ২০২৬ সালের হালনাগাদকৃত ডাটাবেজ।'
+      : isRu
       ? 'Быстрый и точный поиск банковских реквизитов: БИК, корр. счета, ИНН, КПП, IFSC, SWIFT коды по банкам РФ и мира. Проверенная база 2026.'
       : isHi
       ? 'भारत, रूस एवं बांग्लादेश के सभी बैंकों के IFSC, BIK, MICR ও SWIFT कोड तुरंत खोजें। 100% सत्यापित व नवीनतम डेटाबेस।'
-      : isBn
-      ? 'বাংলাদেশ, ভারত ও রাশিয়ার সকল ব্যাংকের রাউটিং নম্বর, BIK, IFSC ও সুইফট কোড তাৎক্ষণিক খুঁজে নিন। ১০০% নির্ভুল ও নিয়মিত হালনাগাদকৃত।'
-      : 'Find official Bank Routing Numbers, Russian BIK Codes, Indian IFSC Codes, SWIFT/BIC Codes, and branch details with instant search.',
+      : 'Find official 9-digit BEFTN Routing Numbers, US ABA Routing, Indian IFSC, UK Sort Codes, Russian BIK, German BLZ, and SWIFT/BIC codes with instant search.',
     canonicalUrl: BASE_URL
   };
 }
@@ -412,9 +422,14 @@ export function updateSEOMeta({
     el.setAttribute('content', content);
   };
 
-  // Standard Meta
+  // Standard Meta with high-intent keywords across all countries
+  const isBn = lang === 'bn';
+  const localizedKeywords = isBn
+    ? 'সব ব্যাংকের রাউটিং নম্বর, ব্যাংক রাউটিং নাম্বার বাংলাদেশ, beftn routing number bangladesh, ইসলামী ব্যাংক রাউটিং নাম্বার, ডাচ বাংলা ব্যাংক রাউটিং নাম্বার, ব্র্যাক ব্যাংক রাউটিং নাম্বার, সোনালী ব্যাংক রাউটিং নাম্বার, সুইফট কোড বাংলাদেশ, ৯ ডিজিটের রাউটিং নাম্বার ২০২৬'
+    : 'bank routing number, beftn routing number bangladesh, aba routing number, ifsc code finder, bik code finder, uk sort code, bsb code australia, blz code germany, swift bic code, fedwire routing, ach direct deposit routing, bank branches directory 2026';
+
   setMeta('name', 'description', description);
-  setMeta('name', 'keywords', 'bank routing number, aba routing number, fedwire routing, ach direct deposit routing, bik code finder, ifsc code finder, swift bic code, us bank routing directory, russian bik lookup, bank of russia, beftn routing, rbi ifsc codes, neft rtgs imps codes, bangladesh bank routing numbers, bank branches directory, micr code lookup 2026');
+  setMeta('name', 'keywords', localizedKeywords);
   
   if (is404) {
     setMeta('name', 'robots', 'noindex, nofollow, noarchive');

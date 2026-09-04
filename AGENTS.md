@@ -23,8 +23,13 @@ Every new country added to this platform MUST strictly implement the complete mu
   - Localized Meta Titles, Descriptions, Canonical URLs in `/src/lib/seoManager.ts`.
   - Structured data with `FinancialService`, `BankOrCreditUnion`, `FAQPage`, and `BreadcrumbList` schemas.
 - **Multilingual Support**:
-  - Full translations for all UI strings across English (`en`), Bengali (`bn`), Hindi (`hi`), and Russian (`ru`) in `/src/lib/translations.ts`.
+  - Full translations for all UI strings across English (`en`), Bengali (`bn`), Hindi (`hi`), Russian (`ru`), and German (`de`) (and any future supported languages) in `/src/lib/translations.ts`.
+  - When switching or selecting a country, automatically activate the native language of that country (e.g., German `de` for Germany, Bengali `bn` for Bangladesh, Hindi `hi` for India, Russian `ru` for Russia).
 
-## 3. Automatic "Latest Update Date" in Footer
+## 3. User Query Rules & Specific Behaviors
+- **Sitemap Inquiries ("সাইট ম্যাপ দাও")**:
+  - Whenever the user asks for a sitemap, **ONLY** provide the sitemap of the most recently added or relevant country (e.g., `sitemap-de.xml` for Germany) along with its direct link and URL count, rather than outputting the full list of all countries, unless explicitly asked for all.
+
+## 4. Automatic "Latest Update Date" in Footer
 - On **every update and code modification**, automatically update `CURRENT_DATA_VERSION_DATE` and `CURRENT_DATA_VERSION_TIMESTAMP` in `/src/lib/seoManager.ts` to the latest current date (YYYY-MM-DD).
 - The footer displays this date dynamically to provide freshness signals to users and search engines.
