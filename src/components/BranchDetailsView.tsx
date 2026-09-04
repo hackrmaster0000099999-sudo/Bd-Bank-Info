@@ -9,6 +9,7 @@ import { validateAbaRouting } from '../data/usa/abaValidator';
 import { validateSortCode } from '../data/uk/sortCodeValidator';
 import { decodeCanadaRouting } from '../data/canada/canadaRoutingValidator';
 import { decodeAustraliaBsb } from '../data/australia/australiaBsbValidator';
+import { decodeBlz } from '../data/germany/blzValidator';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -37,11 +38,13 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const isCanada = branch.country === 'ca' || !!branch.transit_number;
   const isAustralia = branch.country === 'au' || !!branch.bsb_code;
   const isUAE = branch.country === 'ae' || !!branch.cbuae_code;
+  const isGermany = branch.country === 'de' || !!branch.blz;
   const isRussia = branch.country === 'ru' || !!branch.bik_code;
   const isIndia = branch.country === 'in' || !!branch.ifsc_code;
   const sortCodeDecoded = isUK ? validateSortCode(branch.sort_code || branch.routing_number) : null;
   const canadaDecoded = isCanada ? decodeCanadaRouting(branch.transit_number ? `${branch.transit_number}-${branch.institution_number || '003'}` : branch.routing_number) : null;
   const auDecoded = isAustralia ? decodeAustraliaBsb(branch.bsb_code || branch.routing_number) : null;
+  const blzDecoded = isGermany ? decodeBlz(branch.blz || branch.routing_number) : null;
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const getBranchName = () => {
@@ -83,6 +86,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
     ? `BSB Code: ${branch.bsb_code || branch.routing_number} | SWIFT: ${branch.swift_code || 'HO'} | City: ${branch.district}, ${branch.division}, Australia.`
     : isUAE
     ? `UAE CBUAE Routing: ${branch.routing_number} | CBUAE Code: ${branch.cbuae_code || 'N/A'} | SWIFT: ${branch.swift_code || 'HO'} | Emirate: ${branch.district}, UAE.`
+    : isGermany
+    ? `German BLZ: ${branch.blz || branch.routing_number} | Sample IBAN: ${branch.iban_sample || 'DE...'} | SWIFT: ${branch.swift_code || 'HO'} | Bundesland: ${branch.division}, Germany.`
     : isRussia
     ? `БИК: ${branch.bik_code || branch.routing_number} | Корр. счет: ${branch.corr_account || 'N/A'} | Город: ${branch.district}, ${branch.division}, Россия.`
     : isIndia
@@ -172,6 +177,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           answer: branch.swift_code
             ? `The official SWIFT / BIC code for international wire transfers to this branch is ${branch.swift_code}. Provide this code to the sender along with your 23-digit UAE IBAN.`
             : `Use the main UAE Head Office SWIFT code for ${branch.bank_name} and include your 23-digit UAE IBAN.`
+        }
+      ]
+    : isGermany
+    ? [
+        {
+          question: `What is the 8-digit Bankleitzahl (BLZ) for ${branch.bank_name} - ${branch.name}?`,
+          answer: `The official 8-digit Bankleitzahl (BLZ) for this branch is ${branch.blz || branch.routing_number}. It is assigned and maintained by Deutsche Bundesbank for clearing SEPA Credit Transfers, SEPA Direct Debits (Lastschrift), and Bundesbank electronic clearing.`
+        },
+        {
+          question: `What is the German IBAN format for this branch?`,
+          answer: `German IBANs consist of 22 characters starting with 'DE' followed by a 2-digit checksum, the 8-digit Bankleitzahl (${branch.blz || branch.routing_number}), and a 10-digit account number (sample: ${branch.iban_sample || 'DE89370400440532013000'}).`
+        },
+        {
+          question: `Which SWIFT / BIC code is used for international SEPA and global wire transfers?`,
+          answer: branch.swift_code
+            ? `The official SWIFT / BIC code for ${branch.bank_name} is ${branch.swift_code}. Provide this code along with your German IBAN for international wire transfers.`
+            : `Use the main German Head Office SWIFT code for ${branch.bank_name} along with your DE IBAN.`
         }
       ]
     : lang === 'ru'
@@ -310,7 +332,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               {getDistrict()}, {branch.division}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 whitespace-nowrap shrink-0">
-              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isAustralia ? '🇦🇺 Australia' : isUAE ? '🇦🇪 United Arab Emirates' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
+              {isUS ? '🇺🇸 United States' : isUK ? '🇬🇧 United Kingdom' : isCanada ? '🇨🇦 Canada' : isAustralia ? '🇦🇺 Australia' : isUAE ? '🇦🇪 United Arab Emirates' : isGermany ? '🇩🇪 Germany' : isRussia ? '🇷🇺 Russia' : isIndia ? '🇮🇳 India' : '🇧🇩 Bangladesh'}
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
@@ -389,6 +411,27 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               </div>
               <CopyButton textToCopy={branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
             </div>
+          ) : isGermany ? (
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 block uppercase tracking-wider">
+                    Bankleitzahl (BLZ - 8 Digits)
+                  </span>
+                  <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                    {blzDecoded?.formattedBlz || branch.blz || branch.routing_number}
+                  </span>
+                </div>
+                <button
+                  onClick={() => onOpenRoutingDecoder(branch.blz || branch.routing_number)}
+                  className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition-colors cursor-pointer"
+                  title="Decode 8-digit German BLZ"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+              </div>
+              <CopyButton textToCopy={branch.blz || branch.routing_number} size="md" lang={lang} className="w-full justify-center" />
+            </div>
           ) : isRussia ? (
             <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between space-y-3">
               <div>
@@ -466,6 +509,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               </div>
               <CopyButton
                 textToCopy={branch.routing_number}
+                size="md"
+                lang={lang}
+                className="w-full justify-center"
+              />
+            </div>
+          ) : isGermany && branch.iban_sample ? (
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between space-y-3">
+              <div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block uppercase tracking-wider">
+                  Sample German IBAN (SEPA)
+                </span>
+                <span className="font-mono text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-wider break-all mt-1 block">
+                  {branch.iban_sample}
+                </span>
+              </div>
+              <CopyButton
+                textToCopy={branch.iban_sample}
                 size="md"
                 lang={lang}
                 className="w-full justify-center"

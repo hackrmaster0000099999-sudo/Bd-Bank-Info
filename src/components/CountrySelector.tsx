@@ -68,6 +68,14 @@ const COUNTRIES: CountryOption[] = [
     defaultLang: 'en'
   },
   {
+    code: 'de',
+    flag: '🇩🇪',
+    shortCode: 'DE',
+    name: 'Germany',
+    nameNative: 'Deutschland / Deutsch',
+    defaultLang: 'de'
+  },
+  {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',
@@ -161,7 +169,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         >
           <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-700/60 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 block">
-              {lang === 'hi' ? 'देश चुनें' : lang === 'bn' ? 'দেশ নির্বাচন করুন' : 'Select Country'}
+              {lang === 'de' ? 'Land auswählen' : lang === 'hi' ? 'देश चुनें' : lang === 'bn' ? 'দেশ নির্বাচন করুন' : lang === 'ru' ? 'Выберите страну' : 'Select Country'}
             </span>
           </div>
 

@@ -67,6 +67,11 @@ function detectFromTimezone(): { country: Country; lang: Language } | null {
       return { country: 'sg', lang: 'en' };
     }
 
+    // Germany (Europe/Berlin, Europe/Busingen)
+    if (tz === 'Europe/Berlin' || tz === 'Europe/Busingen' || tz === 'Germany' || tz.includes('Berlin')) {
+      return { country: 'de', lang: 'de' };
+    }
+
     // India
     if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta' || tz === 'Asia/Colombo') {
       return { country: 'in', lang: 'hi' };
@@ -222,6 +227,9 @@ function detectFromLocale(): { country: Country; lang: Language } | null {
       if (l.endsWith('-ca') || l.includes('ca')) {
         return { country: 'ca', lang: 'en' };
       }
+      if (l.endsWith('-de') || l.includes('de-') || l.startsWith('de') || l === 'ger' || l === 'deu') {
+        return { country: 'de', lang: 'de' };
+      }
       if (l.endsWith('-au') || l.includes('en-au')) {
         return { country: 'au', lang: 'en' };
       }
@@ -257,6 +265,7 @@ export async function tryAsyncGeoLookup(): Promise<{ country: Country; lang: Lan
     if (code === 'ae') return { country: 'ae', lang: 'en' };
     if (code === 'sg') return { country: 'sg', lang: 'en' };
     if (code === 'ca') return { country: 'ca', lang: 'en' };
+    if (code === 'de') return { country: 'de', lang: 'de' };
     if (code === 'au') return { country: 'au', lang: 'en' };
     if (code === 'us') return { country: 'us', lang: 'en' };
   } catch {
@@ -278,6 +287,8 @@ export function recordUserManualCountry(country: Country, lang: Language) {
 
 export function getDefaultLanguageForCountry(c: Country): Language {
   switch (c) {
+    case 'de':
+      return 'de';
     case 'bd':
       return 'bn';
     case 'in':

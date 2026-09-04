@@ -4,6 +4,7 @@ import { Language, Country } from '../types';
 import { Link, useLocation } from 'react-router-dom';
 import { translations } from '../lib/translations';
 import { CountrySelector } from './CountrySelector';
+import { LanguageSelector } from './LanguageSelector';
 
 interface HeaderProps {
   lang: Language;
@@ -111,13 +112,20 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
           </nav>
 
-          {/* Right actions: Country Selector, & Dark Mode Toggle */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3.5 pl-2 pr-0.5 sm:pr-2">
+          {/* Right actions: Country Selector, Language Selector & Dark Mode Toggle */}
+          <div className="flex items-center space-x-1.5 sm:space-x-2.5 pl-2 pr-0.5 sm:pr-2">
             {/* Country Selector with Flag and 2-Letter Code */}
             <CountrySelector
               country={country}
               onSetCountry={onSetCountry}
+              onSetLanguage={onSetLanguage}
               lang={lang}
+            />
+
+            {/* Language Selector */}
+            <LanguageSelector
+              lang={lang}
+              onSetLanguage={onSetLanguage}
             />
 
             {/* Dark Mode Toggle */}

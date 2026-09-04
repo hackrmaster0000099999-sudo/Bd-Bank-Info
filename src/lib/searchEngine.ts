@@ -9,6 +9,7 @@ import { canadaBanks, canadaBranches } from '../data/canada/index';
 import { australiaBanks, australiaBranches } from '../data/australia/index';
 import { uaeBanks, uaeBranches } from '../data/uae/index';
 import { singaporeBanks, singaporeBranches } from '../data/singapore/index';
+import { germanyBanks, germanyBranches } from '../data/germany/index';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -57,7 +58,12 @@ const sgBanksList: Bank[] = (singaporeBanks as any[]).map((b) => ({
   country: 'sg' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList, ...sgBanksList];
+const deBanksList: Bank[] = (germanyBanks as any[]).map((b) => ({
+  ...b,
+  country: 'de' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList, ...sgBanksList, ...deBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -96,6 +102,10 @@ const branches: Branch[] = [
   ...singaporeBranches.map((br) => ({
     ...br,
     country: 'sg' as const,
+  })),
+  ...germanyBranches.map((br) => ({
+    ...br,
+    country: 'de' as const,
   }))
 ];
 
@@ -398,20 +408,38 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
       }
     }
 
-    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU / AE / SG)
+    // Check German BLZ (Bankleitzahl) & German IBAN
+    if (!matched && (br.country === 'de' || br.blz) && (searchType === 'all' || searchType === 'blz' || searchType === 'routing')) {
+      const cleanBlz = (br.blz || br.routing_number || '').replace(/\D/g, '');
+      if (cleanBlz === normalizedNumQuery) {
+        matched = true;
+        score += 120;
+        matchedField = 'German BLZ (Bankleitzahl) (Exact)';
+      } else if (cleanBlz.startsWith(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
+        matched = true;
+        score += 75;
+        matchedField = 'German BLZ (Bankleitzahl)';
+      } else if (br.iban_sample && br.iban_sample.replace(/\s+/g, '').toLowerCase().includes(normalizedTextQuery.replace(/\s+/g, '')) && normalizedTextQuery.length >= 6) {
+        matched = true;
+        score += 85;
+        matchedField = 'German IBAN Format';
+      }
+    }
+
+    // Check Routing / MICR Number (BD / IN / RU / US / CA / AU / AE / SG / DE)
     if (!matched && (searchType === 'all' || searchType === 'routing')) {
       if (br.routing_number === normalizedNumQuery) {
         matched = true;
         score += 100; // Exact routing match
-        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : br.country === 'ae' ? 'CBUAE Routing (Exact)' : br.country === 'sg' ? 'MEPS+ / FAST Routing (Exact)' : 'Routing / MICR (Exact)';
+        matchedField = br.country === 'ru' ? 'BIK Code (Exact)' : br.country === 'uk' ? 'Sort Code (Exact)' : br.country === 'ca' ? 'EFT Routing (Exact)' : br.country === 'au' ? 'BSB Code (Exact)' : br.country === 'ae' ? 'CBUAE Routing (Exact)' : br.country === 'sg' ? 'MEPS+ / FAST Routing (Exact)' : br.country === 'de' ? 'German BLZ (Exact)' : 'Routing / MICR (Exact)';
       } else if (br.routing_number.startsWith(normalizedNumQuery)) {
         matched = true;
         score += 60;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : br.country === 'de' ? 'German BLZ' : 'Routing Number';
       } else if (br.routing_number.includes(normalizedNumQuery) && normalizedNumQuery.length >= 3) {
         matched = true;
         score += 40;
-        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : 'Routing Number';
+        matchedField = br.country === 'ru' ? 'BIK Code' : br.country === 'uk' ? 'Sort Code' : br.country === 'ca' ? 'EFT Routing' : br.country === 'au' ? 'BSB Code' : br.country === 'ae' ? 'CBUAE Routing' : br.country === 'sg' ? 'MEPS+ / FAST Routing' : br.country === 'de' ? 'German BLZ' : 'Routing Number';
       }
     }
 

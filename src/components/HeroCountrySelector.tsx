@@ -6,6 +6,7 @@ import { translations } from '../lib/translations';
 interface HeroCountrySelectorProps {
   country: Country;
   onSetCountry: (country: Country) => void;
+  onSetLanguage?: (lang: Language) => void;
   lang: Language;
 }
 
@@ -66,6 +67,15 @@ const COUNTRY_TABS: CountryTab[] = [
     badgeNative: 'CBUAE ও রাউটিং'
   },
   {
+    id: 'de',
+    flag: '🇩🇪',
+    code: 'DE',
+    nameEn: 'Germany',
+    nameNative: 'Deutschland',
+    badgeEn: 'BLZ, IBAN & SEPA',
+    badgeNative: 'BLZ ও জার্মান IBAN'
+  },
+  {
     id: 'sg',
     flag: '🇸🇬',
     code: 'SG',
@@ -106,9 +116,20 @@ const COUNTRY_TABS: CountryTab[] = [
 export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
   country,
   onSetCountry,
+  onSetLanguage,
   lang
 }) => {
   const t = translations[lang] || translations.en;
+
+  const handleTabClick = (tabId: Country) => {
+    onSetCountry(tabId);
+    if (onSetLanguage) {
+      if (tabId === 'de') onSetLanguage('de');
+      else if (tabId === 'bd') onSetLanguage('bn');
+      else if (tabId === 'in') onSetLanguage('hi');
+      else if (tabId === 'ru') onSetLanguage('ru');
+    }
+  };
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-2.5">
@@ -131,6 +152,8 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: সিঙ্গাপুর (মনিটারি অথরিটি অব সিঙ্গাপুর MAS, MEPS+, FAST ও সুইফট ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: सिंगापुर (MAS, MEPS+, FAST एवं स्विफ्ट डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Сингапур (MAS, MEPS+, FAST и SWIFT коды)' : 'Selected Country: Singapore (Monetary Authority of Singapore MAS, MEPS+, FAST & PayNow Directory)')
             : country === 'ae'
             ? (lang === 'bn' ? 'নির্বাচিত দেশ: সংযুক্ত আরব আমিরাত (সেন্ট্রাল ব্যাংক অব দ্য ইউএই CBUAE রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त अरब अमीरात (CBUAE राउटिंग एवं SWIFT डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: ОАЭ (CBUAE Routing и SWIFT коды)' : 'Selected Country: United Arab Emirates (CBUAE Routing & SWIFT Directory)')
+            : country === 'de'
+            ? (lang === 'bn' ? 'নির্বাচিত দেশ: জার্মানি (ডয়চে বুন্দেসবাংক ও BaFin অনুমোদিত BLZ ও IBAN ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: जर्मनी (Deutsche Bundesbank अधिकृत BLZ व IBAN डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Германия (Deutsche Bundesbank BLZ, IBAN и SEPA)' : 'Selected Country: Germany (Deutsche Bundesbank BLZ, IBAN & SEPA Directory)')
             : country === 'ru'
             ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
             : country === 'in'
@@ -149,7 +172,7 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
             <button
               key={tab.id}
               type="button"
-              onClick={() => onSetCountry(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               className={`relative flex-shrink-0 flex items-center justify-center gap-1.5 px-4 py-2 sm:py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-center select-none snap-start min-w-[140px] sm:min-w-[160px] ${
                 isActive
                   ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm border border-slate-200/90 dark:border-slate-600 font-bold scale-[1.01]'
@@ -159,12 +182,14 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
               <div className="flex items-center gap-1.5">
                 <span className="text-base sm:text-lg leading-none">{tab.flag}</span>
                 <span className="text-xs sm:text-sm font-bold tracking-tight whitespace-nowrap">
-                  {lang === 'ru'
-                    ? (tab.id === 'us' ? 'США' : tab.id === 'uk' ? 'Великобритания' : tab.id === 'ca' ? 'Канада' : tab.id === 'au' ? 'Австралия' : tab.id === 'ae' ? 'ОАЭ (Эмираты)' : tab.id === 'sg' ? 'Сингапур' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
+                  {lang === 'de'
+                    ? (tab.id === 'us' ? 'USA' : tab.id === 'uk' ? 'Großbritannien' : tab.id === 'ca' ? 'Kanada' : tab.id === 'au' ? 'Australien' : tab.id === 'ae' ? 'VAE (Emirate)' : tab.id === 'sg' ? 'Singapur' : tab.id === 'de' ? 'Deutschland' : tab.id === 'ru' ? 'Russland' : tab.id === 'in' ? 'Indien' : 'Bangladesch')
+                    : lang === 'ru'
+                    ? (tab.id === 'us' ? 'США' : tab.id === 'uk' ? 'Великобритания' : tab.id === 'ca' ? 'Канада' : tab.id === 'au' ? 'Австралия' : tab.id === 'ae' ? 'ОАЭ (Эмираты)' : tab.id === 'sg' ? 'Сингапур' : tab.id === 'de' ? 'Германия' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
                     : lang === 'hi'
-                    ? (tab.id === 'us' ? 'संयुक्त राज्य अमेरिका' : tab.id === 'uk' ? 'यूनाइटेड किंगडम' : tab.id === 'ca' ? 'कनाडा' : tab.id === 'au' ? 'ऑस्ट्रेलिया' : tab.id === 'ae' ? 'संयुक्त अरब अमीरात' : tab.id === 'sg' ? 'सिंगापुर' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
+                    ? (tab.id === 'us' ? 'संयुक्त राज्य अमेरिका' : tab.id === 'uk' ? 'यूनाइटेड किंगडम' : tab.id === 'ca' ? 'कनाडा' : tab.id === 'au' ? 'ऑस्ट्रेलिया' : tab.id === 'ae' ? 'संयुक्त अरब अमीरात' : tab.id === 'sg' ? 'सिंगापुर' : tab.id === 'de' ? 'जर्मनी' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
                     : lang === 'bn'
-                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'uk' ? 'যুক্তরাজ্য' : tab.id === 'ca' ? 'কানাডা' : tab.id === 'au' ? 'অস্ট্রেলিয়া' : tab.id === 'ae' ? 'সংযুক্ত আরব আমিরাত' : tab.id === 'sg' ? 'সিঙ্গাপুর' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
+                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'uk' ? 'যুক্তরাজ্য' : tab.id === 'ca' ? 'কানাডা' : tab.id === 'au' ? 'অস্ট্রেলিয়া' : tab.id === 'ae' ? 'সংযুক্ত আরব আমিরাত' : tab.id === 'sg' ? 'সিঙ্গাপুর' : tab.id === 'de' ? 'জার্মানি' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
                     : tab.nameEn}
                 </span>
               </div>

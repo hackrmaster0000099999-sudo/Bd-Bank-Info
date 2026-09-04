@@ -1,16 +1,20 @@
-export type Language = 'bn' | 'en' | 'hi' | 'ru';
-export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
+export type Language = 'bn' | 'en' | 'hi' | 'ru' | 'de';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd', 'dbs-bank-singapore'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd', 'dbs-bank-singapore', 'deutsche-bank'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
+  name_de?: string; // German
   short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates, 'sg' for Singapore
-  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, 3-digit Canadian Institution Number, 2-digit Australian BSB prefix, or 3-digit UAE CBUAE code
-  routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada / 9-digit UAE Central Bank Routing
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates, 'sg' for Singapore, 'de' for Germany
+  bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, 3-digit Canadian Institution Number, 2-digit Australian BSB prefix, 3-digit UAE CBUAE code, or 8-digit German BLZ
+  routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada / 9-digit UAE Central Bank Routing / 8-digit BLZ for Germany
+  blz?: string; // 8-digit German Bankleitzahl (BLZ) (e.g. 50070010, 10040000)
+  blz_code?: string; // 8-digit German Bankleitzahl
+  iban_structure?: string; // German IBAN format e.g. DEkk 5007 0010 CCCC CCCC CC
   bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
   cbuae_code?: string; // 3-digit Central Bank of UAE Bank Code (e.g. 023)
   transit_number?: string; // 5-digit Canadian Transit Number (XXXXX)
@@ -29,6 +33,7 @@ export interface Bank {
   head_office_bn?: string;
   head_office_hi?: string;
   head_office_ru?: string;
+  head_office_de?: string;
   website: string;
   branch_count: number;
   established?: string;
@@ -36,45 +41,55 @@ export interface Bank {
   fed_district?: string; // US Federal Reserve District (e.g. 02 - New York)
   fca_frn?: string; // UK Financial Conduct Authority FRN Number
   apca_code?: string; // Australian Payments Network (APCA) Code
-  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important' | 'National Bank' | 'State Commercial Bank' | 'Federal Savings Bank' | 'Universal Bank' | 'UK Retail Bank' | 'UK Clearing Bank' | 'Australian Major Bank' | 'Australian Regional Bank' | 'Australian Customer-Owned Bank' | 'UAE National Bank' | 'UAE Islamic Bank' | 'UAE Foreign Commercial Bank' | 'UAE Digital Bank';
+  bafin_id?: string; // German BaFin Bak-Nr. / Institute ID
+  type?: 'Private Commercial' | 'State-Owned Commercial' | 'Foreign Commercial' | 'Specialized' | 'Public Sector' | 'Private Sector' | 'Small Finance' | 'State Commercial' | 'Universal Commercial' | 'Fintech Bank' | 'Systemically Important' | 'National Bank' | 'State Commercial Bank' | 'Federal Savings Bank' | 'Universal Bank' | 'UK Retail Bank' | 'UK Clearing Bank' | 'Australian Major Bank' | 'Australian Regional Bank' | 'Australian Customer-Owned Bank' | 'UAE National Bank' | 'UAE Islamic Bank' | 'UAE Foreign Commercial Bank' | 'UAE Digital Bank' | 'German Universal Bank' | 'German Landesbank' | 'German Sparkasse' | 'German Cooperative Bank' | 'German Development Bank' | 'German Direct Bank';
   former_names?: string[]; // Former name for renamed/merged banks
   redirect_to?: string; // Slug for merged bank
 }
 
 export interface Branch {
-  id: string; // e.g., 'chase-newyork-main-021000021' or 'barclays-london-main-200000' or 'cba-sydney-main-062000' or 'enbd-dubai-main-023010001'
+  id: string; // e.g., 'chase-newyork-main-021000021' or 'deutsche-bank-berlin-mitte-10070000'
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
   bank_name_hi?: string;
   bank_name_ru?: string;
+  bank_name_de?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
-  division: string; // Division in BD, State in India/US/Australia, Federal Subject in Russia, Country/Region in UK, Province in Canada, Emirate in UAE
+  name_de?: string; // German
+  division: string; // Division in BD, State in India/US/Australia/Germany (Bundesland), Federal Subject in Russia, Country/Region in UK, Province in Canada, Emirate in UAE
   division_bn?: string;
   division_hi?: string;
   division_ru?: string;
-  district: string; // District / County / City / LGA in English
+  division_de?: string;
+  district: string; // District / County / City / LGA in English (Kreis / Kreisfreie Stadt)
   district_bn?: string;
   district_hi?: string;
   district_ru?: string;
-  upazila?: string; // Upazila / City / Locality / Suburb / Community
+  district_de?: string;
+  upazila?: string; // Upazila / City / Locality / Suburb / Community / Stadtbezirk
   upazila_bn?: string;
   upazila_hi?: string;
   upazila_ru?: string;
+  upazila_de?: string;
   address: string;
   address_bn?: string;
   address_hi?: string;
   address_ru?: string;
-  zip_code?: string; // US Zip Code, UK Postcode, Canadian Postal Code, Australian 4-digit Postcode, or UAE PO Box
-  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, 6-digit Australian BSB, 9-digit Canadian EFT Routing, or 9-digit UAE CBUAE Routing (023010001)
+  address_de?: string;
+  zip_code?: string; // 5-digit German PLZ (Postleitzahl), US Zip Code, UK Postcode, Canadian Postal Code, Australian 4-digit Postcode, or UAE PO Box
+  routing_number: string; // 9-digit ABA Routing Number, 9-digit BEFTN, MICR, BIK, 6-digit UK Sort Code, 6-digit Australian BSB, 9-digit Canadian EFT Routing, 8-digit German BLZ, or 9-digit UAE CBUAE Routing
+  blz?: string; // 8-digit German Bankleitzahl (BLZ)
+  blz_code?: string; // 8-digit German Bankleitzahl
+  iban_sample?: string; // Sample German IBAN
   bsb_code?: string; // 6-digit Australian BSB Code (e.g. 062-000)
   clearing_code?: string; // 7-digit Singapore Clearing Code (e.g. 7171-001)
-  bank_code?: string; // 4-digit Singapore Bank Code or 3-digit CBUAE code
+  bank_code?: string; // 4-digit Singapore Bank Code or 3-digit CBUAE code or 8-digit BLZ
   cbuae_code?: string; // 3-digit CBUAE Bank Code
   transit_number?: string; // 5-digit Canadian Transit Number
   institution_number?: string; // 3-digit Canadian Institution Number
@@ -89,7 +104,7 @@ export interface Branch {
   micr_code?: string; // 9-digit MICR code
   swift_code?: string; // Branch-specific or head office SWIFT
   uses_head_office_swift?: boolean;
-  branch_code: string; // Branch / transit code / BSB
+  branch_code: string; // Branch / transit code / BSB / BLZ
   phone?: string;
   email?: string;
   status: 'active' | 'relocated' | 'merged';
@@ -100,11 +115,11 @@ export interface FilterState {
   bankId: string;
   division: string;
   district: string;
-  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc' | 'bik' | 'sortcode' | 'bsb';
+  searchType: 'all' | 'routing' | 'swift' | 'branch' | 'ifsc' | 'bik' | 'sortcode' | 'bsb' | 'blz';
 }
 
 export interface SearchResult {
-  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc' | 'bik' | 'sortcode' | 'bsb';
+  type: 'bank' | 'branch' | 'routing' | 'swift' | 'ifsc' | 'bik' | 'sortcode' | 'bsb' | 'blz';
   id: string;
   title: string;
   title_bn?: string;
@@ -115,6 +130,8 @@ export interface SearchResult {
   subtitle_hi?: string;
   subtitle_ru?: string;
   routing_number?: string;
+  blz?: string;
+  blz_code?: string;
   bsb_code?: string;
   transit_number?: string;
   institution_number?: string;
@@ -123,7 +140,7 @@ export interface SearchResult {
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;

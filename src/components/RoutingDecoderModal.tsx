@@ -3,6 +3,7 @@ import { X, Hash, Info, CheckCircle2, AlertTriangle, Building2, MapPin, ShieldCh
 import { Language } from '../types';
 import { decodeRoutingNumber } from '../lib/routingDecoder';
 import { decodeBik } from '../data/russia/bikDecoder';
+import { decodeBlz } from '../data/germany/blzValidator';
 import { CopyButton } from './CopyButton';
 
 interface RoutingDecoderModalProps {
@@ -24,9 +25,12 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
   const isRu = lang === 'ru';
   const isHi = lang === 'hi';
 
-  const isBik = routingNumber && routingNumber.startsWith('04');
-  const bikDecoded = decodeBik(routingNumber);
-  const bdDecoded = decodeRoutingNumber(routingNumber);
+  const cleanNum = (routingNumber || '').replace(/\D/g, '');
+  const isBik = cleanNum.length === 9 && cleanNum.startsWith('04');
+  const isBlz = cleanNum.length === 8;
+  const blzDecoded = decodeBlz(cleanNum);
+  const bikDecoded = decodeBik(cleanNum);
+  const bdDecoded = decodeRoutingNumber(cleanNum);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
@@ -46,14 +50,18 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
           </div>
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              {isBik || isRu
+              {isBlz && blzDecoded.isValid
+                ? (isBn ? 'জার্মান BLZ ব্যাংক কোড বিশ্লেষণ' : isRu ? 'Расшифровка структуры BLZ (Бундесбанк)' : 'German BLZ (Bankleitzahl) Breakdown')
+                : isBik || isRu
                 ? (isRu ? 'Расшифровка структуры БИК (Банк России)' : 'Russian BIK Code Breakdown')
                 : isBn
                 ? 'BEFTN রাউটিং নম্বর কোড বিশ্লেষণ'
                 : 'BEFTN Routing Number Breakdown'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {isBik || isRu
+              {isBlz && blzDecoded.isValid
+                ? 'Deutsche Bundesbank 8-Digit Clearing Identifier'
+                : isBik || isRu
                 ? (isRu ? 'Структура 9-значного банковского кода РФ' : 'Bank of Russia 9-Digit BIK Structure')
                 : isBn
                 ? 'বাংলাদেশ ব্যাংকের ৯-ডিজিট রাউটিং কোডের গঠন'
@@ -66,7 +74,7 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
         <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600/80 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium block">
-              {isRu ? 'Проверяемый код:' : isBn ? 'পরীক্ষাধীন রাউটিং নম্বর:' : 'Target Code / Number:'}
+              {isRu ? 'Проверяемый код:' : isBn ? 'পরীক্ষাধীন কোড:' : 'Target Code / Number:'}
             </span>
             <span className="font-mono text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-wider break-all">
               {routingNumber || 'N/A'}
@@ -75,8 +83,81 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
           <CopyButton textToCopy={routingNumber} lang={lang} size="md" className="shrink-0" />
         </div>
 
-        {/* Russian BIK Breakdown */}
-        {isBik && bikDecoded.isValid ? (
+        {/* German BLZ Breakdown */}
+        {isBlz && blzDecoded.isValid ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800/60">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>{isBn ? 'সঠিক ৮-ডিজিটের জার্মান BLZ কোড।' : 'Valid 8-digit Deutsche Bundesbank BLZ Code.'}</span>
+            </div>
+
+            {/* Visual 3-part breakdown bar */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center pt-2">
+              <div className="bg-emerald-50/80 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+                <span className="text-[10px] uppercase font-bold text-emerald-800 dark:text-emerald-300 block">Clearing Area</span>
+                <span className="font-mono text-lg font-bold text-emerald-900 dark:text-emerald-100">{blzDecoded.clearingAreaCode}</span>
+                <span className="text-[11px] text-emerald-700 dark:text-emerald-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {blzDecoded.clearingAreaName}
+                </span>
+              </div>
+
+              <div className="bg-amber-50/80 dark:bg-amber-950/40 p-3 rounded-xl border border-amber-200 dark:border-amber-800/60">
+                <span className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-300 block">Location Area</span>
+                <span className="font-mono text-lg font-bold text-amber-900 dark:text-amber-100">{blzDecoded.locationCode}</span>
+                <span className="text-[11px] text-amber-700 dark:text-amber-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {blzDecoded.locationName}
+                </span>
+              </div>
+
+              <div className="bg-sky-50/80 dark:bg-sky-950/40 p-3 rounded-xl border border-sky-200 dark:border-sky-800/60">
+                <span className="text-[10px] uppercase font-bold text-sky-800 dark:text-sky-300 block">Institute Code</span>
+                <span className="font-mono text-lg font-bold text-sky-900 dark:text-sky-100">{blzDecoded.instituteCode}</span>
+                <span className="text-[11px] text-sky-700 dark:text-sky-400 block mt-0.5 line-clamp-1 font-semibold">
+                  {blzDecoded.bankName}
+                </span>
+              </div>
+            </div>
+
+            {/* Detailed Explanation */}
+            <div className="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 text-xs space-y-2">
+              <div className="flex items-start space-x-2">
+                <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isBn ? '১ম ডিজিট (ক্লিয়ারিং অঞ্চল):' : 'Digit 1 (Clearing Area):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {blzDecoded.clearingAreaCode} — {blzDecoded.clearingAreaName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2 border-t border-slate-200/80 dark:border-slate-700/80 pt-2">
+                <MapPin className="w-4 h-4 text-amber-600 dark:text-amber-500 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isBn ? '২য় ও ৩য় ডিজিট (লোকেশন এলাকা):' : 'Digits 2-3 (Location Area):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {blzDecoded.locationCode} — {blzDecoded.locationName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2 border-t border-slate-200/80 dark:border-slate-700/80 pt-2">
+                <ShieldCheck className="w-4 h-4 text-sky-600 dark:text-sky-500 mt-0.5 shrink-0" />
+                <div>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {isBn ? '৪র্থ থেকে ৮ম ডিজিট (ব্যাংক প্রতিষ্ঠান কোড):' : 'Digits 4-8 (Institute Identifier):'}
+                  </span>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    {blzDecoded.instituteCode} — {blzDecoded.bankName} (Bundesbank Master Register)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : isBik && bikDecoded.isValid ? (
           <div className="space-y-3">
             <div className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800/60">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />

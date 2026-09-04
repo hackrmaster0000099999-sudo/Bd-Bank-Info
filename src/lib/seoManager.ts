@@ -37,6 +37,11 @@ import {
   getSingaporeBranchSeo,
   getSingaporeHomeSeo
 } from '../data/singapore/index';
+import {
+  getGermanyBankSeo,
+  getGermanyBranchSeo,
+  getGermanyHomeSeo
+} from '../data/germany/index';
 
 
 export interface SEOProps {
@@ -59,16 +64,19 @@ export const CURRENT_DATA_VERSION_DATE = '2026-09-03';
 export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-03T10:17:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
+  if (lang === 'de') {
+    return `Verifizierte & tagesaktuelle Datenbank 2026 • 100% zertifiziert durch Deutsche Bundesbank, BaFin, MAS Singapur, CBUAE, US Fed, Payments Canada, Bank of England & SWIFT`;
+  }
   if (lang === 'ru') {
-    return `Официальная актуальная база данных 2026 • Верифицировано ЦБ РФ, MAS Сингапур, CBUAE, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
+    return `Официальная актуальная база данных 2026 • Верифицировано Бундесбанком (Германия), ЦБ РФ, MAS Сингапур, CBUAE, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
   }
   if (lang === 'hi') {
-    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • MAS सिंगापुर, CBUAE, US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
+    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • ड्यूश बुंडेसबैंक (जर्मनी), MAS सिंगापुर, CBUAE, US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
   }
   if (lang === 'bn') {
-    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • মনিটারি অথরিটি অব সিঙ্গাপুর (MAS), ইউএই CBUAE, ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
+    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ডয়চে বুন্দেসব্যাংক (জার্মানি), MAS সিঙ্গাপুর, ইউএই CBUAE, ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
   }
-  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (MAS Singapore, CBUAE, US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
+  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (Deutsche Bundesbank, MAS Singapore, CBUAE, US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
 }
 
 export function generateSeoData(
@@ -132,6 +140,15 @@ export function generateSeoData(
         title: sgSeo.title,
         description: sgSeo.description,
         canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+      };
+    }
+
+    if (branch.country === 'de' || !!branch.blz) {
+      const deSeo = getGermanyBranchSeo(branch, lang);
+      return {
+        title: deSeo.title,
+        description: deSeo.description,
+        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.blz || branch.routing_number}`
       };
     }
 
@@ -214,6 +231,15 @@ export function generateSeoData(
       return {
         title: sgSeo.title,
         description: sgSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'de') {
+      const deSeo = getGermanyBankSeo(bank, lang);
+      return {
+        title: deSeo.title,
+        description: deSeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -446,9 +472,10 @@ export function updateSEOMeta({
   const isAU = branch?.country === 'au' || bank?.country === 'au' || !!branch?.bsb_code;
   const isAE = branch?.country === 'ae' || bank?.country === 'ae' || !!branch?.cbuae_code;
   const isSG = branch?.country === 'sg' || bank?.country === 'sg' || !!branch?.clearing_code;
+  const isDE = branch?.country === 'de' || bank?.country === 'de' || !!branch?.blz;
   const isRussia = branch?.country === 'ru' || bank?.country === 'ru' || !!branch?.bik_code;
   const isIndia = branch?.country === 'in' || bank?.country === 'in' || !!branch?.ifsc_code;
-  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isAE ? 'AE' : isSG ? 'SG' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
+  const countryCode = isUS ? 'US' : isUK ? 'GB' : isCA ? 'CA' : isAU ? 'AU' : isAE ? 'AE' : isSG ? 'SG' : isDE ? 'DE' : isRussia ? 'RU' : isIndia ? 'IN' : 'BD';
   const centralRegulator = isUS
     ? 'Federal Reserve System (Fed) / American Bankers Association (ABA)'
     : isUK
@@ -461,6 +488,8 @@ export function updateSEOMeta({
     ? 'Central Bank of the UAE (CBUAE) / UAEFTS'
     : isSG
     ? 'Monetary Authority of Singapore (MAS) / MEPS+ & FAST'
+    : isDE
+    ? 'Deutsche Bundesbank / Federal Financial Supervisory Authority (BaFin)'
     : isRussia
     ? 'Central Bank of the Russian Federation (Bank of Russia)'
     : isIndia
@@ -481,6 +510,8 @@ export function updateSEOMeta({
       branchDesc = `Official 9-digit UAE Central Bank Routing Number: ${branch.routing_number}, CBUAE Code: ${branch.cbuae_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}. Regulated by ${centralRegulator}.`;
     } else if (isSG) {
       branchDesc = `Official 7-digit Singapore Clearing Code: ${branch.clearing_code || branch.routing_number}, Bank Code: ${branch.bank_code || 'N/A'}, Branch Code: ${branch.branch_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, FAST & PayNow enabled. Regulated by ${centralRegulator}.`;
+    } else if (isDE) {
+      branchDesc = `Official 8-digit Bankleitzahl (BLZ): ${branch.blz || branch.routing_number}, German IBAN: ${branch.iban_sample || 'DE...'}, SWIFT/BIC: ${branch.swift_code || 'Head Office'}, SEPA Instant Credit Transfer enabled. Regulated by ${centralRegulator}.`;
     } else if (isRussia) {
       branchDesc = `BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'}, INN: ${branch.inn || 'N/A'}, КПП ${branch.kpp || 'N/A'}, SWIFT: ${branch.swift_code || 'N/A'}. Regulated by ${centralRegulator}.`;
     } else if (isIndia) {
@@ -567,9 +598,19 @@ export function updateSEOMeta({
           'name': 'Singapore Clearing Code',
           'value': branch.clearing_code
         } : null,
+        branch.blz ? {
+          '@type': 'PropertyValue',
+          'name': 'German Bankleitzahl (BLZ)',
+          'value': branch.blz
+        } : null,
+        branch.iban_sample ? {
+          '@type': 'PropertyValue',
+          'name': 'German IBAN Format',
+          'value': branch.iban_sample
+        } : null,
         {
           '@type': 'PropertyValue',
-          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isAE ? 'CBUAE Routing Number' : isSG ? 'Singapore Clearing Code' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
+          'name': isUS ? 'ABA Routing Transit Number (RTN)' : isUK ? 'UK Sort Code' : isCA ? 'Canadian EFT Routing' : isAU ? 'BSB Number' : isAE ? 'CBUAE Routing Number' : isSG ? 'Singapore Clearing Code' : isDE ? 'Bankleitzahl (BLZ)' : isRussia ? 'BIK Code' : isIndia ? 'MICR / Routing Code' : 'BEFTN Routing Number',
           'value': branch.routing_number
         },
         {
@@ -619,6 +660,8 @@ export function updateSEOMeta({
       bankDesc = `${bank.name} CBUAE routing numbers (${bank.cbuae_code || bank.bank_code}), branch directory, UAE IBAN formats, and SWIFT/BIC codes in the UAE.`;
     } else if (isSG) {
       bankDesc = `${bank.name} 7-digit MAS clearing codes (${bank.bank_code || 'all branches'}), Singapore branch directory, FAST, PayNow and SWIFT codes.`;
+    } else if (isDE) {
+      bankDesc = `${bank.name} 8-digit Bankleitzahl (BLZ: ${bank.blz_code || bank.bank_code || 'all branches'}), German IBAN structure, SEPA Instant and SWIFT codes in Germany.`;
     } else if (isRussia) {
       bankDesc = `${bank.name} Russian banking directory, BIK codes (${bank.bik_code || 'all branches'}), correspondent accounts, INN, and SWIFT codes in the Russian Federation.`;
     } else if (isIndia) {

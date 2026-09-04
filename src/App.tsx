@@ -20,12 +20,14 @@ import { DisclaimerPage } from './components/DisclaimerPage';
 import { NotFoundPage } from './components/NotFoundPage';
 import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting } from './lib/searchEngine';
 import { generateSeoData, updateSEOMeta, getFreshnessLabel, CURRENT_DATA_VERSION_DATE } from './lib/seoManager';
+import { detectUserCountryAndLang } from './lib/geoDetector';
 import { translations } from './lib/translations';
 import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2, Clock, Star } from 'lucide-react';
 
 export default function App() {
-  const [lang, setLang] = useState<Language>('en');
-  const [country, setCountry] = useState<Country>('in');
+  const initialGeo = useMemo(() => detectUserCountryAndLang(), []);
+  const [lang, setLang] = useState<Language>(initialGeo.lang);
+  const [country, setCountry] = useState<Country>(initialGeo.country);
   const [currentTab, setCurrentTab] = useState<string>('search');
   const [is404, setIs404] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ export default function App() {
   const [query, setQuery] = useState<string>('');
   const [searchType, setSearchType] = useState<'all' | 'routing' | 'ifsc' | 'swift' | 'branch'>('all');
   const [filters, setFilters] = useState<FilterState>({
-    country: 'in',
+    country: initialGeo.country,
     bankId: 'all',
     division: 'all',
     district: 'all',
@@ -64,7 +66,9 @@ export default function App() {
   // Keep country filter in sync with global country
   const handleSetCountry = (newCountry: Country) => {
     setCountry(newCountry);
-    if (newCountry === 'in') {
+    if (newCountry === 'de') {
+      setLang('de');
+    } else if (newCountry === 'in') {
       setLang('hi');
     } else if (newCountry === 'bd') {
       setLang('bn');
@@ -127,8 +131,6 @@ export default function App() {
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     if (key === 'country') {
       handleSetCountry(value as Country);
-      if (value === 'in') setLang('hi');
-      else if (value === 'bd') setLang('bn');
     } else {
       setFilters((prev) => ({ ...prev, [key]: value }));
     }
@@ -312,7 +314,17 @@ export default function App() {
               </div>
 
               <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto leading-tight">
-                {country === 'in' ? (
+                {country === 'de' ? (
+                  lang === 'de'
+                    ? 'Deutsche Bankleitzahlen (BLZ), IBAN, SWIFT & Filialverzeichnis'
+                    : lang === 'bn'
+                    ? 'জার্মানির সকল ব্যাংকের Bankleitzahl (BLZ), IBAN ও সুইফট কোড ডিরেক্টরি'
+                    : lang === 'hi'
+                    ? 'जर्मनी के सभी बैंकों के BLZ, IBAN एवं SWIFT कोड डायरेक्टरी'
+                    : lang === 'ru'
+                    ? 'Справочник BLZ, IBAN и SWIFT кодов банков Германии'
+                    : 'Germany Bankleitzahl (BLZ), IBAN & SWIFT Code Directory'
+                ) : country === 'in' ? (
                   lang === 'hi'
                     ? 'भारत के सभी बैंकों के IFSC कोड, MICR ও स्विफ्ट कोड'
                     : lang === 'ru'
@@ -333,7 +345,9 @@ export default function App() {
                     ? 'রাশিয়ান ব্যাংক সমূহের BIK এবং SWIFT কোড ডিরেক্টরি'
                     : 'Russian Bank BIK, Correspondent Accounts & SWIFT Codes Directory'
                 ) : (
-                  lang === 'ru'
+                  lang === 'de'
+                    ? 'Weltweites Bankleitzahlen-Verzeichnis: BLZ, IBAN, Sort Code & SWIFT'
+                    : lang === 'ru'
                     ? 'Глобальный справочник кодов IFSC, Routing и SWIFT'
                     : lang === 'hi'
                     ? 'वैश्विक बैंक IFSC, राउटिंग एवं SWIFT कोड डायरेक्टरी'
@@ -347,11 +361,12 @@ export default function App() {
                 {t.tagline}
               </p>
 
-              {/* Hero Country Quick Switcher (3-Pill Switcher) */}
+              {/* Hero Country Quick Switcher */}
               <div className="pt-2">
                 <HeroCountrySelector
                   country={country}
                   onSetCountry={handleSetCountry}
+                  onSetLanguage={setLang}
                   lang={lang}
                 />
               </div>
