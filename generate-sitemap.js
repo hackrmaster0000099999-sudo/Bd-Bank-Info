@@ -370,6 +370,40 @@ ${pages
   saveXmlFile(countryData.main.filename, generateUrlSetXml(countryData.main.pages));
   generatedSitemaps.push(countryData.main.filename);
 
+  // 1.5 Generate Master Articles & Editorial Guides Sitemap (sitemap-articles.xml & sitemap-blog.xml)
+  const masterArticlePages = [
+    {
+      url: '/blog',
+      priority: '0.9',
+      changefreq: 'daily',
+    }
+  ];
+
+  // Collect all bank articles across Bangladesh, India, Russia, etc.
+  const allArticleBanks = [
+    ...(countryData.bd?.banks || []),
+    ...(countryData.in?.banks || []),
+    ...(countryData.ru?.banks || []),
+  ];
+
+  const seenArticleSlugs = new Set();
+  allArticleBanks.forEach(bank => {
+    if (bank && bank.id && !seenArticleSlugs.has(bank.id)) {
+      seenArticleSlugs.add(bank.id);
+      masterArticlePages.push({
+        url: `/article/${bank.id}`,
+        priority: '0.85',
+        changefreq: 'weekly',
+      });
+    }
+  });
+
+  const articlesXml = generateUrlSetXml(masterArticlePages);
+  saveXmlFile('sitemap-articles.xml', articlesXml);
+  saveXmlFile('sitemap-blog.xml', articlesXml);
+  generatedSitemaps.push('sitemap-articles.xml');
+  console.log(`  - Generated sitemap-articles.xml & sitemap-blog.xml (Master Articles Directory): ${masterArticlePages.length} URLs`);
+
   // 2. Generate per-country sitemaps
   for (const [code, info] of Object.entries(countryData)) {
     if (code === 'main') continue;
@@ -398,15 +432,7 @@ ${pages
       };
     });
 
-    const articlePages = code === 'bd'
-      ? uniqueBanks.map(bank => ({
-          url: `/article/${bank.id}`,
-          priority: '0.85',
-          changefreq: 'weekly',
-        }))
-      : [];
-
-    const countryPages = [...bankPages, ...articlePages, ...branchPages];
+    const countryPages = [...bankPages, ...branchPages];
     if (countryPages.length > 0) {
       saveXmlFile(info.filename, generateUrlSetXml(countryPages));
       generatedSitemaps.push(info.filename);
