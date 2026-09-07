@@ -10,3 +10,4 @@ export const bdBanks: Bank[] = (banksData as any[]).map((b) => ({
 export const bdBranches = allBranches;
 
 export * from './seoHelper';
+export * from './articles';

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Language, FilterState, Bank, Branch, Country } from './types';
+import { Language, FilterState, Bank, Branch, Country, BankArticle } from './types';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { UniversalSearch } from './components/UniversalSearch';
@@ -18,7 +18,9 @@ import { ContactPage } from './components/ContactPage';
 import { PrivacyPage } from './components/PrivacyPage';
 import { DisclaimerPage } from './components/DisclaimerPage';
 import { NotFoundPage } from './components/NotFoundPage';
-import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting } from './lib/searchEngine';
+import { BlogPage } from './components/BlogPage';
+import { ArticleDetailView } from './components/ArticleDetailView';
+import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting, getArticleBySlug } from './lib/searchEngine';
 import { generateSeoData, updateSEOMeta, getFreshnessLabel, CURRENT_DATA_VERSION_DATE } from './lib/seoManager';
 import { detectUserCountryAndLang } from './lib/geoDetector';
 import { translations } from './lib/translations';
@@ -108,6 +110,7 @@ export default function App() {
   // Selected detail view items
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<BankArticle | null>(null);
 
   // Modals state
   const [isRoutingDecoderOpen, setIsRoutingDecoderOpen] = useState(false);
@@ -153,6 +156,7 @@ export default function App() {
       if (bank) {
         setSelectedBank(bank);
         setSelectedBranch(null);
+        setSelectedArticle(null);
       } else {
         setIs404(true);
       }
@@ -162,16 +166,35 @@ export default function App() {
       if (branch) {
         setSelectedBranch(branch);
         setSelectedBank(null);
+        setSelectedArticle(null);
       } else {
         setIs404(true);
       }
-    } else if (path === '/about' || path === '/contact' || path === '/privacy-policy' || path === '/disclaimer') {
+    } else if (path.startsWith('/article/')) {
+      const slug = path.replace('/article/', '');
+      const article = getArticleBySlug(slug);
+      if (article) {
+        setSelectedArticle(article);
+        setSelectedBank(null);
+        setSelectedBranch(null);
+        setCurrentTab('article');
+      } else {
+        setIs404(true);
+      }
+    } else if (path === '/blog') {
       setSelectedBank(null);
       setSelectedBranch(null);
-      setCurrentTab(path.substring(1));
+      setSelectedArticle(null);
+      setCurrentTab('blog');
+    } else if (path === '/about' || path === '/contact' || path === '/privacy-policy' || path === '/privacy' || path === '/disclaimer') {
+      setSelectedBank(null);
+      setSelectedBranch(null);
+      setSelectedArticle(null);
+      setCurrentTab(path === '/privacy' ? 'privacy-policy' : path.substring(1));
     } else if (path === '/' || path === '/banks' || path === '/routing' || path === '/swift') {
       setSelectedBank(null);
       setSelectedBranch(null);
+      setSelectedArticle(null);
 
       const tab = path === '/' ? 'search' : path.substring(1);
       setCurrentTab(tab);
@@ -186,6 +209,7 @@ export default function App() {
     } else {
       setSelectedBank(null);
       setSelectedBranch(null);
+      setSelectedArticle(null);
       setIs404(true);
     }
 
@@ -215,16 +239,25 @@ export default function App() {
     setIsReportModalOpen(true);
   };
 
+  // Select Article
+  const handleSelectArticle = (slug: string) => {
+    navigate('/article/' + slug);
+  };
+
   // SEO Metadata Update
   useEffect(() => {
-    let viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404' = 'home';
+    let viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'blog' | 'article' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404' = 'home';
 
     if (is404) {
       viewType = '404';
+    } else if (selectedArticle) {
+      viewType = 'article';
     } else if (selectedBranch) {
       viewType = 'branch_detail';
     } else if (selectedBank) {
       viewType = 'bank_detail';
+    } else if (currentTab === 'blog') {
+      viewType = 'blog';
     } else if (currentTab === 'banks') {
       viewType = 'banks';
     } else if (currentTab === 'routing') {
@@ -241,19 +274,19 @@ export default function App() {
       viewType = 'disclaimer';
     }
 
-    const seo = generateSeoData(viewType, lang, selectedBank || undefined, selectedBranch || undefined, query);
+    const seo = generateSeoData(viewType, lang, selectedBank || undefined, selectedBranch || undefined, query, selectedArticle?.slug);
 
     updateSEOMeta({
-      title: seo.title,
-      description: seo.description,
-      canonicalUrl: seo.canonicalUrl,
+      title: selectedArticle ? (lang === 'bn' ? (selectedArticle.title_bn || selectedArticle.title) : selectedArticle.title) : seo.title,
+      description: selectedArticle ? (lang === 'bn' ? (selectedArticle.subtitle_bn || selectedArticle.subtitle) : selectedArticle.subtitle) : seo.description,
+      canonicalUrl: selectedArticle ? `https://worldbankcodes.com/article/${selectedArticle.slug}` : seo.canonicalUrl,
       lang: lang,
       bank: selectedBank || undefined,
       branch: selectedBranch || undefined,
       schemaType: selectedBranch ? 'branch' : selectedBank ? 'bank' : 'general',
       is404: is404
     });
-  }, [selectedBranch, selectedBank, currentTab, is404, lang, query]);
+  }, [selectedBranch, selectedBank, selectedArticle, currentTab, is404, lang, query]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/70 dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-200 transition-colors">
@@ -271,6 +304,24 @@ export default function App() {
       <main className="flex-1">
         {is404 ? (
           <NotFoundPage lang={lang} onHome={() => navigate('/')} onNavigate={(path) => navigate(path)} />
+        ) : selectedArticle ? (
+          /* VIEW: Article Details View */
+          <ArticleDetailView
+            article={selectedArticle}
+            lang={lang}
+            onBack={() => navigate('/blog')}
+            onSelectBank={handleSelectBank}
+            onSelectBranch={handleSelectBranch}
+            onOpenRoutingDecoder={handleOpenRoutingDecoder}
+          />
+        ) : currentTab === 'blog' ? (
+          /* VIEW: Blog List Page */
+          <BlogPage
+            lang={lang}
+            country={country}
+            onSelectArticle={handleSelectArticle}
+            onNavigateHome={() => navigate('/')}
+          />
         ) : currentTab === 'about' ? (
           <AboutPage lang={lang} onBack={() => navigate('/')} />
         ) : currentTab === 'contact' ? (

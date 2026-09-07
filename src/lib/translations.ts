@@ -5,6 +5,7 @@ export interface TranslationDict {
   banks: string;
   routing: string;
   swift: string;
+  blog: string;
   ifsc: string;
   bik: string;
   blz?: string;
@@ -78,6 +79,7 @@ export const translations: Record<Language, TranslationDict> = {
     banks: 'ব্যাংক সমূহ',
     routing: 'রাউটিং নম্বর',
     swift: 'সুইফট কোড',
+    blog: 'ব্লগ ও গাইড',
     ifsc: 'আইএফএসসি কোড',
     bik: 'বিক (BIK) কোড',
     blz: 'বিএলজেড (BLZ)',
@@ -149,6 +151,7 @@ export const translations: Record<Language, TranslationDict> = {
     banks: 'All Banks',
     routing: 'Routing Numbers',
     swift: 'SWIFT Codes',
+    blog: 'Articles & Guides',
     ifsc: 'IFSC Codes',
     bik: 'BIK Codes',
     blz: 'BLZ (Germany)',
@@ -220,6 +223,7 @@ export const translations: Record<Language, TranslationDict> = {
     banks: 'सभी बैंक',
     routing: 'राउटिंग / BSB / MICR',
     swift: 'स्विफ्ट कोड',
+    blog: 'लेख एवं गाइड',
     ifsc: 'IFSC कोड',
     bik: 'BIK कोड',
     blz: 'BLZ (जर्मनी)',
@@ -291,6 +295,7 @@ export const translations: Record<Language, TranslationDict> = {
     banks: 'Все банки',
     routing: 'БИК и Маршрутизация',
     swift: 'SWIFT коды',
+    blog: 'Статьи и гайды',
     ifsc: 'IFSC / Международные',
     bik: 'БИК коды',
     blz: 'BLZ (Германия)',
@@ -362,6 +367,7 @@ export const translations: Record<Language, TranslationDict> = {
     banks: 'Alle Banken',
     routing: 'Bankleitzahlen (BLZ)',
     swift: 'SWIFT / BIC Codes',
+    blog: 'Ratgeber & Blog',
     ifsc: 'IFSC Codes',
     bik: 'BIK Codes',
     blz: 'BLZ (Deutschland)',

@@ -10,4 +10,5 @@ export const indianBanks: Bank[] = (banksData as any[]).map((b) => ({
 export { indiaBranches };
 export * from './ifscValidator';
 export * from './seoHelper';
+export * from './articles';
 

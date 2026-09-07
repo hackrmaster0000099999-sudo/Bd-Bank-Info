@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Search, Hash, Globe, Sun, Moon } from 'lucide-react';
+import { Building2, Search, Hash, Globe, BookOpen, Sun, Moon } from 'lucide-react';
 import { Language, Country } from '../types';
 import { Link, useLocation } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -109,6 +109,18 @@ export const Header: React.FC<HeaderProps> = ({
               <Globe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>{t.swift}</span>
             </Link>
+
+            <Link
+              to="/blog"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                currentPath.startsWith('/blog') || currentPath.startsWith('/article/')
+                  ? 'bg-white dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 shadow-2xs border border-slate-200/80 dark:border-slate-600 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{t.blog}</span>
+            </Link>
           </nav>
 
           {/* Right actions: Country/Region Selector & Dark Mode Toggle */}
@@ -181,6 +193,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Globe className="w-4 h-4 shrink-0" />
             <span className="text-[11px] truncate whitespace-nowrap">{t.swift}</span>
+          </Link>
+
+          <Link
+            to="/blog"
+            className={`flex flex-col items-center py-1 px-2.5 rounded-xl transition-all min-w-0 ${
+              currentPath.startsWith('/blog') || currentPath.startsWith('/article/')
+                ? 'text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60'
+                : 'text-slate-600 dark:text-slate-400'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 shrink-0" />
+            <span className="text-[11px] truncate whitespace-nowrap">{t.blog}</span>
           </Link>
         </div>
       </div>

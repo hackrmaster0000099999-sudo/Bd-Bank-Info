@@ -72,8 +72,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-03';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-03T10:17:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-07';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-07T03:10:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'de') {
@@ -92,11 +92,12 @@ export function getFreshnessLabel(lang: Language = 'en'): string {
 }
 
 export function generateSeoData(
-  viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404',
+  viewType: 'home' | 'banks' | 'bank_detail' | 'branch_detail' | 'routing' | 'swift' | 'blog' | 'article' | 'about' | 'contact' | 'privacy' | 'disclaimer' | '404',
   lang: Language = 'en',
   bank?: Bank,
   branch?: Branch,
-  query?: string
+  query?: string,
+  articleSlug?: string
 ): { title: string; description: string; canonicalUrl: string } {
   const isBn = lang === 'bn';
   const isHi = lang === 'hi';
@@ -335,6 +336,26 @@ export function generateSeoData(
         ? 'अंतर्राष्ट्रीय धन प्रेषण (Remittance) एवं विदेशी वायर ट्रांसफर के लिए आधिकारिक स्विफ्ट / BIC कोड सूची।'
         : 'Find official 8 or 11-character SWIFT / BIC codes for international remittances and foreign wire transfers worldwide.',
       canonicalUrl: `${BASE_URL}/swift`
+    };
+  }
+
+  if (viewType === 'blog') {
+    return {
+      title: isBn
+        ? 'ব্যাংকিং আর্টিকেল, রাউটিং গাইড ও আর্থিক ব্লগ ২০২৬ | World Bank Codes'
+        : isRu
+        ? 'Банковский блог, статьи и руководства по маршрутизации 2026 | World Bank Codes'
+        : isHi
+        ? 'बैंकिंग लेख, गाइड एवं वित्तीय ब्लॉग 2026 | World Bank Codes'
+        : 'Banking Guides, Routing Articles & Financial Blog 2026 | World Bank Codes',
+      description: isBn
+        ? 'বাংলাদেশের সকল তফসিলি ব্যাংকের রাউটিং নাম্বার, সুইফট কোড, চেক বই থেকে রাউটিং বের করার নিয়ম, EFT/NPSB/RTGS ফান্ড ট্রান্সফার ও পূর্ণাঙ্গ ব্যাংকিং সহায়িকা ২০২৬।'
+        : isRu
+        ? 'Подробные статьи, руководства по БИК, SWIFT и правилам межбанковских переводов в Бангладеш, Индии и РФ.'
+        : isHi
+        ? 'बांग्लादेश व भारत के सभी बैंकों के राउटिंग, IFSC एवं स्विफ्ट कोड उपयोग पर विस्तृत बैंकिंग लेख।'
+        : 'Comprehensive banking guides, 9-digit BEFTN routing instructions, SWIFT codes, and electronic fund transfer tutorials.',
+      canonicalUrl: `${BASE_URL}/blog`
     };
   }
 

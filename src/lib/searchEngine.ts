@@ -10,6 +10,9 @@ import { australiaBanks, australiaBranches } from '../data/australia/index';
 import { uaeBanks, uaeBranches } from '../data/uae/index';
 import { singaporeBanks, singaporeBranches } from '../data/singapore/index';
 import { germanyBanks, germanyBranches } from '../data/germany/index';
+import { bdBanksArticles } from '../data/bd/articles';
+import { indiaBanksArticles } from '../data/india/articles';
+import { russianBanksArticles } from '../data/russia/articles';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -552,25 +555,52 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
 
 export function getBranchByRoutingNumber(routingNumber: string): Branch | undefined {
   const clean = routingNumber.trim().toUpperCase();
+  const cleanNoDash = clean.replace(/[-\s]/g, '');
   return branches.find(
     (b) =>
-      b.routing_number === clean ||
-      (b.bik_code && b.bik_code === clean) ||
-      b.id.toUpperCase() === clean ||
-      (b.ifsc_code && b.ifsc_code.toUpperCase() === clean)
+      (b.routing_number && b.routing_number.toUpperCase() === clean) ||
+      (b.bik_code && b.bik_code.toUpperCase() === clean) ||
+      (b.id && b.id.toUpperCase() === clean) ||
+      (b.ifsc_code && b.ifsc_code.toUpperCase() === clean) ||
+      (b.sort_code && (b.sort_code.toUpperCase() === clean || b.sort_code.replace(/[-\s]/g, '').toUpperCase() === cleanNoDash)) ||
+      (b.blz && b.blz.toUpperCase() === clean) ||
+      (b.bsb_code && (b.bsb_code.toUpperCase() === clean || b.bsb_code.replace(/[-\s]/g, '').toUpperCase() === cleanNoDash)) ||
+      (b.transit_number && (b.transit_number.toUpperCase() === clean || b.transit_number.replace(/[-\s]/g, '').toUpperCase() === cleanNoDash)) ||
+      (b.clearing_code && b.clearing_code.toUpperCase() === clean) ||
+      (b.cbuae_code && b.cbuae_code.toUpperCase() === clean) ||
+      (b.swift_code && b.swift_code.toUpperCase() === clean)
   );
 }
 
 export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
   const clean = identifier.trim().toLowerCase();
+  const cleanNoDash = clean.replace(/[-\s]/g, '');
   return branches.find(
     (b) =>
-      b.routing_number === clean ||
+      (b.routing_number && b.routing_number.toLowerCase() === clean) ||
       (b.bik_code && b.bik_code.toLowerCase() === clean) ||
       (b.corr_account && b.corr_account.toLowerCase() === clean) ||
       (b.ifsc_code && b.ifsc_code.toLowerCase() === clean) ||
-      b.id.toLowerCase() === clean ||
-      b.id.toLowerCase().endsWith(clean)
+      (b.sort_code && (b.sort_code.toLowerCase() === clean || b.sort_code.replace(/[-\s]/g, '').toLowerCase() === cleanNoDash)) ||
+      (b.blz && b.blz.toLowerCase() === clean) ||
+      (b.bsb_code && (b.bsb_code.toLowerCase() === clean || b.bsb_code.replace(/[-\s]/g, '').toLowerCase() === cleanNoDash)) ||
+      (b.transit_number && (b.transit_number.toLowerCase() === clean || b.transit_number.replace(/[-\s]/g, '').toLowerCase() === cleanNoDash)) ||
+      (b.clearing_code && b.clearing_code.toLowerCase() === clean) ||
+      (b.cbuae_code && b.cbuae_code.toLowerCase() === clean) ||
+      (b.swift_code && b.swift_code.toLowerCase() === clean) ||
+      (b.id && b.id.toLowerCase() === clean) ||
+      (b.id && b.id.toLowerCase().endsWith(clean))
   );
+}
+
+// Unified multi-country article library
+export const allBankArticles = [
+  ...bdBanksArticles,
+  ...indiaBanksArticles,
+  ...russianBanksArticles
+];
+
+export function getArticleBySlug(slug: string) {
+  return allBankArticles.find((a) => a.slug === slug || a.bank_id === slug || a.id === slug);
 }
 

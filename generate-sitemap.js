@@ -19,6 +19,7 @@ try {
         { url: '/banks', priority: '0.9', changefreq: 'daily' },
         { url: '/routing', priority: '0.9', changefreq: 'daily' },
         { url: '/swift', priority: '0.9', changefreq: 'daily' },
+        { url: '/blog', priority: '0.9', changefreq: 'daily' },
         { url: '/about', priority: '0.6', changefreq: 'monthly' },
         { url: '/contact', priority: '0.6', changefreq: 'monthly' },
         { url: '/privacy', priority: '0.5', changefreq: 'yearly' },
@@ -397,7 +398,15 @@ ${pages
       };
     });
 
-    const countryPages = [...bankPages, ...branchPages];
+    const articlePages = code === 'bd'
+      ? uniqueBanks.map(bank => ({
+          url: `/article/${bank.id}`,
+          priority: '0.85',
+          changefreq: 'weekly',
+        }))
+      : [];
+
+    const countryPages = [...bankPages, ...articlePages, ...branchPages];
     if (countryPages.length > 0) {
       saveXmlFile(info.filename, generateUrlSetXml(countryPages));
       generatedSitemaps.push(info.filename);

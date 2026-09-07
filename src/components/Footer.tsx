@@ -108,6 +108,14 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <Link
+                  to="/blog"
+                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  {t.blog}
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/"
                   className="hover:text-emerald-400 transition-colors cursor-pointer"
                 >

@@ -196,3 +196,73 @@ export interface ChangeLogItem {
   changes: string[];
   bb_ref_no?: string;
 }
+
+export interface ArticleSection {
+  id: string;
+  heading: string;
+  heading_bn?: string;
+  heading_hi?: string;
+  heading_ru?: string;
+  heading_de?: string;
+  content: string;
+  content_bn?: string;
+  content_hi?: string;
+  content_ru?: string;
+  content_de?: string;
+  keyTakeaways?: string[];
+  keyTakeaways_bn?: string[];
+}
+
+export interface BankArticle {
+  id: string; // matches bank id, e.g., 'islami-bank-bangladesh'
+  bank_id: string;
+  slug: string;
+  country: Country;
+  title: string;
+  title_bn?: string;
+  title_hi?: string;
+  title_ru?: string;
+  title_de?: string;
+  subtitle: string;
+  subtitle_bn?: string;
+  subtitle_hi?: string;
+  subtitle_ru?: string;
+  subtitle_de?: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keywords?: string[];
+  read_time: string;
+  author: string;
+  published_date: string;
+  last_updated: string;
+  overview: string;
+  overview_bn?: string;
+  overview_hi?: string;
+  overview_ru?: string;
+  overview_de?: string;
+  sections: ArticleSection[];
+  faqs: {
+    question: string;
+    question_bn?: string;
+    question_hi?: string;
+    question_ru?: string;
+    question_de?: string;
+    answer: string;
+    answer_bn?: string;
+    answer_hi?: string;
+    answer_ru?: string;
+    answer_de?: string;
+  }[];
+  quick_stats: {
+    label: string;
+    label_bn?: string;
+    label_hi?: string;
+    label_ru?: string;
+    label_de?: string;
+    value: string;
+    value_bn?: string;
+    value_hi?: string;
+    value_ru?: string;
+    value_de?: string;
+  }[];
+}
