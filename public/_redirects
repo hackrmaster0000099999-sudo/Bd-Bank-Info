@@ -1,4 +1,6 @@
-/sitemap.xml    /sitemap.xml    200
-/robots.txt     /robots.txt     200
-/site.webmanifest /site.webmanifest 200
-/*              /index.html     200
+/sitemap.xml       /sitemap.xml       200
+/sitemap_index.xml /sitemap_index.xml 200
+/sitemap-*.xml     /sitemap-:splat.xml 200
+/robots.txt        /robots.txt        200
+/site.webmanifest  /site.webmanifest  200
+/*                 /index.html        200

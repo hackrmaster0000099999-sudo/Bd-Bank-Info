@@ -73,7 +73,7 @@ const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
 export const CURRENT_DATA_VERSION_DATE = '2026-09-07';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-07T03:10:00.000Z';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-07T05:25:30.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'de') {
@@ -281,13 +281,7 @@ export function generateSeoData(
 
   if (viewType === 'banks') {
     return {
-      title: isBn
-        ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নাম্বার ও ব্রাঞ্চ তালিকা (২০২৬ আপডেট) | World Bank Codes'
-        : isRu
-        ? 'Справочник банков России, Индии и Бангладеш (БИК, SWIFT, Реквизиты 2026) | World Bank Codes'
-        : isHi
-        ? 'सभी अनुसूचित बैंक सूची, IFSC एवं स्विफ्ट कोड (2026 अपडेटेड) | World Bank Codes'
-        : 'All Scheduled Banks List, Routing Numbers & SWIFT Codes Directory (2026) | World Bank Codes',
+      title: 'All Scheduled Banks Directory, Routing Numbers & SWIFT Codes (2026) | World Bank Codes',
       description: isBn
         ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের সকল তফসিলি ব্যাংকের ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড ও জেলা ভিত্তিক পূর্ণাঙ্গ শাখা তালিকা ২০২৬।'
         : isRu
@@ -301,13 +295,7 @@ export function generateSeoData(
 
   if (viewType === 'routing') {
     return {
-      title: isBn
-        ? 'সকল ব্যাংকের রাউটিং নাম্বার ও BEFTN কোড সার্চ ২০২৬ | World Bank Codes'
-        : isRu
-        ? 'Поиск БИК Банка России, Корр. счетов и Маршрутизации 2026 | World Bank Codes'
-        : isHi
-        ? 'IFSC कोड एवं बैंक राউটিং নম্বর ডিরেক্টরি (Updated 2026) | World Bank Codes'
-        : 'Bank Routing Numbers, BEFTN & Clearing Code Directory 2026 | World Bank Codes',
+      title: 'Bank Routing Numbers, BEFTN & Clearing Code Directory 2026 | World Bank Codes',
       description: isBn
         ? 'বাংলাদেশের যে কোনো ব্যাংক ও শাখার ৯-সংখ্যার BEFTN রাউটিং নম্বর, জেলা, শাখা কোড এবং ঠিকানা তাৎক্ষণিক সার্চ করুন। বাংলাদেশ ব্যাংক অনুমোদিত ২০২৬ হালনাগাদ ডাটাবেজ।'
         : isRu
@@ -321,13 +309,7 @@ export function generateSeoData(
 
   if (viewType === 'swift') {
     return {
-      title: isBn
-        ? 'সকল ব্যাংকের সুইফট কোড (SWIFT / BIC) ডিরেক্টরি ২০২৬ | World Bank Codes'
-        : isRu
-        ? 'Справочник SWIFT / BIC кодов банков 2026 | World Bank Codes'
-        : isHi
-        ? 'स्विफ्ट कोड (SWIFT / BIC) डायरेक्टरी 2026 | World Bank Codes'
-        : 'Global SWIFT Code (BIC) Directory (2026 Updated) | World Bank Codes',
+      title: 'Global SWIFT Code (BIC) Directory & Bank Finder 2026 | World Bank Codes',
       description: isBn
         ? 'বৈদেশিক রেমিট্যান্স, ফ্রিল্যান্সিং পেমেন্ট ও আন্তর্জাতিক ব্যাংক ট্রান্সফারের জন্য বাংলাদেশ ও বিশ্বের সকল ব্যাংকের অফিশিয়াল ৮ ও ১১ ডিজিটের সুইফট/BIC কোড।'
         : isRu
@@ -341,13 +323,7 @@ export function generateSeoData(
 
   if (viewType === 'blog') {
     return {
-      title: isBn
-        ? 'ব্যাংকিং আর্টিকেল, রাউটিং গাইড ও আর্থিক ব্লগ ২০২৬ | World Bank Codes'
-        : isRu
-        ? 'Банковский блог, статьи и руководства по маршрутизации 2026 | World Bank Codes'
-        : isHi
-        ? 'बैंकिंग लेख, गाइड एवं वित्तीय ब्लॉग 2026 | World Bank Codes'
-        : 'Banking Guides, Routing Articles & Financial Blog 2026 | World Bank Codes',
+      title: 'Banking Guides, Routing Articles & Financial Blog 2026 | World Bank Codes',
       description: isBn
         ? 'বাংলাদেশের সকল তফসিলি ব্যাংকের রাউটিং নাম্বার, সুইফট কোড, চেক বই থেকে রাউটিং বের করার নিয়ম, EFT/NPSB/RTGS ফান্ড ট্রান্সফার ও পূর্ণাঙ্গ ব্যাংকিং সহায়িকা ২০২৬।'
         : isRu
@@ -400,13 +376,7 @@ export function generateSeoData(
   }
 
   return {
-    title: isBn
-      ? 'বাংলাদেশের সকল ব্যাংকের রাউটিং নাম্বার, BEFTN কোড ও সুইফট ডিরেক্টরি ২০২৬ | World Bank Codes'
-      : isRu
-      ? 'World Bank Codes - БИК, Корр. счета, IFSC и SWIFT коды банков (2026)'
-      : isHi
-      ? 'World Bank Codes - बैंक IFSC, राউটিং নম্বর ও সুইফট কোড ফাইন্ডার'
-      : 'World Bank Codes - Global Bank Routing Numbers, BEFTN, IFSC & SWIFT Code Finder 2026',
+    title: 'World Bank Codes - Global Bank Routing Numbers, BEFTN, IFSC & SWIFT Code Finder 2026',
     description: isBn
       ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের ৬১টি তফসিলি ব্যাংকের সকল শাখার অফিশিয়াল ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড (SWIFT/BIC), জেলা ভিত্তিক শাখা তালিকা ও ঠিকানা। ২০২৬ সালের হালনাগাদকৃত ডাটাবেজ।'
       : isRu
