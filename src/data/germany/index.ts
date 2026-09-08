@@ -21,3 +21,4 @@ export const germanyBranches: Branch[] = [
 export * from './blzValidator';
 export * from './guide';
 export * from './seo';
+export * from './articles';

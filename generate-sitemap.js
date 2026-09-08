@@ -379,11 +379,18 @@ ${pages
     }
   ];
 
-  // Collect all bank articles across Bangladesh, India, Russia, etc.
+  // Collect all bank articles across Bangladesh, India, Russia, USA, UK, Germany, Canada, Australia, etc.
   const allArticleBanks = [
     ...(countryData.bd?.banks || []),
     ...(countryData.in?.banks || []),
     ...(countryData.ru?.banks || []),
+    ...(countryData.us?.banks || []),
+    ...(countryData.uk?.banks || []),
+    ...(countryData.de?.banks || []),
+    ...(countryData.ca?.banks || []),
+    ...(countryData.au?.banks || []),
+    ...(countryData.ae?.banks || []),
+    ...(countryData.sg?.banks || []),
   ];
 
   const seenArticleSlugs = new Set();

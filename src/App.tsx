@@ -107,6 +107,24 @@ export default function App() {
     }
   };
 
+  // Synchronize language and country state globally across all navigation points
+  const handleSetLanguage = (newLang: Language) => {
+    setLang(newLang);
+    if (newLang === 'de' && country !== 'de') {
+      setCountry('de');
+      setFilters((prev) => ({ ...prev, country: 'de', bankId: 'all', division: 'all', district: 'all' }));
+    } else if (newLang === 'hi' && country !== 'in') {
+      setCountry('in');
+      setFilters((prev) => ({ ...prev, country: 'in', bankId: 'all', division: 'all', district: 'all' }));
+    } else if (newLang === 'bn' && country !== 'bd') {
+      setCountry('bd');
+      setFilters((prev) => ({ ...prev, country: 'bd', bankId: 'all', division: 'all', district: 'all' }));
+    } else if (newLang === 'ru' && country !== 'ru') {
+      setCountry('ru');
+      setFilters((prev) => ({ ...prev, country: 'ru', bankId: 'all', division: 'all', district: 'all' }));
+    }
+  };
+
   // Selected detail view items
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
@@ -293,7 +311,7 @@ export default function App() {
       {/* Top Header Navigation */}
       <Header
         lang={lang}
-        onSetLanguage={setLang}
+        onSetLanguage={handleSetLanguage}
         country={country}
         onSetCountry={handleSetCountry}
         darkMode={darkMode}
@@ -319,6 +337,8 @@ export default function App() {
           <BlogPage
             lang={lang}
             country={country}
+            onSetCountry={handleSetCountry}
+            onSetLanguage={handleSetLanguage}
             onSelectArticle={handleSelectArticle}
             onNavigateHome={() => navigate('/')}
           />
@@ -417,7 +437,7 @@ export default function App() {
                 <HeroCountrySelector
                   country={country}
                   onSetCountry={handleSetCountry}
-                  onSetLanguage={setLang}
+                  onSetLanguage={handleSetLanguage}
                   lang={lang}
                 />
               </div>

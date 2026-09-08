@@ -13,6 +13,13 @@ import { germanyBanks, germanyBranches } from '../data/germany/index';
 import { bdBanksArticles } from '../data/bd/articles';
 import { indiaBanksArticles } from '../data/india/articles';
 import { russianBanksArticles } from '../data/russia/articles';
+import { usaBanksArticles } from '../data/usa/articles';
+import { ukBanksArticles } from '../data/uk/articles';
+import { germanyBanksArticles } from '../data/germany/articles';
+import { canadaBanksArticles } from '../data/canada/articles';
+import { australiaBanksArticles } from '../data/australia/articles';
+import { uaeBanksArticles } from '../data/uae/articles';
+import { singaporeBanksArticles } from '../data/singapore/articles';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -597,7 +604,14 @@ export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
 export const allBankArticles = [
   ...bdBanksArticles,
   ...indiaBanksArticles,
-  ...russianBanksArticles
+  ...russianBanksArticles,
+  ...usaBanksArticles,
+  ...ukBanksArticles,
+  ...germanyBanksArticles,
+  ...canadaBanksArticles,
+  ...australiaBanksArticles,
+  ...uaeBanksArticles,
+  ...singaporeBanksArticles
 ];
 
 export function getArticleBySlug(slug: string) {

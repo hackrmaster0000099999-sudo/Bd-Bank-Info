@@ -15,3 +15,4 @@ export const uaeBranches: Branch[] = [
 export * from './uaeRoutingValidator';
 export * from './guide';
 export * from './seo';
+export * from './articles';

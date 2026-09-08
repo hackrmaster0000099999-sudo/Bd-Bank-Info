@@ -7,3 +7,4 @@ export { ukBranches };
 export * from './guide';
 export * from './sortCodeValidator';
 export * from './seo';
+export * from './articles';

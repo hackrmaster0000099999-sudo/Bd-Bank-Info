@@ -128,6 +128,7 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
       else if (tabId === 'bd') onSetLanguage('bn');
       else if (tabId === 'in') onSetLanguage('hi');
       else if (tabId === 'ru') onSetLanguage('ru');
+      else onSetLanguage('en');
     }
   };
 
