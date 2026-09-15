@@ -34,6 +34,7 @@ try {
     au: { name: 'Australia', filename: 'sitemap-au.xml', banks: [], branches: [] },
     ae: { name: 'United Arab Emirates', filename: 'sitemap-ae.xml', banks: [], branches: [] },
     sg: { name: 'Singapore', filename: 'sitemap-sg.xml', banks: [], branches: [] },
+    my: { name: 'Malaysia', filename: 'sitemap-my.xml', banks: [], branches: [] },
     de: { name: 'Germany', filename: 'sitemap-de.xml', banks: [], branches: [] },
     ru: { name: 'Russia', filename: 'sitemap-ru.xml', banks: [], branches: [] }
   };
@@ -155,6 +156,18 @@ try {
       if (Array.isArray(list)) countryData.de.banks.push(...list);
     } catch (e) {
       console.warn('Warning: Could not parse germany/banks.json:', e.message);
+    }
+  }
+
+  // 6f. Malaysia Banks
+  const myBanksPath = path.join(__dirname, 'src/data/malaysia/banks.json');
+  if (fs.existsSync(myBanksPath)) {
+    try {
+      const raw = fs.readFileSync(myBanksPath, 'utf8').trim();
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) countryData.my.banks.push(...list);
+    } catch (e) {
+      console.warn('Warning: Could not parse malaysia/banks.json:', e.message);
     }
   }
 
@@ -333,6 +346,21 @@ try {
     }
   }
 
+  // 15. Malaysia Branches
+  const myBranchesDir = path.join(__dirname, 'src/data/malaysia/branches');
+  if (fs.existsSync(myBranchesDir)) {
+    const files = fs.readdirSync(myBranchesDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+      try {
+        const raw = fs.readFileSync(path.join(myBranchesDir, f), 'utf8').trim();
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) countryData.my.branches.push(...parsed);
+      } catch (e) {
+        console.warn(`Warning: Could not parse Malaysia branch file ${f}:`, e.message);
+      }
+    }
+  }
+
   const generatedSitemaps = [];
 
   const publicDir = path.join(__dirname, 'public');
@@ -380,6 +408,28 @@ ${pages
   ];
 
   // Collect all bank articles across Bangladesh, India, Russia, USA, UK, Germany, Canada, Australia, etc.
+  const nationalGuideSlugs = [
+    'how-us-banking-works',
+    'how-uk-banking-works',
+    'how-india-banking-works',
+    'how-bangladesh-banking-works',
+    'how-canada-banking-works',
+    'how-australia-banking-works',
+    'how-germany-banking-works',
+    'how-uae-banking-works',
+    'how-singapore-banking-works',
+    'how-malaysia-banking-works',
+    'how-russia-banking-works'
+  ];
+
+  nationalGuideSlugs.forEach(slug => {
+    masterArticlePages.push({
+      url: `/article/${slug}`,
+      priority: '0.9',
+      changefreq: 'weekly'
+    });
+  });
+
   const allArticleBanks = [
     ...(countryData.bd?.banks || []),
     ...(countryData.in?.banks || []),
@@ -391,6 +441,7 @@ ${pages
     ...(countryData.au?.banks || []),
     ...(countryData.ae?.banks || []),
     ...(countryData.sg?.banks || []),
+    ...(countryData.my?.banks || []),
   ];
 
   const seenArticleSlugs = new Set();

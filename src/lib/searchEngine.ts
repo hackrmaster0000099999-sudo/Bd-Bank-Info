@@ -10,6 +10,7 @@ import { australiaBanks, australiaBranches } from '../data/australia/index';
 import { uaeBanks, uaeBranches } from '../data/uae/index';
 import { singaporeBanks, singaporeBranches } from '../data/singapore/index';
 import { germanyBanks, germanyBranches } from '../data/germany/index';
+import { malaysiaBanks, malaysiaBranches } from '../data/malaysia/index';
 import { bdBanksArticles } from '../data/bd/articles';
 import { indiaBanksArticles } from '../data/india/articles';
 import { russianBanksArticles } from '../data/russia/articles';
@@ -20,6 +21,8 @@ import { canadaBanksArticles } from '../data/canada/articles';
 import { australiaBanksArticles } from '../data/australia/articles';
 import { uaeBanksArticles } from '../data/uae/articles';
 import { singaporeBanksArticles } from '../data/singapore/articles';
+import { malaysiaBanksArticles } from '../data/malaysia/articles';
+import { countrySharedGuideArticles, getCountrySharedGuideSlug, getCountrySharedGuideTitle } from '../data/countryGuideArticles';
 import { convertBnToEnNum } from './routingDecoder';
 
 // Ensure all BD banks have country='bd'
@@ -73,7 +76,12 @@ const deBanksList: Bank[] = (germanyBanks as any[]).map((b) => ({
   country: 'de' as const,
 }));
 
-const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList, ...sgBanksList, ...deBanksList];
+const myBanksList: Bank[] = (malaysiaBanks as any[]).map((b) => ({
+  ...b,
+  country: 'my' as const,
+}));
+
+const allBanksList: Bank[] = [...bdBanks, ...inBanks, ...ruBanks, ...usBanks, ...unitedKingdomBanks, ...caBanksList, ...auBanksList, ...aeBanksList, ...sgBanksList, ...deBanksList, ...myBanksList];
 
 // Ensure all branches have appropriate country tags
 const branches: Branch[] = [
@@ -116,6 +124,10 @@ const branches: Branch[] = [
   ...germanyBranches.map((br) => ({
     ...br,
     country: 'de' as const,
+  })),
+  ...malaysiaBranches.map((br) => ({
+    ...br,
+    country: 'my' as const,
   }))
 ];
 
@@ -137,6 +149,32 @@ export function getBankBySlug(slug: string): Bank | undefined {
 
 export function getBranchesForBank(bankId: string): Branch[] {
   return branches.filter((br) => br.bank_id === bankId || br.bank_id.toLowerCase() === bankId.toLowerCase());
+}
+
+export function slugifyState(division: string): string {
+  return division
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export function getBranchesForBankAndState(bankId: string, stateSlug: string): { bank: Bank | undefined; divisionName: string; branches: Branch[] } {
+  const bank = getBankBySlug(bankId);
+  const bankBranches = getBranchesForBank(bankId);
+  const normalizedSlug = stateSlug.toLowerCase().trim();
+
+  // Find matching division
+  const matchedBranch = bankBranches.find((br) => slugifyState(br.division) === normalizedSlug);
+  const divisionName = matchedBranch ? matchedBranch.division : stateSlug;
+
+  const stateBranches = bankBranches.filter((br) => slugifyState(br.division) === normalizedSlug);
+
+  return {
+    bank,
+    divisionName,
+    branches: stateBranches
+  };
 }
 
 export function getBranchBySlug(bankSlug: string, branchSlug: string): Branch | undefined {
@@ -600,8 +638,9 @@ export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
   );
 }
 
-// Unified multi-country article library
+// Unified multi-country article library (including per-country shared clearing architecture guides)
 export const allBankArticles = [
+  ...countrySharedGuideArticles,
   ...bdBanksArticles,
   ...indiaBanksArticles,
   ...russianBanksArticles,
@@ -611,8 +650,11 @@ export const allBankArticles = [
   ...canadaBanksArticles,
   ...australiaBanksArticles,
   ...uaeBanksArticles,
-  ...singaporeBanksArticles
+  ...singaporeBanksArticles,
+  ...malaysiaBanksArticles
 ];
+
+export { getCountrySharedGuideSlug, getCountrySharedGuideTitle, countrySharedGuideArticles };
 
 export function getArticleBySlug(slug: string) {
   return allBankArticles.find((a) => a.slug === slug || a.bank_id === slug || a.id === slug);

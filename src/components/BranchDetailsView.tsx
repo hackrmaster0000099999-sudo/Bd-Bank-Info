@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Building2, MapPin, Phone, Mail, Hash, Globe, ArrowLeft, HeartHandshake, HelpCircle, BookOpen, CheckCircle2, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
+import { Building2, MapPin, Phone, Mail, Hash, Globe, ArrowLeft, HeartHandshake, HelpCircle, BookOpen, CheckCircle2, ChevronDown, ChevronUp, ShieldCheck, Layers } from 'lucide-react';
 import { Branch, Language } from '../types';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
@@ -11,6 +11,7 @@ import { decodeCanadaRouting } from '../data/canada/canadaRoutingValidator';
 import { decodeAustraliaBsb } from '../data/australia/australiaBsbValidator';
 import { decodeBlz } from '../data/germany/blzValidator';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { slugifyState } from '../lib/searchEngine';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
 
@@ -258,8 +259,11 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
         }
       ];
 
-  // Update SEO Meta Tags on view mount
+  // Update SEO Meta Tags on view mount (with canonical pointing to consolidated state hub)
   useEffect(() => {
+    const stateSlug = slugifyState(branch.division || branch.district || 'all');
+    const consolidatedCanonical = branch.bank_id ? `https://worldbankcodes.com/bank/${branch.bank_id}/${stateSlug}` : undefined;
+
     updateSEOMeta({
       title: isUS
         ? `${branch.name} - ${branch.bank_name} ABA Routing Number ${branch.routing_number}, SWIFT & Address | World Bank Codes`
@@ -283,6 +287,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
         : isIndia
         ? `Official IFSC Code: ${branch.ifsc_code}, MICR: ${branch.routing_number} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, India.`
         : `Official BEFTN Routing Number: ${branch.routing_number} and SWIFT Code for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, Bangladesh.`,
+      canonicalUrl: consolidatedCanonical,
       lang,
       branch,
       faqs
@@ -302,6 +307,16 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
         </button>
 
         <div className="flex items-center gap-2">
+          {branch.division && (
+            <Link
+              to={`/bank/${branch.bank_id}/${slugifyState(branch.division)}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-slate-600 transition-colors"
+            >
+              <Layers className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>{branch.division}</span>
+            </Link>
+          )}
+
           <Link
             to={`/bank/${branch.bank_id}`}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 transition-colors"

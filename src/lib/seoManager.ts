@@ -38,6 +38,11 @@ import {
   getSingaporeHomeSeo
 } from '../data/singapore/index';
 import {
+  getMalaysiaBankSeo,
+  getMalaysiaBranchSeo,
+  getMalaysiaHomeSeo
+} from '../data/malaysia/index';
+import {
   getGermanyBankSeo,
   getGermanyBranchSeo,
   getGermanyHomeSeo
@@ -63,7 +68,10 @@ export interface SEOProps {
   lang?: Language;
   bank?: Bank;
   branch?: Branch;
-  schemaType?: 'home' | 'bank' | 'branch' | 'general';
+  stateBranches?: Branch[];
+  stateName?: string;
+  stateSlug?: string;
+  schemaType?: 'home' | 'bank' | 'branch' | 'bank_state' | 'general';
   faqs?: Array<{ question: string; answer: string }>;
   dateModified?: string;
   is404?: boolean;
@@ -72,23 +80,26 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-08';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-08T09:58:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-14';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-14T10:00:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
+  if (lang === 'ms') {
+    return `Pangkalan Data Disahkan & Terkini 2026 • 100% Disahkan oleh Bank Negara Malaysia (BNM), PayNet DuitNow, RENTAS & SWIFT`;
+  }
   if (lang === 'de') {
-    return `Verifizierte & tagesaktuelle Datenbank 2026 • 100% zertifiziert durch Deutsche Bundesbank, BaFin, MAS Singapur, CBUAE, US Fed, Payments Canada, Bank of England & SWIFT`;
+    return `Verifizierte & tagesaktuelle Datenbank 2026 • 100% zertifiziert durch Deutsche Bundesbank, BaFin, Bank Negara Malaysia, MAS Singapur, CBUAE, US Fed, Payments Canada, Bank of England & SWIFT`;
   }
   if (lang === 'ru') {
-    return `Официальная актуальная база данных 2026 • Верифицировано Бундесбанком (Германия), ЦБ РФ, MAS Сингапур, CBUAE, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
+    return `Официальная актуальная база данных 2026 • Верифицировано Бундесбанком (Германия), Банком Негара Малайзии, ЦБ РФ, MAS Сингапур, CBUAE, US Fed, Bank of Canada, Bank of England, RBI и SWIFT`;
   }
   if (lang === 'hi') {
-    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • ड्यूश बुंडेसबैंक (जर्मनी), MAS सिंगापुर, CBUAE, US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
+    return `आज का सत्यापित व अपडेटेड डेटाबेस (2026) • बैंक नेगारा मलेशिया, ड्यूश बुंडेसबैंक (जर्मनी), MAS सिंगापुर, CBUAE, US Fed, Payments Canada, Bank of England, RBI एवं बांग्लादेश बैंक प्रमाणित`;
   }
   if (lang === 'bn') {
-    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ডয়চে বুন্দেসব্যাংক (জার্মানি), MAS সিঙ্গাপুর, ইউএই CBUAE, ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
+    return `আজকের সর্বশেষ হালনাগাদকৃত ডাটাবেজ (২০২৬) • ব্যাংক নেগারা মালয়েশিয়া, ডয়চে বুন্দেসব্যাংক (জার্মানি), MAS সিঙ্গাপুর, ইউএই CBUAE, ইউএস ফেডারেল রিজার্ভ, পেমেন্টস কানাডা, ব্যাংক অব ইংল্যান্ড, আরবিআই ও রাশিয়ান সেন্ট্রাল ব্যাংক দ্বারা যাচাইকৃত`;
   }
-  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (Deutsche Bundesbank, MAS Singapore, CBUAE, US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
+  return `Verified & Fully Updated for 2026 • 100% Central Bank Certified (Bank Negara Malaysia, Deutsche Bundesbank, MAS Singapore, CBUAE, US Fed, Payments Canada, Bank of England, CBR, RBI, Bangladesh Bank)`;
 }
 
 export function generateSeoData(
@@ -104,11 +115,18 @@ export function generateSeoData(
   const isRu = lang === 'ru';
 
   if (viewType === 'branch_detail' && branch) {
+    const stateSlug = branch.division
+      ? branch.division.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+      : (branch.district ? branch.district.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : 'all');
+    const consolidatedUrl = branch.bank_id
+      ? `${BASE_URL}/bank/${branch.bank_id}/${stateSlug}`
+      : `${BASE_URL}/branch/${branch.id || branch.routing_number}`;
+
     if (branch.country === 'us') {
       return {
         title: getUsaBranchMetaTitle(branch, lang),
         description: getUsaBranchMetaDescription(branch, lang),
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -116,7 +134,7 @@ export function generateSeoData(
       return {
         title: getUkBranchMetaTitle(branch, lang),
         description: getUkBranchMetaDescription(branch, lang),
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.sort_code || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -125,7 +143,7 @@ export function generateSeoData(
       return {
         title: caSeo.title,
         description: caSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.transit_number || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -134,7 +152,7 @@ export function generateSeoData(
       return {
         title: auSeo.title,
         description: auSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.bsb_code || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -143,7 +161,7 @@ export function generateSeoData(
       return {
         title: aeSeo.title,
         description: aeSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -152,7 +170,16 @@ export function generateSeoData(
       return {
         title: sgSeo.title,
         description: sgSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
+      };
+    }
+
+    if (branch.country === 'my') {
+      const mySeo = getMalaysiaBranchSeo(branch, lang);
+      return {
+        title: mySeo.title,
+        description: mySeo.description,
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -161,7 +188,7 @@ export function generateSeoData(
       return {
         title: deSeo.title,
         description: deSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.id || branch.blz || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -169,7 +196,7 @@ export function generateSeoData(
       return {
         title: getIndiaBranchMetaTitle(branch, lang),
         description: getIndiaBranchMetaDescription(branch, lang),
-        canonicalUrl: `${BASE_URL}/branch/${branch.ifsc_code || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -179,7 +206,7 @@ export function generateSeoData(
       return {
         title: ruSeo.title,
         description: ruSeo.description,
-        canonicalUrl: `${BASE_URL}/branch/${branch.bik_code || branch.routing_number}`
+        canonicalUrl: consolidatedUrl
       };
     }
 
@@ -187,7 +214,7 @@ export function generateSeoData(
     return {
       title: getBdBranchesMetaTitle(branch, lang),
       description: getBdBranchesMetaDescription(branch, lang),
-      canonicalUrl: `${BASE_URL}/branch/${branch.routing_number}`
+      canonicalUrl: consolidatedUrl
     };
   }
 
@@ -240,6 +267,15 @@ export function generateSeoData(
       return {
         title: sgSeo.title,
         description: sgSeo.description,
+        canonicalUrl: `${BASE_URL}/bank/${bank.id}`
+      };
+    }
+
+    if (bank.country === 'my') {
+      const mySeo = getMalaysiaBankSeo(bank, lang);
+      return {
+        title: mySeo.title,
+        description: mySeo.description,
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -395,6 +431,10 @@ export function updateSEOMeta({
   lang = 'en',
   bank,
   branch,
+  stateBranches,
+  stateName,
+  stateSlug,
+  schemaType,
   faqs,
   dateModified = CURRENT_DATA_VERSION_TIMESTAMP,
   is404 = false
@@ -649,6 +689,77 @@ export function updateSEOMeta({
           'position': 3,
           'name': `${branch.name} Branch`,
           'item': `${BASE_URL}/branch/${branch.bik_code || branch.ifsc_code || branch.routing_number}`
+        }
+      ]
+    });
+  } else if (bank && schemaType === 'bank_state' && stateBranches && stateBranches.length > 0) {
+    const regionName = stateName || stateBranches[0]?.division || 'Region';
+    const stateUrl = `${BASE_URL}/bank/${bank.id}/${stateSlug || 'state'}`;
+
+    const departmentList = stateBranches.map((br) => ({
+      '@type': 'BankOrCreditUnion',
+      'name': `${bank.name} - ${br.name}`,
+      'description': `${br.name} in ${br.district || regionName}, ${regionName}. Routing/Clearing: ${br.routing_number || br.ifsc_code || br.sort_code || 'N/A'}, SWIFT: ${br.swift_code || bank.swift_code}.`,
+      'telephone': br.phone || undefined,
+      'address': {
+        '@type': 'PostalAddress',
+        'streetAddress': br.address,
+        'addressLocality': br.district,
+        'addressRegion': br.division || regionName,
+        'postalCode': br.zip_code || undefined,
+        'addressCountry': countryCode
+      },
+      'identifier': [
+        br.ifsc_code ? { '@type': 'PropertyValue', 'name': 'IFSC Code', 'value': br.ifsc_code } : null,
+        br.sort_code ? { '@type': 'PropertyValue', 'name': 'Sort Code', 'value': br.sort_code } : null,
+        br.bik_code ? { '@type': 'PropertyValue', 'name': 'BIK Code', 'value': br.bik_code } : null,
+        br.routing_number ? {
+          '@type': 'PropertyValue',
+          'name': isUS ? 'ABA Routing Number' : isUK ? 'Sort Code' : isCA ? 'EFT Routing' : isAU ? 'BSB Number' : isDE ? 'BLZ' : isRussia ? 'BIK Code' : isIndia ? 'MICR Code' : 'Routing Number',
+          'value': br.routing_number
+        } : null,
+        { '@type': 'PropertyValue', 'name': 'SWIFT / BIC Code', 'value': br.swift_code || bank.swift_code }
+      ].filter(Boolean)
+    }));
+
+    schemaData.push({
+      '@context': 'https://schema.org',
+      '@type': 'FinancialService',
+      'name': `${bank.name} - ${regionName} Branches & Routing Directory`,
+      'alternateName': [bank.name_bn, bank.name_hi, bank.name_ru, bank.short_name].filter(Boolean),
+      'url': stateUrl,
+      'description': description || `${bank.name} branches in ${regionName} with verified routing numbers, SWIFT/BIC codes and addresses.`,
+      'address': {
+        '@type': 'PostalAddress',
+        'addressRegion': regionName,
+        'addressCountry': countryCode
+      },
+      'dateModified': dateModified,
+      'datePublished': '2026-01-01T00:00:00.000Z',
+      'department': departmentList
+    });
+
+    schemaData.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': BASE_URL
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': bank.name,
+          'item': `${BASE_URL}/bank/${bank.id}`
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': `${regionName} Branches`,
+          'item': stateUrl
         }
       ]
     });

@@ -80,6 +80,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <option value="au" className="dark:bg-slate-800">🇦🇺 {t.australia}</option>
             <option value="ae" className="dark:bg-slate-800">🇦🇪 {t.uae || 'United Arab Emirates'}</option>
             <option value="sg" className="dark:bg-slate-800">🇸🇬 {t.singapore || 'Singapore'}</option>
+            <option value="my" className="dark:bg-slate-800">🇲🇾 {t.malaysia || 'Malaysia'}</option>
             <option value="de" className="dark:bg-slate-800">🇩🇪 {t.germany || 'Germany'}</option>
             <option value="ru" className="dark:bg-slate-800">🇷🇺 {t.russia}</option>
             <option value="in" className="dark:bg-slate-800">🇮🇳 {t.india}</option>

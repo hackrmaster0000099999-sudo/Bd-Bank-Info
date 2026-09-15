@@ -12,6 +12,7 @@ import { canadaBanksArticles } from '../data/canada/articles';
 import { australiaBanksArticles } from '../data/australia/articles';
 import { uaeBanksArticles } from '../data/uae/articles';
 import { singaporeBanksArticles } from '../data/singapore/articles';
+import { malaysiaBanksArticles } from '../data/malaysia/articles';
 import { HeroCountrySelector } from './HeroCountrySelector';
 
 interface BlogPageProps {
@@ -42,12 +43,14 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       else if (c === 'bd') onSetLanguage('bn');
       else if (c === 'in') onSetLanguage('hi');
       else if (c === 'ru') onSetLanguage('ru');
-      else if (c === 'us' || c === 'uk' || c === 'ca' || c === 'au' || c === 'ae' || c === 'sg') onSetLanguage('en');
+      else if (c === 'my') onSetLanguage('ms');
+      else onSetLanguage('en');
     }
   };
 
   const articlesToFilter = useMemo(() => {
     if (country === 'all') return allBankArticles;
+    if (country === 'my') return malaysiaBanksArticles;
     if (country === 'sg') return singaporeBanksArticles;
     if (country === 'ae') return uaeBanksArticles;
     if (country === 'au') return australiaBanksArticles;
@@ -65,6 +68,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   const isHindi = lang === 'hi';
   const isBengali = lang === 'bn';
   const isGerman = lang === 'de';
+  const isMalay = lang === 'ms';
 
   const filteredArticles = useMemo(() => {
     return articlesToFilter.filter((article) => {
@@ -160,7 +164,9 @@ export const BlogPage: React.FC<BlogPageProps> = ({
 
   // Dynamic banner texts based on active country / language
   const bannerBadge =
-    country === 'sg'
+    country === 'my'
+      ? 'Bank Negara Malaysia (BNM) Regulated Banking Guides 2026'
+      : country === 'sg'
       ? 'Monetary Authority of Singapore (MAS) Regulated Banking Guides 2026'
       : country === 'ae'
       ? 'Central Bank of the UAE (CBUAE) Verified Banking Guides 2026'
@@ -183,7 +189,11 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       : 'Global Banking Knowledge Hub & Verified Guides 2026';
 
   const bannerTitle =
-    country === 'sg'
+    isMalay || (country === 'my' && lang === 'ms')
+      ? 'Panduan Kod Bank Malaysia, Nombor Routing IBG, DuitNow & SWIFT 2026'
+      : country === 'my'
+      ? 'Malaysia Banks 3-Digit BNM Codes, DuitNow, IBG & RENTAS Guides 2026'
+      : country === 'sg'
       ? 'Singapore Banks 4-Digit MAS Codes, 7-Digit Routing, FAST & PayNow Guides 2026'
       : country === 'ae'
       ? 'UAE Banks CBUAE Codes, UAEFTS, 23-Digit IBAN & Aani Instant Guides 2026'
@@ -206,7 +216,11 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       : 'Complete Bank IFSC Codes, Routing Numbers & SWIFT BIC Guides 2026';
 
   const bannerSubtitle =
-    country === 'sg'
+    isMalay || (country === 'my' && lang === 'ms')
+      ? 'Panduan rasmi kod bank BNM, Interbank GIRO (IBG), DuitNow pemindahan pantas 24/7, RENTAS, perlindungan deposit PIDM RM250,000 dan kod wayar SWIFT/BIC untuk Maybank, CIMB, Public Bank, RHB, Hong Leong, AmBank, Bank Islam serta semua institusi perbankan berlesen di Malaysia.'
+      : country === 'my'
+      ? 'Official 3-digit BNM clearing codes, Interbank GIRO (IBG), DuitNow 24/7 instant transfers, RENTAS real-time gross settlement, PIDM RM250,000 deposit protection, and SWIFT wire codes for Maybank, CIMB, Public Bank, RHB, Hong Leong, AmBank, Bank Islam, and all Malaysian financial institutions.'
+      : country === 'sg'
       ? 'Official 4-digit MAS/ABS bank clearing codes (7171, 7339, 7375, 7083, 7214), 7-digit branch routing numbers, FAST 24/7 instant transfers, PayNow (NRIC/FIN/UEN), SDIC S$100,000 deposit guarantee, and SWIFT wire codes for DBS, POSB, OCBC, UOB, Standard Chartered, Citibank, HSBC, Maybank, Bank of China, Trust Bank, GXS Bank, MariBank, and all Singapore financial institutions.'
       : country === 'ae'
       ? 'Official 3-digit CBUAE bank clearing codes, 9-digit UAEFTS routing numbers, 23-character IBAN structure (AEkk...), Aani 24/7 instant mobile payments, Wages Protection System (WPS) and SWIFT wire codes for Emirates NBD, First Abu Dhabi Bank (FAB), ADCB, Dubai Islamic Bank (DIB), Mashreq, ADIB, CBD, RAKBANK, Emirates Islamic, Sharjah Islamic Bank, HSBC UAE, Citibank, Wio Bank and all UAE institutions.'
@@ -229,7 +243,11 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       : 'Authoritative financial editorial guides for banks across Singapore, UAE, Australia, Canada, UK, USA, Germany, Russia, India, Bangladesh and global financial corridors.';
 
   const searchPlaceholder =
-    country === 'sg'
+    isMalay || (country === 'my' && lang === 'ms')
+      ? 'Cari bank Malaysia (cth. Maybank, CIMB, Public Bank, RHB, Bank Islam)...'
+      : country === 'my'
+      ? 'Search Malaysia banks (e.g., Maybank, CIMB, Public Bank, RHB, AmBank)...'
+      : country === 'sg'
       ? 'Search Singapore banks (e.g., DBS, POSB, OCBC, UOB, StanChart, Trust)...'
       : country === 'ae'
       ? 'Search UAE banks (e.g., Emirates NBD, FAB, ADCB, DIB, Mashreq, Wio)...'
@@ -259,18 +277,18 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           onClick={onNavigateHome}
           className="hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer font-medium"
         >
-          {isGerman ? 'Startseite' : isRussian ? 'Главная' : isHindi ? 'होम' : isBengali ? 'হোম' : 'Home'}
+          {isMalay ? 'Laman Utama' : isGerman ? 'Startseite' : isRussian ? 'Главная' : isHindi ? 'होम' : isBengali ? 'হোম' : 'Home'}
         </button>
         <ChevronRight className="w-3.5 h-3.5" />
         <span className="text-slate-800 dark:text-slate-200 font-semibold">
-          {isGerman ? 'Banken-Leitfäden & Blog' : isRussian ? 'Банковские статьи и блог' : isHindi ? 'बैंकिंग लेख एवं ब्लॉग' : isBengali ? 'ব্লগ ও ব্যাংকিং আর্টিকেল' : 'Blog & Banking Guides'}
+          {isMalay ? 'Blog & Panduan Perbankan' : isGerman ? 'Banken-Leitfäden & Blog' : isRussian ? 'Банковские статьи и блог' : isHindi ? 'बैंकिंग लेख एवं ब्लॉग' : isBengali ? 'ব্লগ ও ব্যাংকিং আর্টিকেল' : 'Blog & Banking Guides'}
         </span>
       </nav>
 
       {/* Header Banner */}
-      <div className="bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950 text-white p-8 sm:p-12 rounded-3xl shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950 text-white p-8 sm:p-12 rounded-3xl shadow-xl relative overflow-hidden text-center sm:text-left">
         <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl space-y-4">
+        <div className="relative z-10 max-w-4xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{bannerBadge}</span>
@@ -280,35 +298,13 @@ export const BlogPage: React.FC<BlogPageProps> = ({
             {bannerTitle}
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
             {bannerSubtitle}
           </p>
-
-          {/* Quick Filter Search inside Banner */}
-          <div className="pt-2">
-            <div className="relative max-w-xl">
-              <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={searchPlaceholder}
-                className="w-full pl-11 pr-14 py-3 bg-white/10 dark:bg-slate-800/80 backdrop-blur-md border border-white/20 dark:border-slate-700 text-white placeholder-slate-400 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-300 hover:text-white bg-white/20 px-2 py-0.5 rounded-md cursor-pointer"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Country Filter Bar (Synchronized with Global Country State) */}
+      {/* Country & Language Quick Selector (Identical to Main Search Bar Options) */}
       <div className="pt-2">
         <HeroCountrySelector
           country={country}
@@ -316,6 +312,28 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           onSetLanguage={onSetLanguage}
           lang={lang}
         />
+      </div>
+
+      {/* Universal Search Input Bar (Placed directly under the Country & Language Selector) */}
+      <div className="pt-1">
+        <div className="relative max-w-3xl mx-auto">
+          <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={searchPlaceholder}
+            className="w-full pl-12 pr-20 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm sm:text-base rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg cursor-pointer transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Category Pills */}
@@ -328,7 +346,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
           }`}
         >
-          {isGerman ? 'Alle Kategorien' : isRussian ? 'Все категории' : isHindi ? 'सभी श्रेणियां' : isBengali ? 'সকল ক্যাটাগরি' : 'All Categories'}
+          {isMalay ? 'Semua Kategori' : isGerman ? 'Alle Kategorien' : isRussian ? 'Все категории' : isHindi ? 'सभी श्रेणियां' : isBengali ? 'সকল ক্যাটাগরি' : 'All Categories'}
         </button>
         <button
           onClick={() => setSelectedCategory('state')}
@@ -338,7 +356,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
           }`}
         >
-          {isGerman ? 'Staatliche & Systemische Banken' : isRussian ? 'Системно значимые и государственные' : isHindi ? 'सार्वजनिक क्षेत्र के बैंक (Public Sector)' : isBengali ? 'রাষ্ট্রায়ত্ত ও বিশেষায়িত ব্যাংক' : 'Public & State-Owned'}
+          {isMalay ? 'Bank Komersial Tempatan' : isGerman ? 'Staatliche & Systemische Banken' : isRussian ? 'Системно значимые и государственные' : isHindi ? 'सार्वजनिक क्षेत्र के बैंक (Public Sector)' : isBengali ? 'রাষ্ট্রায়ত্ত ও বিশেষায়িত ব্যাংক' : 'Public & State-Owned'}
         </button>
         <button
           onClick={() => setSelectedCategory('private')}
@@ -348,7 +366,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
           }`}
         >
-          {isGerman ? 'Private Geschäftsbanken' : isRussian ? 'Частные коммерческие банки' : isHindi ? 'निजी वाणिज्यिक बैंक (Private Sector)' : isBengali ? 'বেসরকারি বাণিজ্যিক ব্যাংক' : 'Private Sector'}
+          {isMalay ? 'Bank Swasta' : isGerman ? 'Private Geschäftsbanken' : isRussian ? 'Частные коммерческие банки' : isHindi ? 'निजी वाणिज्यिक बैंक (Private Sector)' : isBengali ? 'বেসরকারি বাণিজ্যিক ব্যাংক' : 'Private Sector'}
         </button>
         <button
           onClick={() => setSelectedCategory('islamic')}
@@ -358,7 +376,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
           }`}
         >
-          {isGerman ? 'Islamisches Bankwesen' : isRussian ? 'Партнерский / Исламский банкинг' : isHindi ? 'इस्लामिक बैंकिंग (Islamic Banking)' : isBengali ? 'ইসলামিক ব্যাংকসমূহ' : 'Islamic Banking'}
+          {isMalay ? 'Perbankan Islam' : isGerman ? 'Islamisches Bankwesen' : isRussian ? 'Партнерский / Исламский банкинг' : isHindi ? 'इस्लामिक बैंकिंग (Islamic Banking)' : isBengali ? 'ইসলামিক ব্যাংকসমূহ' : 'Islamic Banking'}
         </button>
         <button
           onClick={() => setSelectedCategory('foreign')}
@@ -368,7 +386,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
           }`}
         >
-          {isGerman ? 'Ausländische Banken' : isRussian ? 'Иностранные банки' : isHindi ? 'विदेशी वाणिज्यिक बैंक (Foreign Banks)' : isBengali ? 'বিদেশি বাণিজ্যিক ব্যাংক' : 'Foreign Banks'}
+          {isMalay ? 'Bank Antarabangsa' : isGerman ? 'Ausländische Banken' : isRussian ? 'Иностранные банки' : isHindi ? 'विदेशी वाणिज्यिक बैंक (Foreign Banks)' : isBengali ? 'বিদেশি বাণিজ্যিক ব্যাংক' : 'Foreign Banks'}
         </button>
       </div>
 

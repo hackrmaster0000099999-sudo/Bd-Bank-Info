@@ -11,6 +11,7 @@ import { RoutingDecoderModal } from './components/RoutingDecoderModal';
 import { ReportIssueModal } from './components/ReportIssueModal';
 import { RatingFeedbackModal } from './components/RatingFeedbackModal';
 import { BankDetailsView } from './components/BankDetailsView';
+import { BankStateView } from './components/BankStateView';
 import { BranchDetailsView } from './components/BranchDetailsView';
 import { HeroCountrySelector } from './components/HeroCountrySelector';
 import { AboutPage } from './components/AboutPage';
@@ -20,7 +21,7 @@ import { DisclaimerPage } from './components/DisclaimerPage';
 import { NotFoundPage } from './components/NotFoundPage';
 import { BlogPage } from './components/BlogPage';
 import { ArticleDetailView } from './components/ArticleDetailView';
-import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchByRoutingNumber, getBranchByIdOrRouting, getArticleBySlug } from './lib/searchEngine';
+import { searchAll, getBanks, getDivisions, getBankBySlug, getBranchesForBank, getBranchesForBankAndState, getBranchByRoutingNumber, getBranchByIdOrRouting, getArticleBySlug, slugifyState } from './lib/searchEngine';
 import { generateSeoData, updateSEOMeta, getFreshnessLabel, CURRENT_DATA_VERSION_DATE } from './lib/seoManager';
 import { detectUserCountryAndLang } from './lib/geoDetector';
 import { translations } from './lib/translations';
@@ -76,6 +77,8 @@ export default function App() {
       setLang('bn');
     } else if (newCountry === 'ru') {
       setLang('ru');
+    } else if (newCountry === 'my') {
+      setLang('ms');
     } else {
       setLang('en');
     }
@@ -129,6 +132,8 @@ export default function App() {
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<BankArticle | null>(null);
+  const [selectedStateSlug, setSelectedStateSlug] = useState<string | null>(null);
+  const [selectedStateInfo, setSelectedStateInfo] = useState<{ divisionName: string; branches: Branch[]; allBankBranches: Branch[] } | null>(null);
 
   // Modals state
   const [isRoutingDecoderOpen, setIsRoutingDecoderOpen] = useState(false);
@@ -169,23 +174,65 @@ export default function App() {
     setIs404(false);
 
     if (path.startsWith('/bank/')) {
-      const slug = path.replace('/bank/', '');
-      const bank = getBankBySlug(slug);
+      const parts = path.replace('/bank/', '').split('/').filter(Boolean);
+      const bankId = parts[0];
+      const stateSlug = parts[1];
+
+      const bank = getBankBySlug(bankId);
       if (bank) {
         setSelectedBank(bank);
         setSelectedBranch(null);
         setSelectedArticle(null);
+
+        if (stateSlug) {
+          const stateData = getBranchesForBankAndState(bank.id, stateSlug);
+          if (stateData.branches.length > 0) {
+            setSelectedStateSlug(stateSlug);
+            setSelectedStateInfo({
+              divisionName: stateData.divisionName,
+              branches: stateData.branches,
+              allBankBranches: getBranchesForBank(bank.id)
+            });
+          } else {
+            // Invalid state slug for this bank -> 404
+            setSelectedStateSlug(null);
+            setSelectedStateInfo(null);
+            setIs404(true);
+          }
+        } else {
+          // Standard /bank/:bankId page
+          setSelectedStateSlug(null);
+          setSelectedStateInfo(null);
+        }
       } else {
+        setSelectedBank(null);
+        setSelectedStateSlug(null);
+        setSelectedStateInfo(null);
         setIs404(true);
       }
     } else if (path.startsWith('/branch/')) {
+      setSelectedStateSlug(null);
+      setSelectedStateInfo(null);
       const identifier = decodeURIComponent(path.replace('/branch/', ''));
       const branch = getBranchByIdOrRouting(identifier) || getBranchByRoutingNumber(identifier);
       if (branch) {
-        setSelectedBranch(branch);
-        setSelectedBank(null);
-        setSelectedArticle(null);
+        // Automatic client-side redirect to consolidated bank+state page with anchor
+        const bankId = branch.bank_id;
+        const stateSlug = slugifyState(branch.division || branch.district || 'all');
+        const code = branch.routing_number || branch.ifsc_code || branch.sort_code || branch.bik_code || branch.transit_number || branch.bsb_code || branch.blz || branch.id || identifier;
+
+        if (bankId) {
+          navigate(`/bank/${bankId}/${stateSlug}#routing-${encodeURIComponent(code)}`, { replace: true });
+          return;
+        } else {
+          setSelectedBranch(branch);
+          setSelectedBank(null);
+          setSelectedArticle(null);
+        }
       } else {
+        setSelectedBank(null);
+        setSelectedBranch(null);
+        setSelectedArticle(null);
         setIs404(true);
       }
     } else if (path.startsWith('/article/')) {
@@ -239,10 +286,16 @@ export default function App() {
     navigate('/bank/' + bankId);
   };
 
-  // Select Branch Detail
+  // Select Branch Detail -> Consolidated State/Region Hub Page with Hash Anchor
   const handleSelectBranch = (branch: Branch) => {
-    const code = branch.ifsc_code || branch.routing_number;
-    navigate('/branch/' + encodeURIComponent(code));
+    const code = branch.routing_number || branch.ifsc_code || branch.sort_code || branch.bik_code || branch.transit_number || branch.bsb_code || branch.blz || branch.id;
+    const bankId = branch.bank_id;
+    const stateSlug = slugifyState(branch.division || branch.district || 'all');
+    if (bankId) {
+      navigate(`/bank/${bankId}/${stateSlug}#routing-${encodeURIComponent(code)}`);
+    } else {
+      navigate('/branch/' + encodeURIComponent(code));
+    }
   };
 
   // Trigger Routing Decoder Modal
@@ -327,6 +380,9 @@ export default function App() {
           <ArticleDetailView
             article={selectedArticle}
             lang={lang}
+            country={country}
+            onSetCountry={handleSetCountry}
+            onSetLanguage={handleSetLanguage}
             onBack={() => navigate('/blog')}
             onSelectBank={handleSelectBank}
             onSelectBranch={handleSelectBranch}
@@ -359,8 +415,23 @@ export default function App() {
             onOpenRoutingDecoder={handleOpenRoutingDecoder}
             onOpenReportModal={handleOpenReportModal}
           />
+        ) : selectedBank && selectedStateSlug && selectedStateInfo ? (
+          /* VIEW 2A: Consolidated Bank + State View */
+          <BankStateView
+            bank={selectedBank}
+            stateSlug={selectedStateSlug}
+            stateName={selectedStateInfo.divisionName}
+            stateBranches={selectedStateInfo.branches}
+            allBankBranches={selectedStateInfo.allBankBranches}
+            lang={lang}
+            onBack={() => navigate('/bank/' + selectedBank.id)}
+            onSelectBranch={handleSelectBranch}
+            onSelectState={(newSlug) => navigate(`/bank/${selectedBank.id}/${newSlug}`)}
+            onOpenRoutingDecoder={handleOpenRoutingDecoder}
+            onOpenReportModal={handleOpenReportModal}
+          />
         ) : selectedBank ? (
-          /* VIEW 2: Bank Details View */
+          /* VIEW 2B: Bank Details View */
           <BankDetailsView
             bank={selectedBank}
             lang={lang}
@@ -407,6 +478,18 @@ export default function App() {
                     : lang === 'ru'
                     ? 'Справочник Routing и SWIFT кодов банков Бангладеш'
                     : 'Bangladesh Bank Routing Numbers & SWIFT Code Directory'
+                ) : country === 'my' ? (
+                  lang === 'ms'
+                    ? 'Direktori Kod Bank Malaysia, Nombor Routing IBG, DuitNow & Kod SWIFT'
+                    : lang === 'bn'
+                    ? 'মালয়েশিয়ার সকল ব্যাংকের ব্যাংক কোড, IBG রাউটিং ও সুইফট কোড ডিরেক্টরি'
+                    : lang === 'hi'
+                    ? 'मलेशिया के सभी बैंकों के बैंक कोड, IBG राउटिंग एवं स्विफ्ट कोड डायरेक्टरी'
+                    : lang === 'ru'
+                    ? 'Справочник кодов банков Малайзии, IBG Routing, DuitNow и SWIFT'
+                    : lang === 'de'
+                    ? 'Malaysia Bankleitzahlen, IBG Routing, DuitNow & SWIFT-Verzeichnis'
+                    : 'Malaysia Bank Code, 5-Digit IBG Routing, DuitNow & SWIFT Directory'
                 ) : country === 'ru' ? (
                   lang === 'ru'
                     ? 'Открытый справочник банковских реквизитов: БИК, корр. счета и SWIFT коды РФ'

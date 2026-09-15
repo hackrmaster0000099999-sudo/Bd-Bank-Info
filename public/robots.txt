@@ -7,6 +7,12 @@ Disallow: /404
 User-agent: Googlebot
 Allow: /
 
+User-agent: Google-adstxt
+Allow: /
+
+User-agent: Mediapartners-Google
+Allow: /
+
 User-agent: Googlebot-Mobile
 Allow: /
 

@@ -19,13 +19,17 @@ import {
   MapPin,
   FileText
 } from 'lucide-react';
-import { BankArticle, Language, Branch } from '../types';
+import { BankArticle, Language, Country, Branch } from '../types';
 import { getBranchesForBank } from '../lib/searchEngine';
 import { CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { HeroCountrySelector } from './HeroCountrySelector';
 
 interface ArticleDetailViewProps {
   article: BankArticle;
   lang: Language;
+  country?: Country;
+  onSetCountry?: (country: Country) => void;
+  onSetLanguage?: (lang: Language) => void;
   onBack: () => void;
   onSelectBank: (bankId: string) => void;
   onSelectBranch: (branch: Branch) => void;
@@ -35,6 +39,9 @@ interface ArticleDetailViewProps {
 export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   article,
   lang,
+  country,
+  onSetCountry,
+  onSetLanguage,
   onBack,
   onSelectBank,
   onSelectBranch,
@@ -43,12 +50,15 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
   const [copied, setCopied] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-  const isRussian = lang === 'ru' || article.country === 'ru';
-  const isHindi = !isRussian && (lang === 'hi' || article.country === 'in');
-  const isBengali = !isRussian && !isHindi && (lang === 'bn' || article.country === 'bd');
-  const isGerman = !isRussian && !isHindi && !isBengali && (lang === 'de' || article.country === 'de');
+  const isRussian = lang === 'ru';
+  const isHindi = lang === 'hi';
+  const isBengali = lang === 'bn';
+  const isGerman = lang === 'de';
+  const isMalay = lang === 'ms';
 
-  const title = isRussian && article.title_ru
+  const title = isMalay && article.title_ms
+    ? article.title_ms
+    : isRussian && article.title_ru
     ? article.title_ru
     : isHindi && article.title_hi
     ? article.title_hi
@@ -58,7 +68,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
     ? article.title_de
     : article.title;
 
-  const subtitle = isRussian && article.subtitle_ru
+  const subtitle = isMalay && article.subtitle_ms
+    ? article.subtitle_ms
+    : isRussian && article.subtitle_ru
     ? article.subtitle_ru
     : isHindi && article.subtitle_hi
     ? article.subtitle_hi
@@ -68,7 +80,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
     ? article.subtitle_de
     : article.subtitle;
 
-  const overview = isRussian && article.overview_ru
+  const overview = isMalay && article.overview_ms
+    ? article.overview_ms
+    : isRussian && article.overview_ru
     ? article.overview_ru
     : isHindi && article.overview_hi
     ? article.overview_hi
@@ -97,7 +111,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           onClick={onBack}
           className="hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer font-medium"
         >
-          {lang === 'de'
+          {lang === 'ms'
+            ? 'Semua Artikel & Blog'
+            : lang === 'de'
             ? 'Alle Artikel & Blog'
             : lang === 'ru'
             ? 'Все статьи и блог'
@@ -113,6 +129,18 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         </span>
       </nav>
 
+      {/* Country & Language Quick Selector (Identical to Main Search Bar Options) */}
+      {onSetCountry && (
+        <div className="pt-1">
+          <HeroCountrySelector
+            country={country || article.country}
+            onSetCountry={onSetCountry}
+            onSetLanguage={onSetLanguage}
+            lang={lang}
+          />
+        </div>
+      )}
+
       {/* Article Header & Hero */}
       <header className="bg-white dark:bg-slate-800/90 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -120,7 +148,17 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>
-                {article.country === 'de'
+                {article.country === 'my'
+                  ? (lang === 'ms' ? 'Bank Negara Malaysia & PIDM (RM250,000 Dilindungi) Panduan 2026' : lang === 'bn' ? 'ব্যাংক নেগারা মালয়েশিয়া ও PIDM (RM২৫০,০০০ বিমাকৃত) ২০২৬' : lang === 'hi' ? 'बैंक नेगारा मलेशिया एवं PIDM (RM250,000 गारंटी) 2026' : lang === 'ru' ? 'Банк Негара Малайзии и страхование PIDM (RM250,000) 2026' : 'Bank Negara Malaysia & PIDM (RM250,000 Insured) Guide 2026')
+                  : article.country === 'sg'
+                  ? (lang === 'bn' ? 'মনিটারি অথরিটি অব সিঙ্গাপুর ও SDIC (S$১০০,০০০ বিমাকৃত) ২০২৬' : lang === 'hi' ? 'MAS एवं SDIC (S$100,000 गारंटी) 2026' : lang === 'ru' ? 'MAS и страхование вкладов SDIC (S$100,000) 2026' : 'Monetary Authority of Singapore & SDIC (S$100,000 Insured) Guide 2026')
+                  : article.country === 'ae'
+                  ? (lang === 'bn' ? 'সেন্ট্রাল ব্যাংক অব দ্য ইউএই (CBUAE) সার্টিফাইড ২০২৬' : lang === 'hi' ? 'सेंट्रल बैंक ऑफ यूएई (CBUAE) अधिकृत 2026' : lang === 'ru' ? 'Центральный банк ОАЭ (CBUAE) 2026' : 'Central Bank of the UAE (CBUAE) Certified Guide 2026')
+                  : article.country === 'au'
+                  ? (lang === 'bn' ? 'রিজার্ভ ব্যাংক অব অস্ট্রেলিয়া ও APRA FCS ($২৫০,০০০) ২০২৬' : lang === 'hi' ? 'रिजर्व बैंक ऑफ ऑस्ट्रेलिया एवं APRA FCS ($250,000) 2026' : lang === 'ru' ? 'Резервный банк Австралии и APRA FCS ($250 000) 2026' : 'Reserve Bank of Australia & APRA FCS ($250,000) Guide 2026')
+                  : article.country === 'ca'
+                  ? (lang === 'bn' ? 'পেমেন্টস কানাডা ও CDIC ($১০০,০০০ বিমাকৃত) ২০২৬' : lang === 'hi' ? 'पेमेंट्स कनाडा एवं CDIC ($100,000 डिपॉजिट गारंटी) 2026' : lang === 'ru' ? 'Payments Canada и страхование CDIC ($100 000) 2026' : 'Bank of Canada & CDIC ($100,000 Insured) Guide 2026')
+                  : article.country === 'de'
                   ? (lang === 'de' ? 'BaFin & EdB (100.000 € Einlagensicherung) Leitfaden 2026' : lang === 'bn' ? 'বাফিন ও এডিবি (১০০,০০০ ইউরো ডিপোজিট স্কিম) গাইড ২০২৬' : lang === 'hi' ? 'BaFin एवं EdB (100,000 € डिपॉजिट गारंटी) गाइड 2026' : lang === 'ru' ? 'BaFin и защита вкладов EdB (100 000 €) 2026' : 'BaFin & EdB (€100,000 Deposit Guarantee) Guide 2026')
                   : article.country === 'uk'
                   ? (lang === 'bn' ? 'ব্যাংক অব ইংল্যান্ড ও FSCS বিমাকৃত গাইড ২০২৬' : lang === 'hi' ? 'बैंक ऑफ इंग्लैंड एवं FSCS प्रमाणित गाइड 2026' : lang === 'ru' ? 'Банк Англии и страхование FSCS 2026' : 'Bank of England & FSCS Protected Guide 2026')
@@ -167,18 +205,18 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700/60 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1.5">
             <User className="w-3.5 h-3.5 text-slate-400" />
-            <span>{isGerman ? 'Autor:' : isRussian ? 'Автор:' : isHindi ? 'लेखक:' : isBengali ? 'লেখক:' : 'Author:'} <strong className="text-slate-700 dark:text-slate-200">{article.author}</strong></span>
+            <span>{isMalay ? 'Pengarang:' : isGerman ? 'Autor:' : isRussian ? 'Автор:' : isHindi ? 'लेखक:' : isBengali ? 'লেখক:' : 'Author:'} <strong className="text-slate-700 dark:text-slate-200">{article.author}</strong></span>
           </div>
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-slate-400" />
-            <span>{isGerman ? 'Aktualisiert:' : isRussian ? 'Обновлено:' : isHindi ? 'अंतिम अपडेट:' : isBengali ? 'সর্বশেষ সংস্করণ:' : 'Updated:'} <strong className="text-emerald-700 dark:text-emerald-300">{CURRENT_DATA_VERSION_DATE}</strong></span>
+            <span>{isMalay ? 'Dikemas kini:' : isGerman ? 'Aktualisiert:' : isRussian ? 'Обновлено:' : isHindi ? 'अंतिम अपडेट:' : isBengali ? 'সর্বশেষ সংস্করণ:' : 'Updated:'} <strong className="text-emerald-700 dark:text-emerald-300">{CURRENT_DATA_VERSION_DATE}</strong></span>
           </div>
           <button
             onClick={() => onSelectBank(article.bank_id)}
             className="ml-auto inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:underline font-bold cursor-pointer"
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span>{isGerman ? `Bankseite & Filialen (${branches.length})` : isRussian ? `Страница банка и филиалы (${branches.length})` : isHindi ? `बैंक का मुख्य पेज एवं शाखाएं (${branches.length})` : isBengali ? `ব্যাংকের মূল পেজ ও সকল ব্রাঞ্চ দেখুন (${branches.length})` : `Bank Details & Branches (${branches.length})`}</span>
+            <span>{isMalay ? `Halaman Bank & Cawangan (${branches.length})` : isGerman ? `Bankseite & Filialen (${branches.length})` : isRussian ? `Страница банка и филиалы (${branches.length})` : isHindi ? `बैंक का मुख्य पेज एवं शाखाएं (${branches.length})` : isBengali ? `ব্যাংকের মূল পেজ ও সকল ব্রাঞ্চ দেখুন (${branches.length})` : `Bank Details & Branches (${branches.length})`}</span>
           </button>
         </div>
       </header>
@@ -187,13 +225,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
       <section className="bg-emerald-900 text-white rounded-3xl p-6 sm:p-8 shadow-lg space-y-6">
         <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 text-emerald-200">
           <Hash className="w-4 h-4 text-emerald-300" />
-          <span>{isGerman ? 'Wichtige Bankdaten & Codes (Quick Statistics)' : isRussian ? 'Основные реквизиты и коды банка (Quick Statistics)' : isHindi ? 'बैंक के महत्वपूर्ण कोड एवं आंकड़े (Quick Statistics)' : isBengali ? 'এক নজরে ব্যাংকের গুরুত্বপূর্ণ কোড ও তথ্য (Quick Statistics)' : 'Quick Bank Statistics & Verification'}</span>
+          <span>{isMalay ? 'Statistik & Kod Bank Pantas' : isGerman ? 'Wichtige Bankdaten & Codes (Quick Statistics)' : isRussian ? 'Основные реквизиты и коды банка (Quick Statistics)' : isHindi ? 'बैंक के महत्वपूर्ण कोड एवं आंकड़े (Quick Statistics)' : isBengali ? 'এক নজরে ব্যাংকের গুরুত্বপূর্ণ কোড ও তথ্য (Quick Statistics)' : 'Quick Bank Statistics & Verification'}</span>
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 text-xs">
           {article.quick_stats.map((stat, i) => {
-            const statLabel = isRussian && stat.label_ru ? stat.label_ru : isHindi && stat.label_hi ? stat.label_hi : isBengali && stat.label_bn ? stat.label_bn : isGerman && stat.label_de ? stat.label_de : stat.label;
-            const statValue = isRussian && stat.value_ru ? stat.value_ru : isHindi && stat.value_hi ? stat.value_hi : isBengali && stat.value_bn ? stat.value_bn : isGerman && stat.value_de ? stat.value_de : stat.value;
+            const statLabel = isMalay && stat.label_ms ? stat.label_ms : isRussian && stat.label_ru ? stat.label_ru : isHindi && stat.label_hi ? stat.label_hi : isBengali && stat.label_bn ? stat.label_bn : isGerman && stat.label_de ? stat.label_de : stat.label;
+            const statValue = isMalay && stat.value_ms ? stat.value_ms : isRussian && stat.value_ru ? stat.value_ru : isHindi && stat.value_hi ? stat.value_hi : isBengali && stat.value_bn ? stat.value_bn : isGerman && stat.value_de ? stat.value_de : stat.value;
             return (
               <div key={i} className="bg-emerald-950/60 p-3.5 rounded-2xl border border-emerald-800/80 space-y-1">
                 <span className="text-emerald-300/80 font-medium block">
@@ -216,7 +254,7 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
             <Info className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="font-bold text-emerald-900 dark:text-emerald-300 mb-1">
-                {isGerman ? 'Zusammenfassung des Leitfadens' : isRussian ? 'Краткое резюме руководства' : isHindi ? 'गाइड सारांश एवं अवलोकन' : isBengali ? 'গাইড ওভারভিউ ও ভূমিকা' : 'Guide Summary'}
+                {isMalay ? 'Ringkasan Panduan' : isGerman ? 'Zusammenfassung des Leitfadens' : isRussian ? 'Краткое резюме руководства' : isHindi ? 'गाइड सारांश एवं अवलोकन' : isBengali ? 'গাইড ওভারভিউ ও ভূমিকা' : 'Guide Summary'}
               </h3>
               <p className="whitespace-pre-line">{overview}</p>
             </div>
@@ -225,8 +263,8 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
 
         {/* Main Headings & Sections */}
         {article.sections.map((section, idx) => {
-          const heading = isRussian && section.heading_ru ? section.heading_ru : isHindi && section.heading_hi ? section.heading_hi : isBengali && section.heading_bn ? section.heading_bn : isGerman && section.heading_de ? section.heading_de : section.heading;
-          const content = isRussian && section.content_ru ? section.content_ru : isHindi && section.content_hi ? section.content_hi : isBengali && section.content_bn ? section.content_bn : isGerman && section.content_de ? section.content_de : section.content;
+          const heading = isMalay && section.heading_ms ? section.heading_ms : isRussian && section.heading_ru ? section.heading_ru : isHindi && section.heading_hi ? section.heading_hi : isBengali && section.heading_bn ? section.heading_bn : isGerman && section.heading_de ? section.heading_de : section.heading;
+          const content = isMalay && section.content_ms ? section.content_ms : isRussian && section.content_ru ? section.content_ru : isHindi && section.content_hi ? section.content_hi : isBengali && section.content_bn ? section.content_bn : isGerman && section.content_de ? section.content_de : section.content;
 
           return (
             <section key={section.id} id={section.id} className="space-y-4 pt-6 first:pt-0 border-t first:border-t-0 border-slate-100 dark:border-slate-700/60">
@@ -249,13 +287,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-600" />
-              <span>{isGerman ? `Wichtige Filialen & Bankleitzahlen (${branches.length} Filialen)` : isRussian ? `Филиалы и отделения банка (${branches.length} отделений)` : isHindi ? `इस बैंक की प्रमुख शाखाएं एवं IFSC कोड्स (${branches.length} शाखाएं)` : isBengali ? `এই ব্যাংকের প্রধান শাখা ও রাউটিং কোডসমূহ (${branches.length}টি শাখা)` : `Key Bank Branches & Codes (${branches.length} branches)`}</span>
+              <span>{isMalay ? `Cawangan Utama & Kod Bank (${branches.length} Cawangan)` : isGerman ? `Wichtige Filialen & Bankleitzahlen (${branches.length} Filialen)` : isRussian ? `Филиалы и отделения банка (${branches.length} отделений)` : isHindi ? `इस बैंक की प्रमुख शाखाएं एवं IFSC कोड्स (${branches.length} शाखाएं)` : isBengali ? `এই ব্যাংকের প্রধান শাখা ও রাউটিং কোডসমূহ (${branches.length}টি শাখা)` : `Key Bank Branches & Codes (${branches.length} branches)`}</span>
             </h2>
             <button
               onClick={() => onSelectBank(article.bank_id)}
               className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
             >
-              {isGerman ? `Alle ${branches.length} Filialen im Verzeichnis anzeigen →` : isRussian ? `Все ${branches.length} отделений в справочнике →` : isHindi ? `सभी ${branches.length} शाखाएं देखें →` : isBengali ? `সকল ${branches.length}টি শাখা ডিরেক্টরিতে দেখুন →` : `View all ${branches.length} branches →`}
+              {isMalay ? `Lihat semua ${branches.length} cawangan di direktori →` : isGerman ? `Alle ${branches.length} Filialen im Verzeichnis anzeigen →` : isRussian ? `Все ${branches.length} отделений в справочнике →` : isHindi ? `सभी ${branches.length} शाखाएं देखें →` : isBengali ? `সকল ${branches.length}টি শাখা ডিরেক্টরিতে দেখুন →` : `View all ${branches.length} branches →`}
             </button>
           </div>
 
@@ -287,13 +325,13 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           <section className="pt-8 border-t border-slate-100 dark:border-slate-700/60 space-y-4">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-emerald-600" />
-              <span>{isGerman ? 'Häufig gestellte Fragen (FAQ)' : isRussian ? 'Часто задаваемые вопросы (FAQ)' : isHindi ? 'अक्सर पूछे जाने वाले प्रश्न (Frequently Asked Questions)' : isBengali ? 'সাধারণ জিজ্ঞাসিত প্রশ্নাবলী (Frequently Asked Questions)' : 'Frequently Asked Questions'}</span>
+              <span>{isMalay ? 'Soalan Lazim (FAQ)' : isGerman ? 'Häufig gestellte Fragen (FAQ)' : isRussian ? 'Часто задаваемые вопросы (FAQ)' : isHindi ? 'अक्सर पूछे जाने वाले प्रश्न (Frequently Asked Questions)' : isBengali ? 'সাধারণ জিজ্ঞাসিত প্রশ্নাবলী (Frequently Asked Questions)' : 'Frequently Asked Questions'}</span>
             </h2>
 
             <div className="space-y-3">
               {article.faqs.map((faq, i) => {
-                const q = isRussian && faq.question_ru ? faq.question_ru : isHindi && faq.question_hi ? faq.question_hi : isBengali && faq.question_bn ? faq.question_bn : isGerman && faq.question_de ? faq.question_de : faq.question;
-                const a = isRussian && faq.answer_ru ? faq.answer_ru : isHindi && faq.answer_hi ? faq.answer_hi : isBengali && faq.answer_bn ? faq.answer_bn : isGerman && faq.answer_de ? faq.answer_de : faq.answer;
+                const q = isMalay && faq.question_ms ? faq.question_ms : isRussian && faq.question_ru ? faq.question_ru : isHindi && faq.question_hi ? faq.question_hi : isBengali && faq.question_bn ? faq.question_bn : isGerman && faq.question_de ? faq.question_de : faq.question;
+                const a = isMalay && faq.answer_ms ? faq.answer_ms : isRussian && faq.answer_ru ? faq.answer_ru : isHindi && faq.answer_hi ? faq.answer_hi : isBengali && faq.answer_bn ? faq.answer_bn : isGerman && faq.answer_de ? faq.answer_de : faq.answer;
                 const isOpen = activeFaq === i;
 
                 return (
@@ -329,7 +367,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         >
           <ArrowLeft className="w-4 h-4" />
           <span>
-            {lang === 'de'
+            {lang === 'ms'
+              ? 'Kembali ke Semua Artikel'
+              : lang === 'de'
               ? 'Zurück zu allen Artikeln'
               : lang === 'ru'
               ? 'Назад ко всем статьям'
@@ -345,7 +385,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
         >
-          {lang === 'de'
+          {lang === 'ms'
+            ? 'Ke Atas ↑'
+            : lang === 'de'
             ? 'Nach oben ↑'
             : lang === 'ru'
             ? 'Наверх ↑'

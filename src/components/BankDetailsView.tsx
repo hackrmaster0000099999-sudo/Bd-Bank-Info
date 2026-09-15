@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Globe, MapPin, Search, ArrowLeft, ExternalLink, Hash, BookOpen, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, ArrowRightLeft, ShieldCheck, Clock, Sparkles } from 'lucide-react';
+import { Building2, Globe, MapPin, Search, ArrowLeft, ExternalLink, Hash, BookOpen, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, ArrowRightLeft, ShieldCheck, Clock, Sparkles, Layers } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Bank, Branch, Language } from '../types';
-import { getBranchesForBank } from '../lib/searchEngine';
+import { getBranchesForBank, slugifyState } from '../lib/searchEngine';
 import { BranchCard } from './BranchCard';
 import { CopyButton } from './CopyButton';
 import { getBankGuideContent } from '../lib/bankGuideContent';
@@ -47,6 +48,23 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
 
   // Extract districts for this bank
   const districts = Array.from(new Set(allBranches.map((b) => b.district)));
+
+  // Extract states/divisions for this bank
+  const statesMap = new Map<string, { name: string; count: number }>();
+  for (const b of allBranches) {
+    if (b.division) {
+      const slug = slugifyState(b.division);
+      const existing = statesMap.get(slug);
+      if (existing) {
+        existing.count++;
+      } else {
+        statesMap.set(slug, { name: b.division, count: 1 });
+      }
+    }
+  }
+  const bankStates = Array.from(statesMap.entries())
+    .map(([slug, val]) => ({ slug, name: val.name, count: val.count }))
+    .sort((a, b) => b.count - a.count);
 
   // Filter branches
   const filteredBranches = allBranches.filter((br) => {
@@ -143,6 +161,42 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* State / Region Directory Links */}
+      {bankStates.length > 0 && (
+        <div className="bg-white dark:bg-slate-800/90 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>
+                {isBn
+                  ? `${bank.short_name}-এর রাজ্য ও বিভাগ ভিত্তিক শাখা ডিরেক্টরি (${bankStates.length}টি অঞ্চল)`
+                  : isHi
+                  ? `${bank.short_name} के राज्य एवं क्षेत्र वार शाखाएं (${bankStates.length} क्षेत्र)`
+                  : `${bank.short_name} State & Region Directory (${bankStates.length} Regions)`}
+              </span>
+            </h2>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">
+              {isBn ? 'সম্পূর্ণ তথ্য দেখতে রাজ্য নির্বাচন করুন' : 'Select a state/division for full branch list'}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-1 max-h-48 overflow-y-auto">
+            {bankStates.map((st) => (
+              <Link
+                key={st.slug}
+                to={`/bank/${bank.id}/${st.slug}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-slate-700 font-medium transition-all group"
+              >
+                <span className="group-hover:text-emerald-600 dark:group-hover:text-emerald-400">{st.name}</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300">
+                  {st.count}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Branch Search and Filter Toolbar */}
       <div className="bg-white dark:bg-slate-800/90 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs space-y-3">

@@ -1,15 +1,15 @@
-export type Language = 'bn' | 'en' | 'hi' | 'ru' | 'de';
-export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
+export type Language = 'bn' | 'en' | 'hi' | 'ru' | 'de' | 'ms';
+export type Country = 'all' | 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de' | 'my';
 
 export interface Bank {
-  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd', 'dbs-bank-singapore', 'deutsche-bank'
+  id: string; // slug, e.g., 'islami-bank-bangladesh', 'state-bank-of-india', 'sberbank', 'chase-bank', 'barclays-bank', 'rbc-royal-bank', 'commonwealth-bank', 'emirates-nbd', 'dbs-bank-singapore', 'deutsche-bank', 'maybank-malaysia'
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
   name_ru?: string; // Russian
   name_de?: string; // German
   short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates, 'sg' for Singapore, 'de' for Germany
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de' | 'my'; // 'bd' for Bangladesh, 'in' for India, 'ru' for Russia, 'us' for United States, 'uk' for United Kingdom, 'ca' for Canada, 'au' for Australia, 'ae' for United Arab Emirates, 'sg' for Singapore, 'de' for Germany
   bank_code: string; // 3-digit BEFTN, Indian Bank code, 3-digit Russian, 4-digit ABA Fed prefix, 2-digit UK Prefix, 3-digit Canadian Institution Number, 2-digit Australian BSB prefix, 3-digit UAE CBUAE code, or 8-digit German BLZ
   routing_number?: string; // 9-digit ABA routing number for US / 9-digit EFT Routing (0YYYXXXXX) for Canada / 9-digit UAE Central Bank Routing / 8-digit BLZ for Germany
   blz?: string; // 8-digit German Bankleitzahl (BLZ) (e.g. 50070010, 10040000)
@@ -56,7 +56,7 @@ export interface Branch {
   bank_name_ru?: string;
   bank_name_de?: string;
   bank_short_name: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de' | 'my';
   name: string; // English
   name_bn?: string; // Bengali
   name_hi?: string; // Hindi
@@ -140,7 +140,7 @@ export interface SearchResult {
   corr_account?: string;
   ifsc_code?: string;
   swift_code?: string;
-  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de';
+  country: 'bd' | 'in' | 'ru' | 'us' | 'uk' | 'ca' | 'au' | 'ae' | 'sg' | 'de' | 'my';
   bank_id: string;
   bank_name: string;
   bank_name_bn?: string;
@@ -204,13 +204,16 @@ export interface ArticleSection {
   heading_hi?: string;
   heading_ru?: string;
   heading_de?: string;
+  heading_ms?: string;
   content: string;
   content_bn?: string;
   content_hi?: string;
   content_ru?: string;
   content_de?: string;
+  content_ms?: string;
   keyTakeaways?: string[];
   keyTakeaways_bn?: string[];
+  keyTakeaways_ms?: string[];
 }
 
 export interface BankArticle {
@@ -223,11 +226,13 @@ export interface BankArticle {
   title_hi?: string;
   title_ru?: string;
   title_de?: string;
+  title_ms?: string;
   subtitle: string;
   subtitle_bn?: string;
   subtitle_hi?: string;
   subtitle_ru?: string;
   subtitle_de?: string;
+  subtitle_ms?: string;
   meta_title: string;
   meta_description: string;
   meta_keywords?: string[];
@@ -240,6 +245,7 @@ export interface BankArticle {
   overview_hi?: string;
   overview_ru?: string;
   overview_de?: string;
+  overview_ms?: string;
   sections: ArticleSection[];
   faqs: {
     question: string;
@@ -247,11 +253,13 @@ export interface BankArticle {
     question_hi?: string;
     question_ru?: string;
     question_de?: string;
+    question_ms?: string;
     answer: string;
     answer_bn?: string;
     answer_hi?: string;
     answer_ru?: string;
     answer_de?: string;
+    answer_ms?: string;
   }[];
   quick_stats: {
     label: string;
@@ -259,10 +267,12 @@ export interface BankArticle {
     label_hi?: string;
     label_ru?: string;
     label_de?: string;
+    label_ms?: string;
     value: string;
     value_bn?: string;
     value_hi?: string;
     value_ru?: string;
     value_de?: string;
+    value_ms?: string;
   }[];
 }

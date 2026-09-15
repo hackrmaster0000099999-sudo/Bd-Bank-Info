@@ -22,6 +22,12 @@ const LANGUAGES: LanguageOption[] = [
     flag: '🇩🇪'
   },
   {
+    code: 'ms',
+    label: 'Malay',
+    nativeLabel: 'Bahasa Melayu',
+    flag: '🇲🇾'
+  },
+  {
     code: 'bn',
     label: 'Bengali',
     nativeLabel: 'বাংলা',

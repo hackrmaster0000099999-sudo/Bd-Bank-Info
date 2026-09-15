@@ -10,18 +10,18 @@ interface RatingFeedbackModalProps {
 }
 
 const ratingDescriptions: Record<number, Record<Language, string>> = {
-  1: { en: 'Needs Improvement', bn: 'উন্নতির প্রয়োজন', hi: 'सुधार की आवश्यकता है', ru: 'Требует улучшения', de: 'Verbesserungswürdig' },
-  2: { en: 'Fair', bn: 'মোটামুটি', hi: 'ठीक-ठाक', ru: 'Удовлетворительно', de: 'Ausreichend' },
-  3: { en: 'Good', bn: 'ভালো', hi: 'अच्छा', ru: 'Хорошо', de: 'Gut' },
-  4: { en: 'Very Good & Helpful', bn: 'অনেক ভালো ও উপকারী', hi: 'बहुत अच्छा और उपयोगी', ru: 'Очень полезно и удобно', de: 'Sehr gut & hilfreich' },
-  5: { en: 'Excellent & 100% Accurate! ⭐', bn: 'অসাধারণ ও শতভাগ নির্ভুল! ⭐', hi: 'उत्कृष्ट एवं १००% सटीक! ⭐', ru: 'Отлично и на 100% точно! ⭐', de: 'Ausgezeichnet & 100% präzise! ⭐' }
+  1: { en: 'Needs Improvement', bn: 'উন্নতির প্রয়োজন', hi: 'सुधार की आवश्यकता है', ru: 'Требует улучшения', de: 'Verbesserungswürdig', ms: 'Perlu Penambahbaikan' },
+  2: { en: 'Fair', bn: 'মোটামুটি', hi: 'ठीक-ठाक', ru: 'Удовлетворительно', de: 'Ausreichend', ms: 'Sederhana' },
+  3: { en: 'Good', bn: 'ভালো', hi: 'अच्छा', ru: 'Хорошо', de: 'Gut', ms: 'Baik' },
+  4: { en: 'Very Good & Helpful', bn: 'অনেক ভালো ও উপকারী', hi: 'बहुत अच्छा और उपयोगी', ru: 'Очень полезно и удобно', de: 'Sehr gut & hilfreich', ms: 'Sangat Baik & Bermanfaat' },
+  5: { en: 'Excellent & 100% Accurate! ⭐', bn: 'অসাধারণ ও শতভাগ নির্ভুল! ⭐', hi: 'उत्कृष्ट एवं १००% सटीक! ⭐', ru: 'Отлично и на 100% точно! ⭐', de: 'Ausgezeichnet & 100% präzise! ⭐', ms: 'Cemerlang & 100% Tepat! ⭐' }
 };
 
 const categoryLabels: Record<string, Record<Language, string>> = {
-  overall: { en: 'Overall Experience', bn: 'সামগ্রিক অভিজ্ঞতা', hi: 'समग्र अनुभव', ru: 'Общее впечатление', de: 'Gesamterlebnis' },
-  accuracy: { en: 'Code & Routing Accuracy', bn: 'রাউটিং ও IFSC সঠিকতা', hi: 'IFSC व कोड सटीकता', ru: 'Точность БИК и реквизитов', de: 'BLZ & Routing Genauigkeit' },
-  speed: { en: 'Fast Search & Speed', bn: 'দ্রুত অনুসন্ধান ও স্পিড', hi: 'त्वरित खोज और गति', ru: 'Скорость и удобство', de: 'Suchgeschwindigkeit & Performance' },
-  suggestion: { en: 'Feature Suggestion', bn: 'নতুন ফিচারের পরামর্শ', hi: 'सुझाव / नई सुविधा', ru: 'Предложение по улучшению', de: 'Funktionsvorschlag / Feedback' }
+  overall: { en: 'Overall Experience', bn: 'সামগ্রিক অভিজ্ঞতা', hi: 'समग्र अनुभव', ru: 'Общее впечатление', de: 'Gesamterlebnis', ms: 'Pengalaman Keseluruhan' },
+  accuracy: { en: 'Code & Routing Accuracy', bn: 'রাউটিং ও IFSC সঠিকতা', hi: 'IFSC व कोड सटीकता', ru: 'Точность БИК и реквизитов', de: 'BLZ & Routing Genauigkeit', ms: 'Ketepatan Kod & Penghalaan' },
+  speed: { en: 'Fast Search & Speed', bn: 'দ্রুত অনুসন্ধান ও স্পিড', hi: 'त्वरित खोज और गति', ru: 'Скорость и удобство', de: 'Suchgeschwindigkeit & Performance', ms: 'Carian Pantas & Kelajuan' },
+  suggestion: { en: 'Feature Suggestion', bn: 'নতুন ফিচারের পরামর্শ', hi: 'सुझाव / नई सुविधा', ru: 'Предложение по улучшению', de: 'Funktionsvorschlag / Feedback', ms: 'Cadangan Ciri Baharu' }
 };
 
 const ratingModalTranslations: Record<Language, {
@@ -131,7 +131,25 @@ const ratingModalTranslations: Record<Language, {
     cancel: 'Отмена',
     submit: 'Отправить отзыв',
     sending: 'Отправка...'
-  }
+  },
+  ms: {
+    title: 'Nilaikan & Maklum Balas',
+    subtitle: 'Penilaian dan pandangan anda dihantar terus ke peti masuk sokongan kami',
+    successTitle: 'Terima Kasih! Penilaian & Maklum Balas Diterima.',
+    successDesc: 'Ulasan anda telah dihantar terus ke meja sokongan kami.',
+    selectStars: 'Pilih Penilaian Bintang',
+    categoryLabel: 'Kategori Maklum Balas:',
+    nameLabel: 'Nama Anda (Pilihan):',
+    namePlaceholder: 'Masukkan nama anda...',
+    emailLabel: 'Emel (Untuk jawapan, pilihan):',
+    emailPlaceholder: 'namaanda@example.com',
+    commentLabel: 'Maklum Balas / Komen Anda:',
+    commentPlaceholder: 'Kongsi pandangan, cadangan, atau manfaat platform ini...',
+    securityNotice: 'Penghantaran segera ke meja sokongan. Tiada aplikasi emel luaran diperlukan.',
+    cancel: 'Batal',
+    submit: 'Hantar Penilaian',
+    sending: 'Menghantar...'
+  },
 };
 
 const categoriesList = ['overall', 'accuracy', 'speed', 'suggestion'] as const;

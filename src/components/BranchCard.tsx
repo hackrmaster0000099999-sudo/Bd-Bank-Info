@@ -80,8 +80,13 @@ export const BranchCard: React.FC<BranchCardProps> = ({
     ? `IFSC: ${branch.ifsc_code} | MICR: ${branch.routing_number} | City: ${branch.district}, ${branch.division}`
     : `Routing: ${branch.routing_number} | SWIFT: ${branch.swift_code || 'N/A'} | District: ${branch.district}`;
 
+  const cardAnchorId = `routing-${branch.routing_number || branch.ifsc_code || branch.sort_code || branch.bik_code || branch.transit_number || branch.bsb_code || branch.blz || branch.id}`;
+
   return (
-    <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 p-5 shadow-xs hover:shadow-lg hover:shadow-emerald-900/5 dark:hover:shadow-black/20 transition-all duration-200 flex flex-col justify-between group">
+    <div
+      id={cardAnchorId}
+      className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 p-5 shadow-xs hover:shadow-lg hover:shadow-emerald-900/5 dark:hover:shadow-black/20 transition-all duration-200 flex flex-col justify-between group scroll-mt-24"
+    >
       <div>
         {/* Top Badges */}
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
