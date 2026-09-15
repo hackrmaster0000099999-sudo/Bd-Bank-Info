@@ -14,6 +14,9 @@ import { uaeBanksArticles } from '../data/uae/articles';
 import { singaporeBanksArticles } from '../data/singapore/articles';
 import { malaysiaBanksArticles } from '../data/malaysia/articles';
 import { HeroCountrySelector } from './HeroCountrySelector';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface BlogPageProps {
   lang: Language;
@@ -390,6 +393,19 @@ export const BlogPage: React.FC<BlogPageProps> = ({
         </button>
       </div>
 
+      {/* Featured Remittance & Transfer Deals */}
+      <SmartlinkPromo variant="card" lang={lang} />
+
+      {/* Responsive Display Banner */}
+      <div className="flex flex-col items-center justify-center">
+        <div className="block sm:hidden">
+          <AdsterraBanner format="320x50" />
+        </div>
+        <div className="hidden sm:block">
+          <AdsterraBanner format="300x250" />
+        </div>
+      </div>
+
       {/* Articles Grid */}
       {filteredArticles.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -560,6 +576,9 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           })}
         </div>
       )}
+
+      {/* Adsterra Native Banner (In-Feed Sponsor Unit) */}
+      <AdsterraNativeBanner />
 
       {/* Empty State Type 1: Country has no articles yet (e.g. Germany, UK, Canada, Australia, Singapore, UAE) */}
       {articlesToFilter.length === 0 && (

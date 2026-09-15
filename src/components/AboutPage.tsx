@@ -1,6 +1,9 @@
 import React from 'react';
 import { Building2, ShieldCheck, Zap, Database, ArrowLeft } from 'lucide-react';
 import { Language } from '../types';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface PageProps {
   lang: Language;
@@ -79,7 +82,23 @@ export const AboutPage: React.FC<PageProps> = ({ lang, onBack }) => {
               </p>
             </div>
           </div>
+
+          {/* Special Remittance & Transfer Deals */}
+          <SmartlinkPromo variant="card" lang={lang} />
+
+          {/* Responsive Display Banner */}
+          <div className="flex flex-col items-center justify-center pt-2">
+            <div className="block sm:hidden">
+              <AdsterraBanner format="320x50" />
+            </div>
+            <div className="hidden sm:block">
+              <AdsterraBanner format="300x250" />
+            </div>
+          </div>
         </div>
+
+        {/* Adsterra Native Banner */}
+        <AdsterraNativeBanner />
       </div>
     </div>
   );

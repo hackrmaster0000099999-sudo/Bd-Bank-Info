@@ -1,6 +1,8 @@
 import React from 'react';
 import { FileQuestion, Home, Building2, Hash, Globe, ArrowLeft } from 'lucide-react';
 import { Language } from '../types';
+import { AdsterraBanner } from './AdsterraBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface PageProps {
   lang: Language;
@@ -86,6 +88,19 @@ export const NotFoundPage: React.FC<PageProps> = ({ lang, onHome, onNavigate }) 
           <ArrowLeft className="w-4 h-4" />
           <span>{isRu ? 'Вернуться на главную' : isHi ? 'मुख्य पृष्ठ पर लौटें' : isBn ? 'হোমপেজে ফিরে যান' : 'Back to Home'}</span>
         </button>
+      </div>
+
+      {/* Remittance & Money Transfer Deals */}
+      <SmartlinkPromo variant="card" lang={lang} />
+
+      {/* Responsive Display Banner */}
+      <div className="pt-4 flex flex-col items-center justify-center">
+        <div className="block sm:hidden">
+          <AdsterraBanner format="320x50" />
+        </div>
+        <div className="hidden sm:block">
+          <AdsterraBanner format="300x250" />
+        </div>
       </div>
     </div>
   );

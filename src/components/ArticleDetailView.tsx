@@ -23,6 +23,9 @@ import { BankArticle, Language, Country, Branch } from '../types';
 import { getBranchesForBank } from '../lib/searchEngine';
 import { CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { HeroCountrySelector } from './HeroCountrySelector';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface ArticleDetailViewProps {
   article: BankArticle;
@@ -246,6 +249,19 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
         </div>
       </section>
 
+      {/* Featured Remittance & Money Transfer Deals */}
+      <SmartlinkPromo variant="card" lang={lang} />
+
+      {/* Responsive Display Banner */}
+      <div className="flex flex-col items-center justify-center">
+        <div className="block sm:hidden">
+          <AdsterraBanner format="320x50" />
+        </div>
+        <div className="hidden sm:block">
+          <AdsterraBanner format="300x250" />
+        </div>
+      </div>
+
       {/* Article Body Content */}
       <div className="bg-white dark:bg-slate-800/90 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-700/80 shadow-xs space-y-10">
         {/* Lead Overview */}
@@ -358,6 +374,9 @@ export const ArticleDetailView: React.FC<ArticleDetailViewProps> = ({
           </section>
         )}
       </div>
+
+      {/* Adsterra Native Banner (In-Feed Sponsor Unit) */}
+      <AdsterraNativeBanner />
 
       {/* Bottom Navigation Back to Blog */}
       <div className="flex items-center justify-between pt-4">

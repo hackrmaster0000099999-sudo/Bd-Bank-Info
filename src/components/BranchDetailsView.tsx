@@ -14,6 +14,9 @@ import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { slugifyState } from '../lib/searchEngine';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface BranchDetailsViewProps {
   branch: Branch;
@@ -583,6 +586,19 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           )}
         </div>
 
+        {/* Remittance Offer Smartlink Card */}
+        <SmartlinkPromo variant="card" lang={lang} />
+
+        {/* Responsive Display Banner (320x50 on mobile, 300x250 centered) */}
+        <div className="pt-1 flex flex-col items-center justify-center">
+          <div className="block sm:hidden">
+            <AdsterraBanner format="320x50" />
+          </div>
+          <div className="hidden sm:block">
+            <AdsterraBanner format="300x250" />
+          </div>
+        </div>
+
         {/* US Extra Requisites Section (Wire Routing, SWIFT, Zip Code) */}
         {isUS && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
@@ -945,6 +961,9 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Adsterra Native Banner (In-Feed Sponsor Unit) */}
+      <AdsterraNativeBanner />
 
       {/* FAQ Section */}
       <div className="bg-white dark:bg-slate-800/90 rounded-3xl border border-slate-200 dark:border-slate-700/80 p-6 sm:p-8 shadow-xs space-y-4">

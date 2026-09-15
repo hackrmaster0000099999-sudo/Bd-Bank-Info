@@ -26,6 +26,9 @@ import { generateSeoData, updateSEOMeta, getFreshnessLabel, CURRENT_DATA_VERSION
 import { detectUserCountryAndLang } from './lib/geoDetector';
 import { translations } from './lib/translations';
 import { Building2, Sparkles, ShieldCheck, MapPin, CheckCircle2, Clock, Star } from 'lucide-react';
+import { AdsterraBanner } from './components/AdsterraBanner';
+import { AdsterraNativeBanner } from './components/AdsterraNativeBanner';
+import { SmartlinkPromo } from './components/SmartlinkPromo';
 
 export default function App() {
   const initialGeo = useMemo(() => detectUserCountryAndLang(), []);
@@ -536,6 +539,15 @@ export default function App() {
                   totalResultsCount={searchResults.length}
                 />
               </div>
+
+              {/* Remittance & Banking Offers Smartlink Bar */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <SmartlinkPromo variant="pill" lang={lang} />
+                {/* 320x50 Banner on Mobile / Small screen */}
+                <div className="block sm:hidden w-full flex justify-center">
+                  <AdsterraBanner format="320x50" />
+                </div>
+              </div>
             </section>
 
             {/* Filter Bar & Content Area */}
@@ -700,6 +712,9 @@ export default function App() {
                   ))}
                 </div>
               </div>
+
+              {/* Native Banner Sponsor Unit */}
+              <AdsterraNativeBanner />
 
               {/* About World Bank Codes & Educational Overview */}
               <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-6 sm:p-8 space-y-4 shadow-xs">

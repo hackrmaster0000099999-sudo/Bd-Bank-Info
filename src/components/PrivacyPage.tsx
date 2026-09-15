@@ -1,6 +1,9 @@
 import React from 'react';
 import { ShieldCheck, Lock, ArrowLeft } from 'lucide-react';
 import { Language } from '../types';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface PageProps {
   lang: Language;
@@ -79,7 +82,23 @@ export const PrivacyPage: React.FC<PageProps> = ({ lang, onBack }) => {
               ? 'আমাদের ওয়েবসাইটে সরকারি বা ব্যাংকের অফিশিয়াল ওয়েবসাইটের বাহ্যিক লিংক থাকতে পারে। বাহ্যিক ওয়েবসাইটের পলিসির জন্য World Bank Codes দায়ী নয়।'
               : 'Our website may contain links to official bank portals or external resources. We are not responsible for the privacy practices of third-party websites.'}
           </p>
+
+          {/* Special Remittance & Transfer Deals */}
+          <SmartlinkPromo variant="card" lang={lang} />
+
+          {/* Responsive Display Banner */}
+          <div className="flex flex-col items-center justify-center pt-2">
+            <div className="block sm:hidden">
+              <AdsterraBanner format="320x50" />
+            </div>
+            <div className="hidden sm:block">
+              <AdsterraBanner format="300x250" />
+            </div>
+          </div>
         </div>
+
+        {/* Adsterra Native Banner */}
+        <AdsterraNativeBanner />
       </div>
     </div>
   );

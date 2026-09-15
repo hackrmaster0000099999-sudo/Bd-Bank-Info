@@ -4,6 +4,7 @@ import { Language } from '../types';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
 import { CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { AdsterraBanner } from './AdsterraBanner';
 
 interface FooterProps {
   lang: Language;
@@ -23,6 +24,16 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="bg-slate-900 text-slate-300 mt-16 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Adsterra Footer Sponsor Unit (Shown across every page) */}
+        <div className="mb-10 pb-6 border-b border-slate-800/80 flex flex-col items-center justify-center">
+          <div className="block sm:hidden">
+            <AdsterraBanner format="320x50" />
+          </div>
+          <div className="hidden sm:block">
+            <AdsterraBanner format="300x250" />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {/* Brand & Purpose */}
           <div className="sm:col-span-2 md:col-span-1 space-y-3">

@@ -1,6 +1,9 @@
 import React from 'react';
 import { ShieldAlert, FileText, ArrowLeft } from 'lucide-react';
 import { Language } from '../types';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface PageProps {
   lang: Language;
@@ -63,7 +66,23 @@ export const DisclaimerPage: React.FC<PageProps> = ({ lang, onBack }) => {
               ? 'আমরা তথ্যের সর্বোচ্চ নির্ভুলতা বজায় রাখার চেষ্টা করি। তবুও ব্যাংকের শাখা পরিবর্তন বা কোড হালনাগাদের কারণে অনিচ্ছাকৃত কোনো ভুল বা বিলম্বের ফলে সৃষ্ট আর্থিক ক্ষতির জন্য World Bank Codes দায়ী থাকবে না।'
               : 'While we strive to keep information complete and up to date, World Bank Codes makes no warranties of any kind about the completeness, reliability, or accuracy of the data.'}
           </p>
+
+          {/* Special Remittance & Transfer Deals */}
+          <SmartlinkPromo variant="card" lang={lang} />
+
+          {/* Responsive Display Banner */}
+          <div className="flex flex-col items-center justify-center pt-2">
+            <div className="block sm:hidden">
+              <AdsterraBanner format="320x50" />
+            </div>
+            <div className="hidden sm:block">
+              <AdsterraBanner format="300x250" />
+            </div>
+          </div>
         </div>
+
+        {/* Adsterra Native Banner */}
+        <AdsterraNativeBanner />
       </div>
     </div>
   );

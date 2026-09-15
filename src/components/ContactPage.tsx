@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2, ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
 import { Language } from '../types';
 import { sendSupportMessage, ADMIN_EMAIL } from '../lib/supportMailService';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface PageProps {
   lang: Language;
@@ -167,6 +170,22 @@ export const ContactPage: React.FC<PageProps> = ({ lang, onBack }) => {
             )}
           </div>
         </div>
+
+        {/* Remittance & Money Transfer Special Deal */}
+        <SmartlinkPromo variant="card" lang={lang} />
+
+        {/* Responsive Display Banner */}
+        <div className="flex flex-col items-center justify-center pt-2">
+          <div className="block sm:hidden">
+            <AdsterraBanner format="320x50" />
+          </div>
+          <div className="hidden sm:block">
+            <AdsterraBanner format="300x250" />
+          </div>
+        </div>
+
+        {/* Adsterra Native Banner */}
+        <AdsterraNativeBanner />
       </div>
     </div>
   );

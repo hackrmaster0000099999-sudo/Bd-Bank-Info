@@ -5,6 +5,8 @@ import { decodeRoutingNumber } from '../lib/routingDecoder';
 import { decodeBik } from '../data/russia/bikDecoder';
 import { decodeBlz } from '../data/germany/blzValidator';
 import { CopyButton } from './CopyButton';
+import { SmartlinkPromo } from './SmartlinkPromo';
+import { AdsterraBanner } from './AdsterraBanner';
 
 interface RoutingDecoderModalProps {
   routingNumber: string;
@@ -328,6 +330,14 @@ export const RoutingDecoderModal: React.FC<RoutingDecoderModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* Remittance & Money Transfer Deals */}
+        <SmartlinkPromo variant="pill" lang={lang} />
+
+        {/* Adsterra 320x50 Banner Unit inside modal */}
+        <div className="flex justify-center pt-1">
+          <AdsterraBanner format="320x50" />
+        </div>
 
         {/* Modal Footer */}
         <div className="pt-2 flex justify-end">

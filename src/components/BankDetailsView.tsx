@@ -7,6 +7,9 @@ import { BranchCard } from './BranchCard';
 import { CopyButton } from './CopyButton';
 import { getBankGuideContent } from '../lib/bankGuideContent';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface BankDetailsViewProps {
   bank: Bank;
@@ -257,6 +260,9 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
         </div>
       </div>
 
+      {/* Remittance Offer Smartlink Card */}
+      <SmartlinkPromo variant="card" lang={lang} />
+
       {/* Branch Grid */}
       {filteredBranches.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -290,6 +296,16 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
 
       {/* In-depth Educational Blog & Guide Section for SEO */}
       <article className="bg-white dark:bg-slate-800/90 rounded-3xl border border-slate-200 dark:border-slate-700/80 p-6 sm:p-10 shadow-sm space-y-8 text-slate-800 dark:text-slate-200">
+        {/* Responsive Display Banner */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="block sm:hidden">
+            <AdsterraBanner format="320x50" />
+          </div>
+          <div className="hidden sm:block">
+            <AdsterraBanner format="300x250" />
+          </div>
+        </div>
+
         <div className="border-b border-slate-200 dark:border-slate-700/80 pb-4">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 mb-2">
             <BookOpen className="w-3.5 h-3.5" />
@@ -420,6 +436,9 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
             })}
           </div>
         </section>
+
+        {/* In-Feed Native Banner */}
+        <AdsterraNativeBanner />
       </article>
     </div>
   );

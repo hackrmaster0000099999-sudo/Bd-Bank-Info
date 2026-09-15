@@ -7,6 +7,9 @@ import { CopyButton } from './CopyButton';
 import { getBankGuideContent } from '../lib/bankGuideContent';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
+import { AdsterraBanner } from './AdsterraBanner';
+import { AdsterraNativeBanner } from './AdsterraNativeBanner';
+import { SmartlinkPromo } from './SmartlinkPromo';
 
 interface BankStateViewProps {
   bank: Bank;
@@ -437,6 +440,19 @@ export const BankStateView: React.FC<BankStateViewProps> = ({
         </div>
       </div>
 
+      {/* Remittance Offer Smartlink Card */}
+      <SmartlinkPromo variant="card" lang={lang} />
+
+      {/* Responsive Display Banner */}
+      <div className="flex flex-col items-center justify-center">
+        <div className="block sm:hidden">
+          <AdsterraBanner format="320x50" />
+        </div>
+        <div className="hidden sm:block">
+          <AdsterraBanner format="300x250" />
+        </div>
+      </div>
+
       {/* Consolidated Branch Cards Grid */}
       {filteredBranches.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -616,6 +632,9 @@ export const BankStateView: React.FC<BankStateViewProps> = ({
             })}
           </div>
         </section>
+
+        {/* Adsterra Native Banner (In-Feed Sponsor Unit) */}
+        <AdsterraNativeBanner />
       </article>
     </div>
   );
