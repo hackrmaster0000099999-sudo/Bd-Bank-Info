@@ -506,29 +506,5 @@
     "fdic_cert": "6560",
     "fed_district": "04 - Federal Reserve Bank of Cleveland",
     "type": "National Bank"
-  },
-  {
-    "id": "regions-bank",
-    "name": "Regions Bank",
-    "name_bn": "রিজিওনস ব্যাংক",
-    "name_hi": "रीजनल बैंक (Regions Bank)",
-    "name_ru": "Регионс Банк (Regions Bank)",
-    "short_name": "Regions",
-    "country": "us",
-    "bank_code": "0620",
-    "routing_number": "062000019",
-    "ach_routing": "062000019",
-    "wire_routing": "062000019",
-    "swift_code": "UPBKUS44",
-    "head_office": "1900 5th Avenue North, Birmingham, AL 35203, United States",
-    "head_office_bn": "১৯০০ ৫ম অ্যাভিনিউ নর্থ, বার্মিংহাম, অ্যালাবামা ৩৫২০৩, মার্কিন যুক্তরাষ্ট্র",
-    "head_office_hi": "1900 5th एवेन्यू नॉर्थ, बर्मिंघम, अलबामा 35203, संयुक्त राज्य अमेरिका",
-    "head_office_ru": "1900 5-я авеню Норт, Бирмингем, Алабама 35203, США",
-    "website": "https://www.regions.com",
-    "branch_count": 80,
-    "established": "1971",
-    "fdic_cert": "12368",
-    "fed_district": "06 - Federal Reserve Bank of Atlanta",
-    "type": "State Commercial Bank"
   }
 ]
