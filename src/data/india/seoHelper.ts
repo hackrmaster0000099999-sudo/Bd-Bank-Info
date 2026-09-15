@@ -33,7 +33,13 @@ export function getIndiaBranchMetaTitle(branch: Branch, lang: Language = 'en'): 
   const bName = isHi ? (branch.name_hi || branch.name) : isBn ? (branch.name_bn || branch.name) : branch.name;
   const bankTitle = isHi ? (branch.bank_name_hi || branch.bank_name) : isBn ? (branch.bank_name_bn || branch.bank_name) : branch.bank_name;
   
-  return `${bankTitle} (${bName}) IFSC Code: ${branch.ifsc_code} & MICR: ${branch.micr_code || branch.routing_number} | World Bank Codes`;
+  if (isHi) {
+    return `${branch.ifsc_code} - ${bankTitle} (${bName}) IFSC कोड, MICR ও राउटिंग नंबर (2026)`;
+  }
+  if (isBn) {
+    return `${branch.ifsc_code} - ${bankTitle} (${bName}) IFSC কোড, MICR ও রাউটিং নাম্বার (২০২৬)`;
+  }
+  return `${branch.ifsc_code} - ${bankTitle} IFSC Code, MICR & Routing Number | ${bName}`;
 }
 
 export function getIndiaBranchMetaDescription(branch: Branch, lang: Language = 'en'): string {
@@ -41,10 +47,10 @@ export function getIndiaBranchMetaDescription(branch: Branch, lang: Language = '
   const isBn = lang === 'bn';
   
   if (isHi) {
-    return `${branch.bank_name}, ${branch.name}, ${branch.district}, ${branch.division} के लिए सत्यापित IFSC कोड: ${branch.ifsc_code}, MICR: ${branch.micr_code || branch.routing_number}, स्विफ्ट: ${branch.swift_code || 'HO'} और पूरा पता।`;
+    return `भारत में ${branch.bank_name} (${branch.name}) के लिए 11-अक्षरीय IFSC कोड: ${branch.ifsc_code}, 9-अंकीय MICR / राउटिंग नंबर: ${branch.micr_code || branch.routing_number}, स्विफ्ट कोड ${branch.swift_code || 'HO'}, पता और फोन।`;
   }
   if (isBn) {
-    return `${branch.bank_name}, ${branch.name} শাখার অফিশিয়াল IFSC কোড: ${branch.ifsc_code}, MICR: ${branch.micr_code || branch.routing_number}, সুইফট ও সম্পূর্ণ ঠিকানা (${branch.district}, ${branch.division}, ভারত)।`;
+    return `${branch.bank_name}, ${branch.name} শাখার অফিশিয়াল IFSC কোড: ${branch.ifsc_code}, ৯-সংখ্যার MICR / রাউটিং কোড: ${branch.micr_code || branch.routing_number}, সুইফট ও ঠিকানা (${branch.district}, ${branch.division}, ভারত)।`;
   }
-  return `Get verified Indian banking details: IFSC Code ${branch.ifsc_code}, MICR ${branch.micr_code || branch.routing_number}, SWIFT ${branch.swift_code || 'N/A'}, Phone & Address for ${branch.bank_name} (${branch.name}), ${branch.district}, ${branch.division}, India.`;
+  return `Official 11-character IFSC Code ${branch.ifsc_code}, 9-digit MICR / routing number ${branch.micr_code || branch.routing_number}, and SWIFT code ${branch.swift_code || 'Head Office'} for ${branch.bank_name} (${branch.name}) in ${branch.district}, ${branch.division}, India. Verified for NEFT, RTGS, IMPS, and wire transfers.`;
 }

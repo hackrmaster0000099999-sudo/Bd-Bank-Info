@@ -19,15 +19,23 @@ export function getUsaBankMetaDescription(bank: Bank, lang: Language): string {
 export function getUsaBranchMetaTitle(branch: Branch, lang: Language): string {
   const bankName = lang === 'bn' ? (branch.bank_name_bn || branch.bank_name) : branch.bank_name;
   const branchName = lang === 'bn' ? (branch.name_bn || branch.name) : branch.name;
+  const routing = branch.routing_number;
   if (lang === 'bn') {
-    return `${branchName} - ${bankName} ABA রাউটিং ${branch.routing_number}, ঠিকানা ও সুইফট | ${branch.division}`;
+    return `${routing} - ${bankName} ABA রাউটিং নম্বর | ${branchName}, ${branch.division}`;
   }
-  return `${branch.name} - ${branch.bank_name} ABA Routing Number ${branch.routing_number}, Address & SWIFT | ${branch.district}, ${branch.division}`;
+  if (lang === 'hi') {
+    return `${routing} - ${bankName} ABA राउटिंग नंबर | ${branchName}, ${branch.division}`;
+  }
+  if (lang === 'ru') {
+    return `${routing} - ${bankName} Маршрутный номер ABA | ${branchName}, ${branch.division}`;
+  }
+  return `${routing} - ${branch.bank_name} ABA Routing Number & Wire Info | ${branch.name}, ${branch.district}, ${branch.division}`;
 }
 
 export function getUsaBranchMetaDescription(branch: Branch, lang: Language): string {
+  const routing = branch.routing_number;
   if (lang === 'bn') {
-    return `${branch.bank_name}-এর ${branch.name} (${branch.district}, ${branch.division})-এর ৯-ডিজিটের ABA রাউটিং নম্বর ${branch.routing_number}, ঠিকানা: ${branch.address}, ফোন ও সুইফট কোড ${branch.swift_code || ''}।`;
+    return `${routing} হলো ${branch.bank_name}-এর ${branch.name} শাখার ৯-সংখ্যার অফিসিয়াল ABA রাউটিং নম্বর (ACH ও Fedwire)। ঠিকানা: ${branch.address}, ফোন ও সুইফট কোড ${branch.swift_code || ''}।`;
   }
-  return `Full routing information for ${branch.bank_name} - ${branch.name} in ${branch.district}, ${branch.division}. ABA Routing Transit Number: ${branch.routing_number}, Address: ${branch.address}, Zip: ${branch.zip_code || ''}, SWIFT: ${branch.swift_code || 'Head Office'}.`;
+  return `Official 9-digit ABA Routing Number ${routing} for ${branch.bank_name} (${branch.name}) in ${branch.district}, ${branch.division}. Verified for direct deposit (ACH), electronic payments, wire transfers, address: ${branch.address}, ZIP ${branch.zip_code || ''}, and SWIFT: ${branch.swift_code || 'Head Office'}.`;
 }

@@ -10,7 +10,7 @@ import { validateSortCode } from '../data/uk/sortCodeValidator';
 import { decodeCanadaRouting } from '../data/canada/canadaRoutingValidator';
 import { decodeAustraliaBsb } from '../data/australia/australiaBsbValidator';
 import { decodeBlz } from '../data/germany/blzValidator';
-import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { updateSEOMeta, generateSeoData, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { slugifyState } from '../lib/searchEngine';
 import { Link } from 'react-router-dom';
 import { translations } from '../lib/translations';
@@ -200,6 +200,23 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
             : `Use the main German Head Office SWIFT code for ${branch.bank_name} along with your DE IBAN.`
         }
       ]
+    : isIndia
+    ? [
+        {
+          question: `What is the Routing Number vs. IFSC Code for ${branch.bank_name} - ${branch.name}?`,
+          answer: `In India, banks do not use US-style ABA routing numbers. For domestic electronic fund transfers (NEFT, RTGS, IMPS), the official 11-character IFSC Code is ${branch.ifsc_code || 'N/A'}. For paper cheque clearing through RBI's Cheque Truncation System (CTS), the 9-digit MICR (routing) code is ${branch.routing_number}.`
+        },
+        {
+          question: `Which code should I use for foreign inward remittance to ${branch.bank_name}?`,
+          answer: branch.swift_code
+            ? `For international wire transfers to ${branch.bank_name} (${branch.name}), provide the international SWIFT/BIC code ${branch.swift_code} along with the 11-digit IFSC code (${branch.ifsc_code}) and beneficiary account number.`
+            : `Use the principal Head Office SWIFT code for ${branch.bank_name} along with this branch's IFSC code (${branch.ifsc_code}).`
+        },
+        {
+          question: `What is the 9-digit MICR code for ${branch.name} branch?`,
+          answer: `The 9-digit Magnetic Ink Character Recognition (MICR) routing code for this branch is ${branch.routing_number}. It consists of a 3-digit city code, 3-digit bank code, and 3-digit branch code used for magnetic clearing.`
+        }
+      ]
     : lang === 'ru'
     ? [
         {
@@ -264,38 +281,17 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
 
   // Update SEO Meta Tags on view mount (with canonical pointing to consolidated state hub)
   useEffect(() => {
-    const stateSlug = slugifyState(branch.division || branch.district || 'all');
-    const consolidatedCanonical = branch.bank_id ? `https://worldbankcodes.com/bank/${branch.bank_id}/${stateSlug}` : undefined;
+    const seoData = generateSeoData('branch_detail', lang, undefined, branch);
 
     updateSEOMeta({
-      title: isUS
-        ? `${branch.name} - ${branch.bank_name} ABA Routing Number ${branch.routing_number}, SWIFT & Address | World Bank Codes`
-        : isUK
-        ? `${branch.bank_name} ${branch.name} Branch Sort Code ${branch.sort_code || branch.routing_number}, SWIFT & Address | World Bank Codes`
-        : isCanada
-        ? `${branch.bank_name} ${branch.name} Transit Number ${branch.transit_number || branch.branch_code}, EFT & SWIFT | World Bank Codes`
-        : isAustralia
-        ? `${branch.bank_name} ${branch.name} Branch BSB Code ${branch.bsb_code || branch.routing_number}, SWIFT & Address | World Bank Codes`
-        : `${branch.bank_name} ${branch.name} Branch Code & SWIFT | World Bank Codes`,
-      description: isUS
-        ? `Official 9-digit ABA Routing Number: ${branch.routing_number}, ACH: ${branch.ach_routing || branch.routing_number}, Wire: ${branch.wire_routing || branch.routing_number}, SWIFT: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name}, ${branch.district}, ${branch.division}, USA.`
-        : isUK
-        ? `Official UK 6-digit Sort Code: ${branch.sort_code || branch.routing_number} (${sortCodeDecoded?.formattedSortCode || branch.sort_code || branch.routing_number}), SWIFT: ${branch.swift_code || 'HO'}, Postcode: ${branch.zip_code || 'N/A'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, United Kingdom.`
-        : isCanada
-        ? `Official Canadian 5-digit Transit: ${branch.transit_number || branch.branch_code}, Institution: ${branch.institution_number || '003'}, 9-digit EFT: ${branch.routing_number}, SWIFT: ${branch.swift_code || 'HO'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, Canada.`
-        : isAustralia
-        ? `Official Australian 6-digit BSB Number: ${branch.bsb_code || branch.routing_number} (${auDecoded?.formattedDisplay || branch.bsb_code || branch.routing_number}), SWIFT: ${branch.swift_code || 'HO'}, NPP Osko support for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, Australia.`
-        : isRussia
-        ? `Official BIK Code: ${branch.bik_code || branch.routing_number}, Corr. Account: ${branch.corr_account || 'N/A'} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, Russia.`
-        : isIndia
-        ? `Official IFSC Code: ${branch.ifsc_code}, MICR: ${branch.routing_number} for ${branch.bank_name} (${branch.name} Branch), ${branch.district}, ${branch.division}, India.`
-        : `Official BEFTN Routing Number: ${branch.routing_number} and SWIFT Code for ${branch.bank_name}, ${branch.name} branch, ${branch.district}, Bangladesh.`,
-      canonicalUrl: consolidatedCanonical,
+      title: seoData.title,
+      description: seoData.description,
+      canonicalUrl: seoData.canonicalUrl,
       lang,
       branch,
       faqs
     });
-  }, [branch, lang, isUS, isUK, isCanada, isAustralia, isRussia, isIndia, faqs]);
+  }, [branch, lang, faqs]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -924,6 +920,45 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
                 <span className="text-slate-500 dark:text-slate-400 block">Номер подразделения:</span>
                 <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{bikDecoded.branchIndex}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Indian Banking Routing / Clearing Code Clarification Card */}
+        {isIndia && (
+          <div className="bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/50 space-y-2 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>
+                {lang === 'hi'
+                  ? 'भारतीय बैंकिंग: राउटिंग नंबर बनाम IFSC एवं MICR कोड'
+                  : lang === 'bn'
+                  ? 'ভারতীয় ব্যাংকিং: রাউটিং নম্বর বনাম IFSC এবং MICR কোড'
+                  : 'Indian Banking: Routing Number vs. IFSC & MICR Explained'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">
+                  {lang === 'hi' ? 'इलेक्ट्रॉनिक ट्रांसफर (IFSC):' : lang === 'bn' ? 'ইলেকট্রনিক ফান্ড ট্রান্সফার (IFSC):' : 'Electronic Transfer (IFSC):'}
+                </span>
+                <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">{branch.ifsc_code}</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">NEFT / RTGS / IMPS</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">
+                  {lang === 'hi' ? 'चेक क्लियरिंग राउटिंग (MICR):' : lang === 'bn' ? 'চেক ক্লিয়ারিং রাউটিং (MICR):' : 'Cheque Clearing Routing (MICR):'}
+                </span>
+                <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{branch.routing_number}</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">9-Digit RBI CTS Code</span>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
+                <span className="text-slate-500 dark:text-slate-400 block">
+                  {lang === 'hi' ? 'अंतर्राष्ट्रीय प्रेषण (SWIFT):' : lang === 'bn' ? 'আন্তর্জাতিক রেমিট্যান্স (SWIFT):' : 'International Wire (SWIFT):'}
+                </span>
+                <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{branch.swift_code || 'HO Code'}</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">Foreign Remittance</span>
               </div>
             </div>
           </div>
