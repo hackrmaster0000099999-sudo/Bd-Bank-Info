@@ -15,6 +15,11 @@ async function startServer() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
+  // Ads.txt 301 Redirect
+  app.get('/ads.txt', (req, res) => {
+    res.redirect(301, 'https://srv.adstxtmanager.com/19390/worldbankcodes.com');
+  });
+
   // Serve Vite in development or static assets in production
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
