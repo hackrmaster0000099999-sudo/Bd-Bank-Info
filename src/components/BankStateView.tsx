@@ -4,7 +4,6 @@ import { Bank, Branch, Language } from '../types';
 import { slugifyState, getCountrySharedGuideSlug, getCountrySharedGuideTitle } from '../lib/searchEngine';
 import { BranchCard } from './BranchCard';
 import { CopyButton } from './CopyButton';
-import { EzoicAdSpot } from './EzoicAdSpot';
 import { getBankGuideContent } from '../lib/bankGuideContent';
 import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { Link } from 'react-router-dom';
@@ -438,47 +437,19 @@ export const BankStateView: React.FC<BankStateViewProps> = ({
         </div>
       </div>
 
-      {/* Ad Placement 1: Top (Before Branch Listing / Above Content) */}
-      <EzoicAdSpot id="ezoic-bankstate-top-ad" className="w-full bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/60 py-2" />
-
-      {/* Consolidated Branch Cards Grid with Ad Placement 2 (Middle) */}
+      {/* Consolidated Branch Cards Grid */}
       {filteredBranches.length > 0 ? (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredBranches.slice(0, 24).map((br) => (
-              <BranchCard
-                key={`${br.country || 'bd'}-${br.id}`}
-                branch={br}
-                lang={lang}
-                onSelectBranch={onSelectBranch}
-                onOpenRoutingDecoder={onOpenRoutingDecoder}
-                onOpenReportModal={onOpenReportModal}
-              />
-            ))}
-          </div>
-
-          {/* Ad Placement 2: Middle (After first 24 branch cards if list is long, or between branch grid and details) */}
-          {filteredBranches.length > 24 && (
-            <>
-              <EzoicAdSpot id="ezoic-bankstate-mid-ad" className="w-full bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/60 py-2" />
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredBranches.slice(24).map((br) => (
-                  <BranchCard
-                    key={`${br.country || 'bd'}-${br.id}`}
-                    branch={br}
-                    lang={lang}
-                    onSelectBranch={onSelectBranch}
-                    onOpenRoutingDecoder={onOpenRoutingDecoder}
-                    onOpenReportModal={onOpenReportModal}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-
-          {filteredBranches.length <= 24 && (
-            <EzoicAdSpot id="ezoic-bankstate-mid-ad" className="w-full bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/60 py-2" />
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredBranches.map((br) => (
+            <BranchCard
+              key={`${br.country || 'bd'}-${br.id}`}
+              branch={br}
+              lang={lang}
+              onSelectBranch={onSelectBranch}
+              onOpenRoutingDecoder={onOpenRoutingDecoder}
+              onOpenReportModal={onOpenReportModal}
+            />
+          ))}
         </div>
       ) : (
         <div className="bg-white dark:bg-slate-800/90 p-8 rounded-2xl border border-slate-200 dark:border-slate-700/80 text-center space-y-2">
@@ -645,9 +616,6 @@ export const BankStateView: React.FC<BankStateViewProps> = ({
             })}
           </div>
         </section>
-
-        {/* Ad Placement 3: Bottom (Page end, after FAQ section) */}
-        <EzoicAdSpot id="ezoic-bankstate-bottom-ad" className="w-full bg-slate-50/50 dark:bg-slate-900/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700/60 py-2 mt-4" />
       </article>
     </div>
   );
