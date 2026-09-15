@@ -143,12 +143,21 @@ export function getBranches(country?: Country): Branch[] {
 }
 
 export function getBankBySlug(slug: string): Bank | undefined {
-  const clean = slug.toLowerCase();
-  return allBanksList.find((b) => b.id.toLowerCase() === clean);
+  const clean = slug.toLowerCase().trim();
+  return allBanksList.find(
+    (b) =>
+      b.id.toLowerCase() === clean ||
+      b.short_name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === clean ||
+      b.short_name.toLowerCase().replace(/\s+bank$/i, '').replace(/[^a-z0-9]+/g, '-') === clean ||
+      (clean === 'chase' && (b.id === 'jpmorgan-chase' || b.id === 'chase')) ||
+      (clean === 'bofa' && (b.id === 'bank-of-america' || b.id === 'bofa'))
+  );
 }
 
 export function getBranchesForBank(bankId: string): Branch[] {
-  return branches.filter((br) => br.bank_id === bankId || br.bank_id.toLowerCase() === bankId.toLowerCase());
+  const bank = getBankBySlug(bankId);
+  const actualBankId = bank ? bank.id : bankId;
+  return branches.filter((br) => br.bank_id === actualBankId || br.bank_id.toLowerCase() === actualBankId.toLowerCase());
 }
 
 export function slugifyState(division: string): string {
