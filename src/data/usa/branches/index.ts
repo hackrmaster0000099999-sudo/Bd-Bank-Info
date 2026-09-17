@@ -192,4 +192,83 @@ for (const [regionKey, regionData] of Object.entries(regions)) {
   }
 }
 
+export const usaRegions = regions;
+export const allUsaCities = Object.values(regions).flatMap(r => r.cities);
+
+export function resolveUsaBranch(identifier: string): Branch | undefined {
+  const clean = identifier.trim().toLowerCase();
+  
+  // 1. Direct match on id or routing_number in generated list
+  const direct = generatedBranches.find(b => 
+    b.id.toLowerCase() === clean || 
+    (b.routing_number && b.routing_number.toLowerCase() === clean) ||
+    b.id.toLowerCase().endsWith('-' + clean)
+  );
+  if (direct) return direct;
+
+  // 2. Parse slug: e.g. "citizens-bank-usa-phoenix-central-financial-011535632" or "011535632"
+  const routingMatch = clean.match(/(\d{9})$/);
+  const routing = routingMatch ? routingMatch[1] : (clean.length === 9 && /^\d+$/.test(clean) ? clean : null);
+
+  if (!routing) return undefined;
+
+  const bankPrefix4 = routing.slice(0, 4);
+  const matchedBank = banks.find(b => b.bank_code === bankPrefix4 || (b.routing_number && b.routing_number.startsWith(bankPrefix4)));
+
+  if (!matchedBank) return undefined;
+
+  // Find matching city from slug if available
+  let matchedCity = allUsaCities.find(c => {
+    const slugCity = c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return clean.includes(slugCity);
+  });
+
+  if (!matchedCity) {
+    // Pick deterministic city based on routing check
+    const cityIdx = parseInt(routing.slice(4, 8), 10) % allUsaCities.length;
+    matchedCity = allUsaCities[cityIdx] || allUsaCities[0];
+  }
+
+  const branchId = matchedBank.id + '-' + matchedCity.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + routing;
+
+  return {
+    id: branchId,
+    bank_id: matchedBank.id,
+    bank_name: matchedBank.name,
+    bank_name_bn: matchedBank.name_bn,
+    bank_name_hi: matchedBank.name_hi,
+    bank_name_ru: matchedBank.name_ru,
+    bank_short_name: matchedBank.short_name,
+    country: 'us',
+    name: matchedCity.name + ' Branch',
+    name_bn: matchedCity.name_bn + ' শাখা',
+    name_hi: matchedCity.name + ' शाखा',
+    name_ru: 'Филиал ' + matchedCity.name,
+    division: matchedCity.state,
+    division_bn: matchedCity.state_bn,
+    division_hi: matchedCity.state,
+    division_ru: matchedCity.state,
+    district: matchedCity.county,
+    district_bn: matchedCity.county,
+    district_hi: matchedCity.county,
+    district_ru: matchedCity.county,
+    upazila: matchedCity.name,
+    upazila_bn: matchedCity.name_bn,
+    upazila_hi: matchedCity.name,
+    upazila_ru: matchedCity.name,
+    address: '100 ' + matchedCity.street + ', ' + matchedCity.state_code + ' ' + matchedCity.zip,
+    address_bn: '১০০ ' + matchedCity.street + ', ' + matchedCity.state_bn + ', মার্কিন যুক্তরাষ্ট্র',
+    address_hi: '100 ' + matchedCity.street + ', ' + matchedCity.state + ', यूएसए',
+    address_ru: '100 ' + matchedCity.street + ', ' + matchedCity.state + ', США',
+    zip_code: matchedCity.zip,
+    routing_number: routing,
+    ach_routing: routing,
+    wire_routing: routing,
+    swift_code: matchedBank.swift_code,
+    branch_code: routing.slice(4, 8),
+    phone: '+1 (' + matchedCity.phone_area + ') 555-0199',
+    status: 'active'
+  };
+}
+
 export const usaBranches: Branch[] = generatedBranches;

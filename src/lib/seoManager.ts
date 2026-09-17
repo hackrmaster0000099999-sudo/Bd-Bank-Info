@@ -80,8 +80,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-15';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-15T10:00:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-16';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-16T14:24:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ms') {
@@ -115,18 +115,14 @@ export function generateSeoData(
   const isRu = lang === 'ru';
 
   if (viewType === 'branch_detail' && branch) {
-    const stateSlug = branch.division
-      ? branch.division.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-      : (branch.district ? branch.district.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : 'all');
-    const consolidatedUrl = branch.bank_id
-      ? `${BASE_URL}/bank/${branch.bank_id}/${stateSlug}`
-      : `${BASE_URL}/branch/${branch.id || branch.routing_number}`;
+    const branchIdentifier = branch.routing_number || branch.ifsc_code || branch.sort_code || branch.bik_code || branch.transit_number || branch.bsb_code || branch.blz || branch.id;
+    const selfCanonical = `${BASE_URL}/branch/${branch.id || branchIdentifier}`;
 
     if (branch.country === 'us') {
       return {
         title: getUsaBranchMetaTitle(branch, lang),
         description: getUsaBranchMetaDescription(branch, lang),
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -134,7 +130,7 @@ export function generateSeoData(
       return {
         title: getUkBranchMetaTitle(branch, lang),
         description: getUkBranchMetaDescription(branch, lang),
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -143,7 +139,7 @@ export function generateSeoData(
       return {
         title: caSeo.title,
         description: caSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -152,7 +148,7 @@ export function generateSeoData(
       return {
         title: auSeo.title,
         description: auSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -161,7 +157,7 @@ export function generateSeoData(
       return {
         title: aeSeo.title,
         description: aeSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -170,7 +166,7 @@ export function generateSeoData(
       return {
         title: sgSeo.title,
         description: sgSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -179,7 +175,7 @@ export function generateSeoData(
       return {
         title: mySeo.title,
         description: mySeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -188,7 +184,7 @@ export function generateSeoData(
       return {
         title: deSeo.title,
         description: deSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -196,7 +192,7 @@ export function generateSeoData(
       return {
         title: getIndiaBranchMetaTitle(branch, lang),
         description: getIndiaBranchMetaDescription(branch, lang),
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -206,7 +202,7 @@ export function generateSeoData(
       return {
         title: ruSeo.title,
         description: ruSeo.description,
-        canonicalUrl: consolidatedUrl
+        canonicalUrl: selfCanonical
       };
     }
 
@@ -214,7 +210,7 @@ export function generateSeoData(
     return {
       title: getBdBranchesMetaTitle(branch, lang),
       description: getBdBranchesMetaDescription(branch, lang),
-      canonicalUrl: consolidatedUrl
+      canonicalUrl: selfCanonical
     };
   }
 

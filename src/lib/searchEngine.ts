@@ -3,7 +3,7 @@ import bdBanksData from '../data/banks.json';
 import { indianBanks, indiaBranches } from '../data/india/index';
 import { allBranches } from '../data/branches/index';
 import { russianBanks, russianBranches } from '../data/russia/index';
-import { usaBanks, usaBranches } from '../data/usa/index';
+import { usaBanks, usaBranches, resolveUsaBranch } from '../data/usa/index';
 import { ukBanks, ukBranches } from '../data/uk/index';
 import { canadaBanks, canadaBranches } from '../data/canada/index';
 import { australiaBanks, australiaBranches } from '../data/australia/index';
@@ -610,7 +610,7 @@ export function searchAll(query: string, filters?: Partial<FilterState>): Search
 export function getBranchByRoutingNumber(routingNumber: string): Branch | undefined {
   const clean = routingNumber.trim().toUpperCase();
   const cleanNoDash = clean.replace(/[-\s]/g, '');
-  return branches.find(
+  const found = branches.find(
     (b) =>
       (b.routing_number && b.routing_number.toUpperCase() === clean) ||
       (b.bik_code && b.bik_code.toUpperCase() === clean) ||
@@ -624,12 +624,15 @@ export function getBranchByRoutingNumber(routingNumber: string): Branch | undefi
       (b.cbuae_code && b.cbuae_code.toUpperCase() === clean) ||
       (b.swift_code && b.swift_code.toUpperCase() === clean)
   );
+  if (found) return found;
+
+  return resolveUsaBranch(routingNumber);
 }
 
 export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
   const clean = identifier.trim().toLowerCase();
   const cleanNoDash = clean.replace(/[-\s]/g, '');
-  return branches.find(
+  const found = branches.find(
     (b) =>
       (b.routing_number && b.routing_number.toLowerCase() === clean) ||
       (b.bik_code && b.bik_code.toLowerCase() === clean) ||
@@ -645,6 +648,9 @@ export function getBranchByIdOrRouting(identifier: string): Branch | undefined {
       (b.id && b.id.toLowerCase() === clean) ||
       (b.id && b.id.toLowerCase().endsWith(clean))
   );
+  if (found) return found;
+
+  return resolveUsaBranch(identifier);
 }
 
 // Unified multi-country article library (including per-country shared clearing architecture guides)

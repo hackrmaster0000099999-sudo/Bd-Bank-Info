@@ -219,19 +219,9 @@ export default function App() {
       const identifier = decodeURIComponent(path.replace('/branch/', ''));
       const branch = getBranchByIdOrRouting(identifier) || getBranchByRoutingNumber(identifier);
       if (branch) {
-        // Automatic client-side redirect to consolidated bank+state page with anchor
-        const bankId = branch.bank_id;
-        const stateSlug = slugifyState(branch.division || branch.district || 'all');
-        const code = branch.routing_number || branch.ifsc_code || branch.sort_code || branch.bik_code || branch.transit_number || branch.bsb_code || branch.blz || branch.id || identifier;
-
-        if (bankId) {
-          navigate(`/bank/${bankId}/${stateSlug}#routing-${encodeURIComponent(code)}`, { replace: true });
-          return;
-        } else {
-          setSelectedBranch(branch);
-          setSelectedBank(null);
-          setSelectedArticle(null);
-        }
+        setSelectedBranch(branch);
+        setSelectedBank(null);
+        setSelectedArticle(null);
       } else {
         setSelectedBank(null);
         setSelectedBranch(null);
