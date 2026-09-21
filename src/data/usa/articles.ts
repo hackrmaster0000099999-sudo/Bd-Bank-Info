@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getUsaBankArticleSeo } from './seoHelper';
 
 /**
  * Editorial Knowledge Base & Comprehensive Guide for Top 20 United States Commercial & National Banks
@@ -882,6 +883,8 @@ ${bankNameBn}-এ আপনার জমাকৃত প্রতিটি ড�
     { label: 'Customer Helpline', label_bn: 'গ্রাহক সহায়তা হেল্পলাইন', value: knowledge.customerCare, value_bn: knowledge.customerCare }
   ];
 
+  const articleSeo = getUsaBankArticleSeo(bank);
+
   return {
     id: bankId,
     bank_id: bankId,
@@ -895,8 +898,8 @@ ${bankNameBn}-এ আপনার জমাকৃত প্রতিটি ড�
     subtitle_bn: subtitleBn,
     subtitle_hi: `${bankNameEn} के 9-अंकीय ABA रूटिंग नंबर, डायरेक्ट डिपॉजिट एवं स्विफ्ट कोड की पूरी जानकारी।`,
     subtitle_ru: `Официальный справочник банковских реквизитов ${bankNameEn}: 9-значный маршрутный номер ABA, ACH и переводы Fedwire.`,
-    meta_title: metaTitle,
-    meta_description: metaDescription,
+    meta_title: articleSeo.title,
+    meta_description: articleSeo.description,
     meta_keywords: [
       `${bankNameEn} routing number`,
       `${shortName} 9 digit routing number`,

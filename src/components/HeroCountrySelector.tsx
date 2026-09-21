@@ -28,7 +28,7 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'United States',
     nameNative: 'USA',
     badgeEn: 'ABA & ACH Routing',
-    badgeNative: 'ABA রাউটিং'
+    badgeNative: 'ABA Routing'
   },
   {
     id: 'uk',
@@ -37,7 +37,7 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'United Kingdom',
     nameNative: 'UK',
     badgeEn: 'Sort Codes & Faster Payments',
-    badgeNative: 'সর্ট কোড ও SWIFT'
+    badgeNative: 'Sort Code'
   },
   {
     id: 'ca',
@@ -46,7 +46,7 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'Canada',
     nameNative: 'Canada',
     badgeEn: 'Transit & EFT Routing',
-    badgeNative: 'ট্রানজিট ও EFT'
+    badgeNative: 'Transit & EFT'
   },
   {
     id: 'au',
@@ -55,25 +55,25 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'Australia',
     nameNative: 'Australia',
     badgeEn: 'BSB & APCA Direct Entry',
-    badgeNative: 'BSB কোড ও SWIFT'
+    badgeNative: 'BSB Code'
   },
   {
     id: 'ae',
     flag: '🇦🇪',
     code: 'AE',
     nameEn: 'United Arab Emirates',
-    nameNative: 'সংযুক্ত আরব আমিরাত',
+    nameNative: 'UAE',
     badgeEn: 'CBUAE & Routing',
-    badgeNative: 'CBUAE ও রাউটিং'
+    badgeNative: 'CBUAE Routing'
   },
   {
     id: 'de',
     flag: '🇩🇪',
     code: 'DE',
     nameEn: 'Germany',
-    nameNative: 'Deutschland',
+    nameNative: 'Germany',
     badgeEn: 'BLZ, IBAN & SEPA',
-    badgeNative: 'BLZ ও জার্মান IBAN'
+    badgeNative: 'BLZ & SEPA'
   },
   {
     id: 'sg',
@@ -82,7 +82,7 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'Singapore',
     nameNative: 'Singapore',
     badgeEn: 'MEPS+, FAST & PayNow',
-    badgeNative: 'MEPS+ ও FAST'
+    badgeNative: 'MEPS+ & FAST'
   },
   {
     id: 'my',
@@ -91,54 +91,75 @@ const COUNTRY_TABS: CountryTab[] = [
     nameEn: 'Malaysia',
     nameNative: 'Malaysia',
     badgeEn: 'IBG, DuitNow & RENTAS',
-    badgeNative: 'IBG ও DuitNow'
+    badgeNative: 'IBG & DuitNow'
   },
   {
     id: 'ru',
     flag: '🇷🇺',
     code: 'RU',
     nameEn: 'Russia',
-    nameNative: 'Россия',
+    nameNative: 'Russia',
     badgeEn: 'BIK & SWIFT',
-    badgeNative: 'БИК и SWIFT'
+    badgeNative: 'BIK & SWIFT'
   },
   {
     id: 'bd',
     flag: '🇧🇩',
     code: 'BD',
     nameEn: 'Bangladesh',
-    nameNative: 'বাংলাদেশ',
+    nameNative: 'Bangladesh',
     badgeEn: 'BEFTN & SWIFT',
-    badgeNative: 'রাউটিং ও সুইফট'
+    badgeNative: 'Routing & SWIFT'
   },
   {
     id: 'in',
     flag: '🇮🇳',
     code: 'IN',
     nameEn: 'India',
-    nameNative: 'भारत',
+    nameNative: 'India',
     badgeEn: 'IFSC, MICR & SWIFT',
-    badgeNative: 'IFSC ও সুইফট'
+    badgeNative: 'IFSC & SWIFT'
   }
 ];
 
 export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
   country,
   onSetCountry,
-  onSetLanguage,
-  lang
+  onSetLanguage
 }) => {
-  const t = translations[lang] || translations.en;
-
   const handleTabClick = (tabId: Country) => {
     onSetCountry(tabId);
     if (onSetLanguage) {
-      if (tabId === 'de') onSetLanguage('de');
-      else if (tabId === 'bd') onSetLanguage('bn');
-      else if (tabId === 'in') onSetLanguage('hi');
-      else if (tabId === 'ru') onSetLanguage('ru');
-      else if (tabId === 'my') onSetLanguage('ms');
-      else onSetLanguage('en');
+      onSetLanguage('en');
+    }
+  };
+
+  const getCountryBannerText = (c: Country): string => {
+    switch (c) {
+      case 'us':
+        return 'Selected Country: United States (US Federal Reserve ABA Routing & SWIFT Directory)';
+      case 'uk':
+        return 'Selected Country: United Kingdom (Bank of England & FCA Sort Code Directory)';
+      case 'ca':
+        return 'Selected Country: Canada (Payments Canada ACSS Transit, Institution & EFT Routing Directory)';
+      case 'au':
+        return 'Selected Country: Australia (AusPayNet BSB Directory & SWIFT Codes)';
+      case 'sg':
+        return 'Selected Country: Singapore (Monetary Authority of Singapore MAS, MEPS+, FAST & PayNow Directory)';
+      case 'my':
+        return 'Selected Country: Malaysia (Bank Negara Malaysia BNM, IBG, DuitNow & SWIFT Directory)';
+      case 'ae':
+        return 'Selected Country: United Arab Emirates (CBUAE Routing & SWIFT Directory)';
+      case 'de':
+        return 'Selected Country: Germany (Deutsche Bundesbank BLZ, IBAN & SEPA Directory)';
+      case 'ru':
+        return 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)';
+      case 'in':
+        return 'Selected Country: India (RBI IFSC & SWIFT Directory)';
+      case 'bd':
+        return 'Selected Country: Bangladesh (Central Bank BEFTN Database)';
+      default:
+        return 'Global Banking Network: USA, UK, Canada, Australia, Germany & Asia';
     }
   };
 
@@ -151,29 +172,7 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600 dark:bg-emerald-400"></span>
         </span>
         <span className="font-semibold text-[11px] sm:text-xs">
-          {country === 'us'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: মার্কিন যুক্তরাষ্ট্র (ইউএস ফেডারেল রিজার্ভ ও ABA রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त राज्य अमेरिका (US Fed Reserve ABA Routing Database)' : lang === 'ru' ? 'Выбранная страна: США (ФРС США, ABA Routing и SWIFT)' : 'Selected Country: United States (US Federal Reserve ABA Routing & SWIFT Directory)')
-            : country === 'uk'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: যুক্তরাজ্য (ব্যাংক অব ইংল্যান্ড ও FCA অনুমোদিত সর্ট কোড ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: यूनाइटेड किंगडम (Bank of England / FCA Sort Codes Database)' : lang === 'ru' ? 'Выбранная страна: Великобритания (Sort Codes, BACS & SWIFT)' : 'Selected Country: United Kingdom (Bank of England & FCA Sort Code Directory)')
-            : country === 'ca'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: কানাডা (পেমেন্টস কানাডা ACSS, ট্রানজিট নম্বর ও EFT রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: कनाडा (Payments Canada ACSS, ट्रांजिट कोड व EFT राउटिंग)' : lang === 'ru' ? 'Выбранная страна: Канада (Payments Canada, Transit и EFT Routing)' : 'Selected Country: Canada (Payments Canada ACSS Transit, Institution & EFT Routing Directory)')
-            : country === 'au'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: অস্ট্রেলিয়া (অস্ট্রেলিয়ান পেমেন্টস নেটওয়ার্ক BSB ও SWIFT ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: ऑस्ट्रेलिया (AusPayNet BSB एवं SWIFT डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Австралия (AusPayNet BSB и SWIFT справочник)' : 'Selected Country: Australia (AusPayNet BSB Directory & SWIFT Codes)')
-            : country === 'sg'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: সিঙ্গাপুর (মনিটারি অথরিটি অব সিঙ্গাপুর MAS, MEPS+, FAST ও সুইফট ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: सिंगापुर (MAS, MEPS+, FAST एवं स्विफ्ट डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Сингапур (MAS, MEPS+, FAST и SWIFT коды)' : 'Selected Country: Singapore (Monetary Authority of Singapore MAS, MEPS+, FAST & PayNow Directory)')
-            : country === 'my'
-            ? (lang === 'ms' ? 'Negara Dipilih: Malaysia (Pangkalan Data Bank Negara Malaysia BNM, IBG, DuitNow & SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: মালয়েশিয়া (ব্যাংক নেগারা মালয়েশিয়া BNM, IBG, DuitNow ও সুইফট ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: मलेशिया (बैंक नेगारा मलेशिया BNM, IBG, DuitNow एवं स्विफ्ट डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Малайзия (Банк Негара Малайзии BNM, IBG, DuitNow и SWIFT)' : 'Selected Country: Malaysia (Bank Negara Malaysia BNM, IBG, DuitNow & SWIFT Directory)')
-            : country === 'ae'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: সংযুক্ত আরব আমিরাত (সেন্ট্রাল ব্যাংক অব দ্য ইউএই CBUAE রাউটিং ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: संयुक्त अरब अमीरात (CBUAE राउटिंग एवं SWIFT डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: ОАЭ (CBUAE Routing и SWIFT коды)' : 'Selected Country: United Arab Emirates (CBUAE Routing & SWIFT Directory)')
-            : country === 'de'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: জার্মানি (ডয়চে বুন্দেসবাংক ও BaFin অনুমোদিত BLZ ও IBAN ডাটাবেজ)' : lang === 'hi' ? 'चयनित देश: जर्मनी (Deutsche Bundesbank अधिकृत BLZ व IBAN डाटाबेस)' : lang === 'ru' ? 'Выбранная страна: Германия (Deutsche Bundesbank BLZ, IBAN и SEPA)' : 'Selected Country: Germany (Deutsche Bundesbank BLZ, IBAN & SEPA Directory)')
-            : country === 'ru'
-            ? (lang === 'ru' ? 'Выбранная страна: Россия (Банк России ЦБ РФ БИК, корр. счета и SWIFT)' : lang === 'bn' ? 'নির্বাচিত দেশ: রাশিয়া (সেন্ট্রাল ব্যাংক অব রাশিয়া BIK ডাটাবেজ)' : 'Selected Country: Russia (Bank of Russia CBR BIK & SWIFT Directory)')
-            : country === 'in'
-            ? (lang === 'hi' ? 'चयनित देश: भारत (RBI अधिकृत बैंक एवं IFSC डाटाबेस)' : lang === 'bn' ? 'নির্বাচিত দেশ: ভারত (আরবিআই অনুমোদিত IFSC ডাটাবেজ)' : 'Selected Country: India (RBI IFSC & SWIFT Directory)')
-            : country === 'bd'
-            ? (lang === 'bn' ? 'নির্বাচিত দেশ: বাংলাদেশ (বাংলাদেশ ব্যাংক অনুমোদিত BEFTN ডাটাবেজ)' : 'Selected Country: Bangladesh (Central Bank BEFTN Database)')
-            : (lang === 'ru' ? 'Все страны: База реквизитов США, РФ, Индии и Бангладеш' : lang === 'hi' ? 'सभी देश: अमेरिका, भारत, रूस एवं बांग्लादेश के बैंक कोड' : lang === 'bn' ? 'বিশ্বের ব্যাংক সমূহের সকল কোড ও ব্রাঞ্চ ডিরেক্টরি' : 'Global Banking Network: USA, Russia, India & Bangladesh Central Directory')}
+          {getCountryBannerText(country)}
         </span>
       </div>
 
@@ -195,17 +194,7 @@ export const HeroCountrySelector: React.FC<HeroCountrySelectorProps> = ({
               <div className="flex items-center gap-1.5">
                 <span className="text-base sm:text-lg leading-none">{tab.flag}</span>
                 <span className="text-xs sm:text-sm font-bold tracking-tight whitespace-nowrap">
-                  {lang === 'ms'
-                    ? (tab.id === 'us' ? 'Amerika Syarikat' : tab.id === 'uk' ? 'United Kingdom' : tab.id === 'ca' ? 'Kanada' : tab.id === 'au' ? 'Australia' : tab.id === 'ae' ? 'UAE' : tab.id === 'sg' ? 'Singapura' : tab.id === 'my' ? 'Malaysia' : tab.id === 'de' ? 'Jerman' : tab.id === 'ru' ? 'Rusia' : tab.id === 'in' ? 'India' : 'Bangladesh')
-                    : lang === 'de'
-                    ? (tab.id === 'us' ? 'USA' : tab.id === 'uk' ? 'Großbritannien' : tab.id === 'ca' ? 'Kanada' : tab.id === 'au' ? 'Australien' : tab.id === 'ae' ? 'VAE (Emirate)' : tab.id === 'sg' ? 'Singapur' : tab.id === 'my' ? 'Malaysia' : tab.id === 'de' ? 'Deutschland' : tab.id === 'ru' ? 'Russland' : tab.id === 'in' ? 'Indien' : 'Bangladesch')
-                    : lang === 'ru'
-                    ? (tab.id === 'us' ? 'США' : tab.id === 'uk' ? 'Великобритания' : tab.id === 'ca' ? 'Канада' : tab.id === 'au' ? 'Австралия' : tab.id === 'ae' ? 'ОАЭ (Эмираты)' : tab.id === 'sg' ? 'Сингапур' : tab.id === 'my' ? 'Малайзия' : tab.id === 'de' ? 'Германия' : tab.id === 'ru' ? 'Россия' : tab.id === 'in' ? 'Индия' : 'Бангладеш')
-                    : lang === 'hi'
-                    ? (tab.id === 'us' ? 'संयुक्त राज्य अमेरिका' : tab.id === 'uk' ? 'यूनाइटेड किंगडम' : tab.id === 'ca' ? 'कनाडा' : tab.id === 'au' ? 'ऑस्ट्रेलिया' : tab.id === 'ae' ? 'संयुक्त अरब अमीरात' : tab.id === 'sg' ? 'सिंगापुर' : tab.id === 'my' ? 'मलेशिया' : tab.id === 'de' ? 'जर्मनी' : tab.id === 'ru' ? 'रूस' : tab.id === 'in' ? 'भारत' : 'बांग्लादेश')
-                    : lang === 'bn'
-                    ? (tab.id === 'us' ? 'যুক্তরাষ্ট্র' : tab.id === 'uk' ? 'যুক্তরাজ্য' : tab.id === 'ca' ? 'কানাডা' : tab.id === 'au' ? 'অস্ট্রেলিয়া' : tab.id === 'ae' ? 'সংযুক্ত আরব আমিরাত' : tab.id === 'sg' ? 'সিঙ্গাপুর' : tab.id === 'my' ? 'মালয়েশিয়া' : tab.id === 'de' ? 'জার্মানি' : tab.id === 'ru' ? 'রাশিয়া' : tab.id === 'in' ? 'ভারত' : 'বাংলাদেশ')
-                    : tab.nameEn}
+                  {tab.nameEn}
                 </span>
               </div>
 

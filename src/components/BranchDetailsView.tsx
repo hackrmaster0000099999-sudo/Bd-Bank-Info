@@ -51,33 +51,10 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
   const blzDecoded = isGermany ? decodeBlz(branch.blz || branch.routing_number) : null;
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  const getBranchName = () => {
-    if (lang === 'ru' && branch.name_ru) return branch.name_ru;
-    if (lang === 'hi' && branch.name_hi) return branch.name_hi;
-    if (lang === 'bn' && branch.name_bn) return branch.name_bn;
-    return branch.name;
-  };
-
-  const getBankName = () => {
-    if (lang === 'ru' && branch.bank_name_ru) return branch.bank_name_ru;
-    if (lang === 'hi' && branch.bank_name_hi) return branch.bank_name_hi;
-    if (lang === 'bn' && branch.bank_name_bn) return branch.bank_name_bn;
-    return branch.bank_name;
-  };
-
-  const getDistrict = () => {
-    if (lang === 'ru' && branch.district_ru) return branch.district_ru;
-    if (lang === 'hi' && branch.district_hi) return branch.district_hi;
-    if (lang === 'bn' && branch.district_bn) return branch.district_bn;
-    return branch.district;
-  };
-
-  const getAddress = () => {
-    if (lang === 'ru' && branch.address_ru) return branch.address_ru;
-    if (lang === 'hi' && branch.address_hi) return branch.address_hi;
-    if (lang === 'bn' && branch.address_bn) return branch.address_bn;
-    return branch.address;
-  };
+  const getBranchName = () => branch.name;
+  const getBankName = () => branch.bank_name;
+  const getDistrict = () => branch.district;
+  const getAddress = () => branch.address;
 
   const shareTitle = `${branch.bank_name} (${branch.name} Branch) Code & Details`;
   const shareText = isUS
@@ -302,7 +279,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 transition-colors shadow-xs cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span>{lang === 'hi' ? 'वापस जाएँ' : lang === 'bn' ? 'পূর্ববর্তী পাতায় ফিরে যান' : 'Back to Listings'}</span>
+          <span>Back to Listings</span>
         </button>
 
         <div className="flex items-center gap-2">
@@ -321,8 +298,8 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 hover:bg-emerald-100 transition-colors"
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{lang === 'hi' ? 'इस बैंक की सभी शाखाएँ' : lang === 'bn' ? 'এই ব্যাংকের সকল শাখা' : 'All Bank Branches'}</span>
-            <span className="sm:hidden">{t.allBanks}</span>
+            <span className="hidden sm:inline">All Bank Branches</span>
+            <span className="sm:hidden">All Banks</span>
           </Link>
 
           <ShareButton
@@ -350,7 +327,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
             </span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 whitespace-nowrap shrink-0">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              <span>{lang === 'ru' ? `Проверено: ${CURRENT_DATA_VERSION_DATE}` : lang === 'hi' ? `सत्यापित: ${CURRENT_DATA_VERSION_DATE}` : lang === 'bn' ? `যাচাইকৃত: ${CURRENT_DATA_VERSION_DATE}` : `Verified: ${CURRENT_DATA_VERSION_DATE}`}</span>
+              <span>Verified: {CURRENT_DATA_VERSION_DATE}</span>
             </span>
           </div>
 
@@ -955,7 +932,7 @@ export const BranchDetailsView: React.FC<BranchDetailsViewProps> = ({
               </div>
               <div className="bg-white/80 dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-800/40">
                 <span className="text-slate-500 dark:text-slate-400 block">
-                  {lang === 'hi' ? 'अंतर्राष्ट्रीय प्रेषण (SWIFT):' : lang === 'bn' ? 'আন্তর্জাতিক রেমিট্যান্স (SWIFT):' : 'International Wire (SWIFT):'}
+                  International Wire (SWIFT):
                 </span>
                 <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{branch.swift_code || 'HO Code'}</span>
                 <span className="text-[10px] text-slate-500 block mt-0.5">Foreign Remittance</span>

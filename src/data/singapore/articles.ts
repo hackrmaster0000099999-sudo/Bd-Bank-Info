@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getSingaporeBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for Singapore Banks (新加坡银行机构 / Bank-Bank Singapura)
@@ -674,9 +675,8 @@ When making an electronic transfer via FAST, GIRO, or internet banking, enter th
       .filter((b) => b.id !== bank.id)
       .slice(0, 4)
       .map((b) => `${b.id}-bank-code-swift-routing-singapore`), */
-    meta_title: `${bank.name} MAS Code ${bank.bank_code}, 7-Digit Routing, FAST & SWIFT Singapore (2026)`,
-    // meta_title_bn: `${bank.name_bn || bank.name} এমএএস কোড ${bank.bank_code}, ৭-ডিজিট রাউটিং, FAST ও সুইফট কোড (২০২৬)`,
-    meta_description: `Official guide for ${bank.name} (MAS Bank Code: ${bank.bank_code}) in Singapore. 7-digit branch routing formats, FAST 24/7 instant transfers, PayNow, MEPS+, SDIC S$100,000 protection and SWIFT ${custom.swiftHo}.`,
+    meta_title: getSingaporeBankArticleSeo(bank).title,
+    meta_description: getSingaporeBankArticleSeo(bank).description,
     // meta_description_bn: `${bank.name_bn || bank.name}-এর অফিসিয়াল গাইড (এমএএস কোড: ${bank.bank_code})। ৭-সংখ্যার ব্রাঞ্চ রাউটিং কোড, FAST ২৪/৭ পেমেন্ট, PayNow, SDIC ১ লাখ ডলারের আমানত বীমা ও আন্তর্জাতিক সুইফট ${custom.swiftHo}।`,
     // canonicalUrl: `https://youtubemonetizationchecker.online/articles/${bank.id}-bank-code-swift-routing-singapore`,
     published_date: '2026-01-15',

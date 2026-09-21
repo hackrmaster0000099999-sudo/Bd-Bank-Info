@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from '../banks.json';
+import { getBdBankArticleSeo } from './seoHelper';
 
 /**
  * High-ranking, human-grade Financial Editorial Engine for Bangladesh Bank Directory
@@ -104,17 +105,21 @@ const BD_BANK_KNOWLEDGE: Record<string, {
 /**
  * Build rich, long-form, highly informative and human-crafted article for any bank in Bangladesh
  */
-export function buildBdBankArticle(bank: any): BankArticle {
-  const bankId = bank.id;
-  const bankNameBn = bank.name_bn || bank.name;
-  const bankNameEn = bank.name;
+export function buildBdBankArticle(bankInput: any): BankArticle {
+  const bank = typeof bankInput === 'string'
+    ? { id: bankInput, name: bankInput, short_name: bankInput }
+    : (bankInput || {});
+
+  const bankId = bank.id || 'bank';
+  const bankNameBn = bank.name_bn || bank.name || 'Bank';
+  const bankNameEn = bank.name || 'Bank';
   const shortName = bank.short_name || 'Bank';
   const routingPrefix = bank.bank_code ? bank.bank_code.padStart(3, '0') : '000';
   const swiftCode = bank.swift_code || 'N/A';
-  const headOffice = bank.head_office_bn || bank.head_office || 'ঢাকা, বাংলাদেশ';
+  const headOffice = bank.head_office_bn || bank.head_office || 'Dhaka, Bangladesh';
   const branchCount = bank.branch_count || 50;
-  const establishedYear = bank.established || '১৯৮৫';
-  const bankType = bank.type || 'বেসরকারি বাণিজ্যিক ব্যাংক';
+  const establishedYear = bank.established || '1985';
+  const bankType = bank.type || 'Commercial Bank';
 
   const knowledge = BD_BANK_KNOWLEDGE[bankId] || {
     established: `${establishedYear} (বাংলাদেশ ব্যাংক অনুমোদিত তফসিলি বাণিজ্যিক ব্যাংক)`,
@@ -139,8 +144,9 @@ export function buildBdBankArticle(bank: any): BankArticle {
   const titleEn = `${bankNameEn} (${shortName}) 9-Digit BEFTN Routing Number, SWIFT & Complete Banking Guide 2026`;
   const subtitleBn = `${bankNameBn}-এর সকল শাখার ৯-ডিজিটের অফিশিয়াল BEFTN রাউটিং নম্বর, সুইফট/BIC কোড, চেক বই থেকে রাউটিং বের করার নিয়ম, ফান্ড ট্রান্সফার ও পূর্ণাঙ্গ শাখা গাইড`;
 
-  const metaTitle = `${bankNameBn} (${shortName}) সকল শাখার রাউটিং নাম্বার, সুইফট ও ব্রাঞ্চ গাইড ২০২৬ | World Bank Codes`;
-  const metaDescription = `${bankNameBn} (${shortName})-এর সকল শাখার সঠিক ৯-ডিজিটের BEFTN রাউটিং নাম্বার, সুইফট কোড (${swiftCode}), হেড অফিস (${headOffice}), ইন্টারনেট ব্যাংকিং এবং টাকা ট্রান্সফারের পূর্ণাঙ্গ নিয়মাবলী। বাংলাদেশ ব্যাংক অনুমোদিত ২০২৬ হালনাগাদ গাইড।`;
+  const articleSeo = getBdBankArticleSeo(bank);
+  const metaTitle = articleSeo.title;
+  const metaDescription = articleSeo.description;
 
   const overviewBn = `
 ${bankNameBn} (${bankNameEn} - ${shortName}) বাংলাদেশের আর্থিক ও ব্যাংকিং খাতের একটি অত্যন্ত সুপরিচিত ও নির্ভরযোগ্য নাম। আপনি যদি দেশের যে কোনো প্রান্ত থেকে কিংবা বিদেশ থেকে এই ব্যাংকে ফান্ড ট্রান্সফার (EFT/NPSB/RTGS), রেমিট্যান্স গ্রহণ, চেক ক্লিয়ারিং কিংবা বেতন-ভাতা জমা করতে চান, তবে আপনার জন্য সংশ্লিষ্ট শাখার **৯-সংখ্যার অফিশিয়াল BEFTN রাউটিং নাম্বার (Routing Number)** এবং আন্তর্জাতিক **সুইফট কোড (SWIFT/BIC Code)** জানা অপরিহার্য। 

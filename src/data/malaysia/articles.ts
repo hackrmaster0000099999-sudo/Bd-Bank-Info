@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getMalaysiaBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for Malaysia Banks (Bank-Bank di Malaysia / 马来西亚银行机构)
@@ -510,8 +511,8 @@ When initiating scheduled payroll transfers or vendor payments through Malaysian
     subtitle: `Complete 2026 directory covering ${bank.name}'s 2-digit Bank Code (${bank.bank_code}), 5-digit IBG clearing numbers, DuitNow transfer rules, PIDM insurance, and SWIFT wires.`,
     subtitle_bn: `${bank.name_bn || bank.name}-এর ২-সংখ্যার ব্যাংক কোড (${bank.bank_code}), ৫-সংখ্যার IBG ক্লিয়ারিং কোড, ডুইটনাউ (DuitNow) নিয়মাবলি ও সুইফট ওয়্যার ট্রান্সফার গাইড।`,
     subtitle_ms: `Direktori lengkap 2026 meliputi Kod Bank 2 digit ${bank.name} (${bank.bank_code}), nombor penjelasan IBG 5 digit, pindahan segera DuitNow, insurans PIDM, dan pindahan SWIFT.`,
-    meta_title: `${bank.name}: Bank Code ${bank.bank_code}, IBG Routing, DuitNow & SWIFT | World Bank Codes`,
-    meta_description: overview,
+    meta_title: getMalaysiaBankArticleSeo(bank).title,
+    meta_description: getMalaysiaBankArticleSeo(bank).description,
     read_time: '7 min read',
     author: 'World Bank Codes Editorial Research',
     published_date: '2026-01-20',

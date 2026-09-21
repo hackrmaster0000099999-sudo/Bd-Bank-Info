@@ -15,16 +15,15 @@ const STORAGE_KEY_MANUAL = 'wbc_user_has_manual_override';
  * Detect user country and language from browser hints (Timezone, Navigator locale, and network geo)
  */
 export function detectUserCountryAndLang(): { country: Country; lang: Language } {
-  // 1. Check if user already manually selected a preference in the past
+  // Always default language to 'en' per global banking standard
   if (typeof window !== 'undefined') {
     const manualOverride = localStorage.getItem(STORAGE_KEY_MANUAL);
     const savedCountry = localStorage.getItem(STORAGE_KEY_COUNTRY) as Country | null;
-    const savedLang = localStorage.getItem(STORAGE_KEY_LANG) as Language | null;
 
     if (manualOverride === 'true' && savedCountry) {
       return {
         country: savedCountry,
-        lang: savedLang || getDefaultLanguageForCountry(savedCountry)
+        lang: 'en'
       };
     }
   }
@@ -32,16 +31,16 @@ export function detectUserCountryAndLang(): { country: Country; lang: Language }
   // 2. Client-side fast detection via Browser Timezone (Instant & highly reliable)
   const timezoneGeo = detectFromTimezone();
   if (timezoneGeo) {
-    return timezoneGeo;
+    return { country: timezoneGeo.country, lang: 'en' };
   }
 
   // 3. Fallback to Browser Language Locale (e.g. bn-BD, hi-IN, ru-RU, en-GB, en-US)
   const localeGeo = detectFromLocale();
   if (localeGeo) {
-    return localeGeo;
+    return { country: localeGeo.country, lang: 'en' };
   }
 
-  // Default fallback (USA or UK depending on global international standard)
+  // Default fallback (USA)
   return { country: 'us', lang: 'en' };
 }
 

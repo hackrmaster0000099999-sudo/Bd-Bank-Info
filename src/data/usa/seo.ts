@@ -1,41 +1,37 @@
-import { Bank, Branch, Language } from '../../types';
+export {
+  getUsaHomeSeo,
+  getUsaBankSeo,
+  getUsaBranchSeo,
+  getUsaBankMetaTitle,
+  getUsaBankMetaDescription,
+  getUsaBranchMetaTitle,
+  getUsaBranchMetaDescription,
+  getUsaBankArticleSeo
+} from './seoHelper';
 
-export function getUsaBankMetaTitle(bank: Bank, lang: Language): string {
-  const bankName = lang === 'bn' ? (bank.name_bn || bank.name) : bank.name;
-  if (lang === 'bn') {
-    return `${bankName} (${bank.short_name}) ABA রাউটিং নম্বর, ACH ও সুইফট কোড ২০২৬ | World Bank Codes`;
-  }
-  return `${bank.name} (${bank.short_name}) ABA Routing Numbers, ACH & SWIFT Code 2026 | World Bank Codes`;
-}
-
-export function getUsaBankMetaDescription(bank: Bank, lang: Language): string {
-  const bankName = lang === 'bn' ? (bank.name_bn || bank.name) : bank.name;
-  if (lang === 'bn') {
-    return `${bankName}-এর অফিসিয়াল ৯-ডিজিটের ABA রাউটিং নম্বর (${bank.routing_number || 'সকল শাখা'}), ডিরেক্ট ডিপোজিট ACH কোড, ওয়্যার ট্রান্সফার, FDIC #${bank.fdic_cert || ''}, এবং সুইফট কোড ${bank.swift_code} খুঁজুন।`;
-  }
-  return `Lookup official 9-digit ABA Routing Numbers for ${bank.name} (${bank.short_name}), ACH direct deposit transit codes, Fedwire numbers, FDIC Cert #${bank.fdic_cert || 'N/A'}, and SWIFT code ${bank.swift_code}.`;
-}
-
-export function getUsaBranchMetaTitle(branch: Branch, lang: Language): string {
-  const bankName = lang === 'bn' ? (branch.bank_name_bn || branch.bank_name) : branch.bank_name;
-  const branchName = lang === 'bn' ? (branch.name_bn || branch.name) : branch.name;
-  const routing = branch.routing_number;
-  if (lang === 'bn') {
-    return `${routing} - ${bankName} ABA রাউটিং নম্বর | ${branchName}, ${branch.division}`;
-  }
-  if (lang === 'hi') {
-    return `${routing} - ${bankName} ABA राउटिंग नंबर | ${branchName}, ${branch.division}`;
-  }
-  if (lang === 'ru') {
-    return `${routing} - ${bankName} Маршрутный номер ABA | ${branchName}, ${branch.division}`;
-  }
-  return `${routing} - ${branch.bank_name} ABA Routing Number & Wire Info | ${branch.name}, ${branch.district}, ${branch.division}`;
-}
-
-export function getUsaBranchMetaDescription(branch: Branch, lang: Language): string {
-  const routing = branch.routing_number;
-  if (lang === 'bn') {
-    return `${routing} হলো ${branch.bank_name}-এর ${branch.name} শাখার ৯-সংখ্যার অফিসিয়াল ABA রাউটিং নম্বর (ACH ও Fedwire)। ঠিকানা: ${branch.address}, ফোন ও সুইফট কোড ${branch.swift_code || ''}।`;
-  }
-  return `Official 9-digit ABA Routing Number ${routing} for ${branch.bank_name} (${branch.name}) in ${branch.district}, ${branch.division}. Verified for direct deposit (ACH), electronic payments, wire transfers, address: ${branch.address}, ZIP ${branch.zip_code || ''}, and SWIFT: ${branch.swift_code || 'Head Office'}.`;
-}
+export const usaSeoData = {
+  metaTitle: {
+    en: "US Bank ABA Routing Numbers & ACH Wire Directory 2026 | WBC",
+    bn: "ইউএসএ ব্যাংক ABA রাউটিং নম্বর ও ACH ডিরেক্টরি ২০২৬ | WBC",
+    hi: "यूएस बैंक ABA रूटिंग नंबर एवं ACH वायर डायरेक्टरी 2026 | WBC",
+    ru: "Маршрутные номера банков США (ABA Routing) 2026 | WBC"
+  },
+  metaDescription: {
+    en: "Find official 9-digit US ABA routing numbers, ACH direct deposit codes, Fedwire, and SWIFT for 1,700+ bank branches across all 50 states (2026 directory).",
+    bn: "মার্কিন যুক্তরাষ্ট্রের সকল ব্যাংকের ৯-ডিজিট ABA রাউটিং নম্বর, পে-রোল ACH ডিরেক্ট ডিপোজিট, ফেডওয়্যার ওয়্যার ট্রান্সফার ও সুইফট কোড ২০২৬ ডিরেক্টরি।",
+    hi: "यूएसए के सभी बैंकों के 9-अंकीय ABA रूटिंग नंबर, ACH डायरेक्ट डिपॉजिट कोड, फेडवायर (Fedwire) और स्विफ्ट कोड खोजें। आधिकारिक 2026 निर्देशिका।",
+    ru: "Поиск 9-значных маршрутных номеров ABA Routing, кодов прямого депозита ACH, переводов Fedwire и SWIFT для 1,700+ отделений банков США. База 2026."
+  },
+  keywords: [
+    "US ABA routing number lookup",
+    "9 digit routing number finder",
+    "ACH direct deposit routing number",
+    "Fedwire wire transfer routing",
+    "FDIC 250k insured bank routing",
+    "Chase routing number lookup",
+    "Bank of America routing numbers",
+    "Wells Fargo routing number wire",
+    "Citibank ABA routing number",
+    "US Bank routing number ACH"
+  ]
+};

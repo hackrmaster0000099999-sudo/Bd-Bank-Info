@@ -1,12 +1,25 @@
+// UAE Banking SEO Metadata & Rich Snippets Configuration
+// Multilingual SEO for English, Bengali (বাংলা), Hindi (हिन्दी), and Russian (Русский)
+
+export * from './seoHelper';
+
 export const uaeSeoData = {
+  countryName: 'United Arab Emirates',
+  countryNameBn: 'সংযুক্ত আরব আমিরাত',
+  countryNameHi: 'संयुक्त अरब अमीरात',
+  countryNameRu: 'Объединенные Арабские Эмираты',
+  codeName: 'CBUAE Clearing Code & UAEFTS Routing',
+  codeNameBn: 'সিবিইউএই ক্লিয়ারিং কোড ও রাউটিং',
+  codeNameHi: 'CBUAE क्लियरिंग कोड व UAEFTS रूटिंग',
+  codeNameRu: 'Код CBUAE и маршрутный номер UAEFTS',
   metaTitle: {
-    en: "UAE Bank Directory, CBUAE Routing Numbers, IBAN & SWIFT Codes - United Arab Emirates",
+    en: "UAE Bank Routing Code, CBUAE & SWIFT Directory 2026 | WBC",
     bn: "সংযুক্ত আরব আমিরাতের সকল ব্যাংকের সিবিইউএই রাউটিং, আইবিএএন ও সুইফট কোড ডিরেক্টরি",
     hi: "संयुक्त अरब अमीरात (UAE) बैंक डायरेक्टरी, CBUAE रूटिंग नंबर, IBAN व स्विफ्ट कोड",
     ru: "Банки ОАЭ — Клиринговые коды CBUAE, IBAN, маршрутные номера и SWIFT"
   },
   metaDescription: {
-    en: "Search official UAE bank routing numbers, 3-digit CBUAE clearing codes, IBAN generator & validator, SWIFT/BIC codes, branch addresses, and phone numbers for Emirates NBD, First Abu Dhabi Bank (FAB), ADCB, Dubai Islamic Bank, Mashreq, and all UAE financial institutions.",
+    en: "Find verified 9-digit UAEFTS routing numbers, 3-digit CBUAE clearing codes, 23-digit UAE IBANs, and SWIFT BIC for 1,180+ bank branches across UAE Emirates.",
     bn: "এমিরেটস এনবিডি, ফার্স্ট আবুধাবি ব্যাংক (FAB), এডিসিবি, দুবাই ইসলামিক ব্যাংক সহ সংযুক্ত আরব আমিরাতের সকল ব্যাংকের ৯ ডিজিটের সিবিইউএই রাউটিং নম্বর, ৩ ডিজিটের ক্লিয়ারিং কোড, আইবিএএন, সুইফট কোড ও ব্রাঞ্চের ঠিকানা খুঁজুন।",
     hi: "Emirates NBD, First Abu Dhabi Bank (FAB), ADCB, Dubai Islamic Bank सहित संयुक्त अरब अमीरात के सभी बैंकों के CBUAE रूटिंग नंबर, IBAN, स्विफ्ट कोड और शाखा पते खोजें।",
     ru: "Поиск официальных клиринговых кодов ЦБ ОАЭ (CBUAE), номеров IBAN, кодов SWIFT/BIC, адресов отделений в Дубае, Абу-Даби, Шардже для Emirates NBD, FAB, ADCB, DIB, Mashreq и всех банков ОАЭ."
@@ -26,6 +39,16 @@ export const uaeSeoData = {
     "Aani instant payment UAE",
     "UAEFTS routing codes",
     "UAE bank codes list"
+  ],
+  popularCities: [
+    "Dubai",
+    "Abu Dhabi",
+    "Sharjah",
+    "Ajman",
+    "Ras Al Khaimah",
+    "Fujairah",
+    "Umm Al Quwain",
+    "Al Ain"
   ],
   faqs: [
     {
@@ -60,50 +83,3 @@ export const uaeSeoData = {
     }
   ]
 };
-
-export function getUaeBankSeo(bank: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const name = isBn ? (bank.name_bn || bank.name) : isHi ? (bank.name_hi || bank.name) : isRu ? (bank.name_ru || bank.name) : bank.name;
-  return {
-    title: `${name} (${bank.short_name}) CBUAE Routing, IBAN & SWIFT Directory | World Bank Codes`,
-    description: isBn
-      ? `${name}-এর ইউএই দেশব্যাপী সকল ব্রাঞ্চের CBUAE রাউটিং কোড (${bank.cbuae_code || bank.bank_code}), সুইফট কোড, আইবিএএন ফরম্যাট ও ঠিকানা খুঁজুন।`
-      : isHi
-      ? `${name} के संयुक्त अरब अमीरात (UAE) की सभी शाखाओं के CBUAE रूटिंग कोड, स्विफ्ट कोड और पता देखें।`
-      : isRu
-      ? `Все клиринговые коды CBUAE, отделения и SWIFT коды ${name} в ОАЭ (Дубай, Абу-Даби). Актуально 2026.`
-      : `Search all ${bank.name} (${bank.short_name}) branch CBUAE routing numbers, SWIFT/BIC codes, IBAN details, and phone numbers in the United Arab Emirates.`
-  };
-}
-
-export function getUaeBranchSeo(branch: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const bName = isBn ? (branch.name_bn || branch.name) : isHi ? (branch.name_hi || branch.name) : isRu ? (branch.name_ru || branch.name) : branch.name;
-  const bankName = isBn ? (branch.bank_name_bn || branch.bank_name) : isHi ? (branch.bank_name_hi || branch.bank_name) : isRu ? (branch.bank_name_ru || branch.bank_name) : branch.bank_name;
-  const routing = branch.routing_number;
-  return {
-    title: `${bankName} (${bName} Branch) CBUAE Routing: ${routing} & SWIFT | World Bank Codes`,
-    description: isBn
-      ? `${bankName} (${bName} শাখা, ${branch.district}, ${branch.division})-এর অফিসিয়াল CBUAE রাউটিং কোড: ${routing}, সুইফট কোড: ${branch.swift_code || 'N/A'}, পিও বক্স ও ঠিকানা।`
-      : isHi
-      ? `${bankName} (${bName} शाखा, ${branch.division}) का आधिकारिक CBUAE रूटिंग कोड: ${routing}, स्विफ्ट कोड एवं पता।`
-      : isRu
-      ? `Официальный CBUAE маршрутный код: ${routing}, SWIFT: ${branch.swift_code || 'N/A'} для ${bankName}, отделение ${bName}, ${branch.division}, ОАЭ.`
-      : `Official UAE Central Bank Routing Number: ${routing}, CBUAE Code: ${branch.cbuae_code || 'N/A'}, SWIFT/BIC: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} branch in ${branch.district}, ${branch.division}, UAE.`
-  };
-}
-
-export function getUaeHomeSeo(lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  return {
-    title: isBn ? uaeSeoData.metaTitle.bn : isHi ? uaeSeoData.metaTitle.hi : isRu ? uaeSeoData.metaTitle.ru : uaeSeoData.metaTitle.en,
-    description: isBn ? uaeSeoData.metaDescription.bn : isHi ? uaeSeoData.metaDescription.hi : isRu ? uaeSeoData.metaDescription.ru : uaeSeoData.metaDescription.en
-  };
-}
-

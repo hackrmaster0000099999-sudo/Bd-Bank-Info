@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getCanadaBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for Canadian Banks (Canadian Financial Institutions)
@@ -515,6 +516,7 @@ export const canadaBanksArticles: BankArticle[] = banksData.map(bank => {
   const instNum = bank.institution_number || bank.bank_code || '000';
   const eftCode = bank.routing_number || `0${instNum}00001`;
   const swiftCode = bank.swift_code || 'ROYCCAT2';
+  const articleSeo = getCanadaBankArticleSeo(bank);
 
   return {
     id: articleId,
@@ -529,8 +531,8 @@ export const canadaBanksArticles: BankArticle[] = banksData.map(bank => {
     subtitle_bn: `${bank.name_bn || bank.name}-এর ২০২৬ সালের ৩-সংখ্যার প্রতিষ্ঠান কোড (${instNum}), ৫-সংখ্যার ব্রাঞ্চ ট্রানজিট, ৯-সংখ্যার ইএফটি রাউটিং, ইন্টারাক ই-ট্রান্সফার এবং সুইফট ওয়্যার ট্রান্সফার সহায়িকা।`,
     subtitle_hi: `${bank.name_hi || bank.name} के 2026 इंस्टीट्यूशन कोड (${instNum}), 5-अंकीय ट्रांजिट नंबर, EFT राउटिंग और स्विफ्ट कोड की प्रामाणिक जानकारी।`,
     subtitle_ru: `Официальные банковские коды ${bank.name_ru || bank.name}: Institution Number (${instNum}), 5-значный Transit код, 9-значный EFT маршрутизатор, лимиты Interac и SWIFT переводы 2026.`,
-    meta_title: `${bank.name} Transit & Institution Code, EFT Routing & SWIFT 2026`,
-    meta_description: `Official 3-digit Institution Number (${instNum}), 5-digit Transit, 9-digit EFT routing, Interac limits and SWIFT wire codes for ${bank.name} Canada.`,
+    meta_title: articleSeo.title,
+    meta_description: articleSeo.description,
     meta_keywords: [
       `${bank.name} transit number`,
       `${bank.name} institution code ${instNum}`,

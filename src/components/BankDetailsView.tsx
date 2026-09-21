@@ -6,7 +6,7 @@ import { getBranchesForBank, slugifyState } from '../lib/searchEngine';
 import { BranchCard } from './BranchCard';
 import { CopyButton } from './CopyButton';
 import { getBankGuideContent } from '../lib/bankGuideContent';
-import { updateSEOMeta, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
+import { updateSEOMeta, generateSeoData, CURRENT_DATA_VERSION_DATE } from '../lib/seoManager';
 import { AdsterraBanner } from './AdsterraBanner';
 import { AdsterraNativeBanner } from './AdsterraNativeBanner';
 import { SmartlinkPromo } from './SmartlinkPromo';
@@ -40,9 +40,11 @@ export const BankDetailsView: React.FC<BankDetailsViewProps> = ({
 
   // Update SEO Meta Tags on view mount
   useEffect(() => {
+    const seoData = generateSeoData('bank_detail', lang, bank);
     updateSEOMeta({
-      title: `${bank.name} (${bank.short_name}) All Branches Routing Numbers, IFSC, Sort Codes & SWIFT | World Bank Codes`,
-      description: guide.summary,
+      title: seoData.title,
+      description: seoData.description,
+      canonicalUrl: seoData.canonicalUrl,
       lang,
       bank,
       faqs: guide.faqs

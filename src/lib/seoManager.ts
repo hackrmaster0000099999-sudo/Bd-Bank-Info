@@ -28,26 +28,82 @@ import {
   getAustraliaHomeSeo
 } from '../data/australia/index';
 import {
+  getUaeBankMetaTitle,
+  getUaeBankMetaDescription,
+  getUaeBranchMetaTitle,
+  getUaeBranchMetaDescription,
   getUaeBankSeo,
   getUaeBranchSeo,
-  getUaeHomeSeo
+  getUaeHomeSeo,
+  getUaeBankArticleSeo
 } from '../data/uae/index';
+
+export {
+  getUaeBankMetaTitle,
+  getUaeBankMetaDescription,
+  getUaeBranchMetaTitle,
+  getUaeBranchMetaDescription,
+  getUaeBankSeo,
+  getUaeBranchSeo,
+  getUaeHomeSeo,
+  getUaeBankArticleSeo
+};
 import {
+  getSingaporeBankMetaTitle,
+  getSingaporeBankMetaDescription,
+  getSingaporeBranchMetaTitle,
+  getSingaporeBranchMetaDescription,
   getSingaporeBankSeo,
   getSingaporeBranchSeo,
-  getSingaporeHomeSeo
+  getSingaporeHomeSeo,
+  getSingaporeBankArticleSeo
 } from '../data/singapore/index';
+
+export {
+  getSingaporeBankMetaTitle,
+  getSingaporeBankMetaDescription,
+  getSingaporeBranchMetaTitle,
+  getSingaporeBranchMetaDescription,
+  getSingaporeBankSeo,
+  getSingaporeBranchSeo,
+  getSingaporeHomeSeo,
+  getSingaporeBankArticleSeo
+};
 import {
+  getMalaysiaBankMetaTitle,
+  getMalaysiaBankMetaDescription,
+  getMalaysiaBranchMetaTitle,
+  getMalaysiaBranchMetaDescription,
   getMalaysiaBankSeo,
   getMalaysiaBranchSeo,
   getMalaysiaHomeSeo
 } from '../data/malaysia/index';
 import {
+  getGermanyBankMetaTitle,
+  getGermanyBankMetaDescription,
+  getGermanyBranchMetaTitle,
+  getGermanyBranchMetaDescription,
   getGermanyBankSeo,
   getGermanyBranchSeo,
-  getGermanyHomeSeo
+  getGermanyHomeSeo,
+  getGermanyBankArticleSeo
 } from '../data/germany/index';
+
+export {
+  getGermanyBankMetaTitle,
+  getGermanyBankMetaDescription,
+  getGermanyBranchMetaTitle,
+  getGermanyBranchMetaDescription,
+  getGermanyBankSeo,
+  getGermanyBranchSeo,
+  getGermanyHomeSeo,
+  getGermanyBankArticleSeo
+};
 import {
+  getRussiaBankMetaTitle,
+  getRussiaBankMetaDescription,
+  getRussiaBranchMetaTitle,
+  getRussiaBranchMetaDescription,
   getRussiaBankSeo,
   getRussiaBranchSeo,
   getRussiaHomeSeo
@@ -80,8 +136,8 @@ export interface SEOProps {
 const BASE_URL = 'https://worldbankcodes.com';
 
 // Today's ISO date string (YYYY-MM-DD) for search-engine freshness signals
-export const CURRENT_DATA_VERSION_DATE = '2026-09-16';
-export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-16T14:24:00.000Z';
+export const CURRENT_DATA_VERSION_DATE = '2026-09-21';
+export const CURRENT_DATA_VERSION_TIMESTAMP = '2026-09-21T07:42:00.000Z';
 
 export function getFreshnessLabel(lang: Language = 'en'): string {
   if (lang === 'ms') {
@@ -171,10 +227,9 @@ export function generateSeoData(
     }
 
     if (branch.country === 'my') {
-      const mySeo = getMalaysiaBranchSeo(branch, lang);
       return {
-        title: mySeo.title,
-        description: mySeo.description,
+        title: getMalaysiaBranchMetaTitle(branch, lang),
+        description: getMalaysiaBranchMetaDescription(branch, lang),
         canonicalUrl: selfCanonical
       };
     }
@@ -198,10 +253,9 @@ export function generateSeoData(
 
     const isRussia = branch.country === 'ru' || !!branch.bik_code;
     if (isRussia) {
-      const ruSeo = getRussiaBranchSeo(branch, lang);
       return {
-        title: ruSeo.title,
-        description: ruSeo.description,
+        title: getRussiaBranchMetaTitle(branch, lang),
+        description: getRussiaBranchMetaDescription(branch, lang),
         canonicalUrl: selfCanonical
       };
     }
@@ -268,10 +322,9 @@ export function generateSeoData(
     }
 
     if (bank.country === 'my') {
-      const mySeo = getMalaysiaBankSeo(bank, lang);
       return {
-        title: mySeo.title,
-        description: mySeo.description,
+        title: getMalaysiaBankMetaTitle(bank, lang),
+        description: getMalaysiaBankMetaDescription(bank, lang),
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -294,10 +347,9 @@ export function generateSeoData(
     }
 
     if (bank.country === 'ru') {
-      const ruSeo = getRussiaBankSeo(bank, lang);
       return {
-        title: ruSeo.title,
-        description: ruSeo.description,
+        title: getRussiaBankMetaTitle(bank, lang),
+        description: getRussiaBankMetaDescription(bank, lang),
         canonicalUrl: `${BASE_URL}/bank/${bank.id}`
       };
     }
@@ -313,109 +365,87 @@ export function generateSeoData(
 
   if (viewType === 'banks') {
     return {
-      title: 'All Scheduled Banks Directory, Routing Numbers & SWIFT Codes (2026) | World Bank Codes',
-      description: isBn
-        ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের সকল তফসিলি ব্যাংকের ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড ও জেলা ভিত্তিক পূর্ণাঙ্গ শাখা তালিকা ২০২৬।'
-        : isRu
-        ? 'Полный каталог действующих банков РФ, Индии и Бангладеш с официальными БИК, SWIFT кодами, корр. счетами и списком отделений.'
-        : isHi
-        ? 'भारत एवं बांग्लादेश के सभी प्रमुख सरकारी एवं निजी बैंकों की अद्यतन सूची, प्रधान कार्यालय स्विफ्ट कोड और शाखा निर्देशिका।'
-        : 'Complete verified directory of scheduled banks, BEFTN routing numbers, ABA routing, IFSC, Sort Codes, BIK, BLZ and international SWIFT codes.',
+      title: 'Global Bank Routing Numbers & SWIFT Codes 2026 | WBC',
+      description: 'Verified directory of scheduled banks, US ABA routing numbers, UK Sort Codes, Indian IFSC, Canadian Transit, BIK, and SWIFT codes for wire and ACH payments.',
       canonicalUrl: `${BASE_URL}/banks`
     };
   }
 
   if (viewType === 'routing') {
     return {
-      title: 'Bank Routing Numbers, BEFTN & Clearing Code Directory 2026 | World Bank Codes',
-      description: isBn
-        ? 'বাংলাদেশের যে কোনো ব্যাংক ও শাখার ৯-সংখ্যার BEFTN রাউটিং নম্বর, জেলা, শাখা কোড এবং ঠিকানা তাৎক্ষণিক সার্চ করুন। বাংলাদেশ ব্যাংক অনুমোদিত ২০২৬ হালনাগাদ ডাটাবেজ।'
-        : isRu
-        ? 'Мгновенный поиск по 9-значному БИК Банка России, номеру корр. счета, 11-значному IFSC или BEFTN маршрутизации.'
-        : isHi
-        ? '9-अंकीय MICR / 11-अंकीय IFSC कोड से तुरंत बैंक शाखा और विवरण खोजें।'
-        : 'Instant lookup for 9-digit BEFTN Routing Numbers, US ABA Routing, Indian IFSC, UK Sort Codes, Russian BIK and Australian BSB codes.',
+      title: 'Bank Routing Numbers & Clearing Code Finder 2026 | WBC',
+      description: 'Instant lookup for 9-digit US ABA routing, UK Sort Codes, Indian IFSC, Canadian Transit, Australian BSB, Russian BIK, and German BLZ bank clearing numbers.',
       canonicalUrl: `${BASE_URL}/routing`
     };
   }
 
   if (viewType === 'swift') {
     return {
-      title: 'Global SWIFT Code (BIC) Directory & Bank Finder 2026 | World Bank Codes',
-      description: isBn
-        ? 'বৈদেশিক রেমিট্যান্স, ফ্রিল্যান্সিং পেমেন্ট ও আন্তর্জাতিক ব্যাংক ট্রান্সফারের জন্য বাংলাদেশ ও বিশ্বের সকল ব্যাংকের অফিশিয়াল ৮ ও ১১ ডিজিটের সুইফট/BIC কোড।'
-        : isRu
-        ? 'Официальные 8 и 11-значные SWIFT / BIC коды для международных переводов и валютных платежей.'
-        : isHi
-        ? 'अंतर्राष्ट्रीय धन प्रेषण (Remittance) एवं विदेशी वायर ट्रांसफर के लिए आधिकारिक स्विफ्ट / BIC कोड सूची।'
-        : 'Find official 8 or 11-character SWIFT / BIC codes for international remittances and foreign wire transfers worldwide.',
+      title: 'Global SWIFT & BIC Code Directory 2026 Finder | WBC',
+      description: 'Find official 8 or 11-character SWIFT / BIC codes for international remittances, foreign wire transfers, and interbank messaging worldwide (2026 directory).',
       canonicalUrl: `${BASE_URL}/swift`
     };
   }
 
   if (viewType === 'blog') {
     return {
-      title: 'Banking Guides, Routing Articles & Financial Blog 2026 | World Bank Codes',
-      description: isBn
-        ? 'বাংলাদেশের সকল তফসিলি ব্যাংকের রাউটিং নাম্বার, সুইফট কোড, চেক বই থেকে রাউটিং বের করার নিয়ম, EFT/NPSB/RTGS ফান্ড ট্রান্সফার ও পূর্ণাঙ্গ ব্যাংকিং সহায়িকা ২০২৬।'
-        : isRu
-        ? 'Подробные статьи, руководства по БИК, SWIFT и правилам межбанковских переводов в Бангладеш, Индии и РФ.'
-        : isHi
-        ? 'बांग्लादेश व भारत के सभी बैंकों के राउटिंग, IFSC एवं स्विफ्ट कोड उपयोग पर विस्तृत बैंकिंग लेख।'
-        : 'Comprehensive banking guides, 9-digit BEFTN routing instructions, SWIFT codes, and electronic fund transfer tutorials.',
+      title: 'Banking Guides, Routing Articles & Blog 2026 | WBC',
+      description: 'Comprehensive banking guides, 9-digit ABA routing instructions, IFSC search, Sort Codes, international SWIFT directory, & electronic fund transfer tutorials.',
       canonicalUrl: `${BASE_URL}/blog`
+    };
+  }
+
+  if (viewType === 'article') {
+    return {
+      title: 'Banking Guide & Regulatory Specifications 2026 | WBC',
+      description: 'Comprehensive banking clearing codes, national routing guide, IBAN validation, instant payment systems, and central bank regulations directory 2026 guide.',
+      canonicalUrl: articleSlug ? `${BASE_URL}/article/${articleSlug}` : `${BASE_URL}/blog`
     };
   }
 
   if (viewType === 'about') {
     return {
-      title: isRu ? 'О сервисе | World Bank Codes' : isHi ? 'हमारे बारे में | World Bank Codes' : isBn ? 'আমাদের সম্পর্কে | World Bank Codes' : 'About Us | World Bank Codes',
-      description: 'Learn about World Bank Codes — the trusted, verified central banking code lookup platform for Russia, India, Bangladesh, and worldwide.',
+      title: 'About World Bank Codes & Clearing Directory 2026 | WBC',
+      description: 'Learn about World Bank Codes — the trusted, verified central banking code lookup platform for US, UK, Canada, Australia, India, Europe, and worldwide 2026.',
       canonicalUrl: `${BASE_URL}/about`
     };
   }
 
   if (viewType === 'contact') {
     return {
-      title: isRu ? 'Контакты | World Bank Codes' : isHi ? 'संपर्क करें | World Bank Codes' : isBn ? 'যোগাযোগ | World Bank Codes' : 'Contact Us | World Bank Codes',
-      description: 'Get in touch with the World Bank Codes verification team for corrections, API access, or data inquiries.',
+      title: 'Contact World Bank Codes Verification Team 2026 | WBC',
+      description: 'Get in touch with the World Bank Codes editorial and verification team for banking code corrections, API developer access, or financial data inquiries.',
       canonicalUrl: `${BASE_URL}/contact`
     };
   }
 
   if (viewType === 'privacy') {
     return {
-      title: isRu ? 'Политика конфиденциальности | World Bank Codes' : isHi ? 'गोपनीयता नीति | World Bank Codes' : isBn ? 'প্রাইভেসি পলিসি | World Bank Codes' : 'Privacy Policy | World Bank Codes',
-      description: 'Privacy Policy and data transparency statement for World Bank Codes users.',
+      title: 'Privacy Policy & User Data Protection Statement | WBC',
+      description: 'Official Privacy Policy and data transparency statement for World Bank Codes users, explaining encryption standards, data handling, and privacy compliance.',
       canonicalUrl: `${BASE_URL}/privacy`
     };
   }
 
   if (viewType === 'disclaimer') {
     return {
-      title: isRu ? 'Отказ от ответственности | World Bank Codes' : isHi ? 'अस्वीकरण | World Bank Codes' : isBn ? 'ডিসক্লেমার ও সতর্কতা | World Bank Codes' : 'Disclaimer & Data Sources | World Bank Codes',
-      description: 'Official data source citations from Bank of Russia (CBR), Reserve Bank of India (RBI), Bangladesh Bank, and SWIFT ISO standards.',
+      title: 'Disclaimer, Central Bank Sources & Terms 2026 | WBC',
+      description: 'Official data source citations from Federal Reserve, Bank of England, Reserve Bank of India, Bank of Canada, RBA, European Central Bank, and ISO standards.',
       canonicalUrl: `${BASE_URL}/disclaimer`
     };
   }
 
   if (viewType === '404') {
     return {
-      title: '404 - Page Not Found | World Bank Codes',
-      description: 'Sorry, the requested banking code resource could not be found.',
+      title: '404 - Bank Code Resource Page Not Found 2026 | WBC',
+      description: 'Sorry, the requested banking clearing code, routing number, or branch directory resource could not be found. Search our verified 2026 global database.',
       canonicalUrl: `${BASE_URL}/404`
     };
   }
 
   return {
-    title: 'World Bank Codes - Global Bank Routing Numbers, BEFTN, IFSC & SWIFT Code Finder 2026',
-    description: isBn
-      ? 'ইসলামী ব্যাংক, ডাচ-বাংলা, ব্র্যাক, সোনালী ব্যাংকসহ বাংলাদেশের ৬১টি তফসিলি ব্যাংকের সকল শাখার অফিশিয়াল ৯-ডিজিট BEFTN রাউটিং নাম্বার, সুইফট কোড (SWIFT/BIC), জেলা ভিত্তিক শাখা তালিকা ও ঠিকানা। ২০২৬ সালের হালনাগাদকৃত ডাটাবেজ।'
-      : isRu
-      ? 'Быстрый и точный поиск банковских реквизитов: БИК, корр. счета, ИНН, КПП, IFSC, SWIFT коды по банкам РФ и мира. Проверенная база 2026.'
-      : isHi
-      ? 'भारत, रूस एवं बांग्लादेश के सभी बैंकों के IFSC, BIK, MICR ও SWIFT कोड तुरंत खोजें। 100% सत्यापित व नवीनतम डेटाबेस।'
-      : 'Find official 9-digit BEFTN Routing Numbers, US ABA Routing, Indian IFSC, UK Sort Codes, Russian BIK, German BLZ, and SWIFT/BIC codes with instant search.',
+    title: 'Global Bank Routing Numbers & SWIFT Codes Directory | WBC',
+    description: 'Find official 9-digit US ABA routing numbers, UK Sort Codes, Indian IFSC, Canadian Transit, Australian BSB, and SWIFT/BIC codes with 2026 instant directory.',
     canonicalUrl: BASE_URL
   };
 }
@@ -458,13 +488,9 @@ export function updateSEOMeta({
   setMeta('name', 'description', description);
   setMeta('name', 'keywords', localizedKeywords);
   
-  if (is404) {
-    setMeta('name', 'robots', 'noindex, nofollow, noarchive');
-    setMeta('name', 'googlebot', 'noindex, nofollow, noarchive');
-  } else {
-    setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    setMeta('name', 'googlebot', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-  }
+  // Standard robots tags across all pages ensuring crawlers can inspect all endpoints and identify 404/broken URL reports in Search Console
+  setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+  setMeta('name', 'googlebot', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
   setMeta('name', 'author', 'World Bank Codes Editorial Team');
   setMeta('name', 'last-modified', dateModified);
   setMeta('name', 'date', CURRENT_DATA_VERSION_DATE);

@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getIndiaBankArticleSeo } from './seoHelper';
 
 /**
  * Human-grade Financial Editorial Engine for Indian Banks (हिन्दी भाषा में विशेष बैंकिंग मार्गदर्शिका)
@@ -155,18 +156,22 @@ const INDIA_BANK_KNOWLEDGE_HI: Record<string, {
 /**
  * Builds high-density, authoritative, and human-crafted Hindi banking articles for Indian Banks
  */
-export function buildIndiaBankArticle(bank: any): BankArticle {
-  const bankId = bank.id;
-  const bankNameHi = bank.name_hi || bank.name;
-  const bankNameEn = bank.name;
+export function buildIndiaBankArticle(bankInput: any): BankArticle {
+  const bank = typeof bankInput === 'string'
+    ? ((banksData as any[]).find((b: any) => b.id === bankInput) || { id: bankInput, name: bankInput, short_name: bankInput })
+    : (bankInput || {});
+
+  const bankId = bank.id || 'bank';
+  const bankNameHi = bank.name_hi || bank.name || 'Bank';
+  const bankNameEn = bank.name || 'Bank';
   const shortName = bank.short_name || 'Bank';
   const ifscPrefix = bank.ifsc_prefix || bank.bank_code || 'BANK';
   const swiftCode = bank.swift_code || 'N/A';
-  const headOfficeHi = bank.head_office_hi || bank.head_office || 'मुंबई, भारत';
+  const headOfficeHi = bank.head_office_hi || bank.head_office || 'Mumbai, India';
   const headOfficeEn = bank.head_office || 'Mumbai, India';
   const branchCount = bank.branch_count || 1000;
   const establishedYear = bank.established || '1990';
-  const bankType = bank.type || 'अनुसूचित वाणिज्यिक बैंक';
+  const bankType = bank.type || 'Scheduled Commercial Bank';
 
   const knowledge = INDIA_BANK_KNOWLEDGE_HI[bankId] || {
     established: `${establishedYear} (भारतीय रिज़र्व बैंक (RBI) द्वारा लाइसेंस प्राप्त अनुसूचित बैंक)`,
@@ -192,8 +197,9 @@ export function buildIndiaBankArticle(bank: any): BankArticle {
   const subtitleHi = `${bankNameHi} की सभी शाखाओं के 11-अंकीय आधिकारिक IFSC कोड, 9-अंकीय MICR कोड, चेक बुक से कोड खोजने की विधि, NEFT / RTGS / IMPS फंड ट्रांसफर नियम और संपूर्ण शाखा निर्देशिका।`;
   const subtitleEn = `Complete directory of 11-character IFSC codes, 9-digit MICR, SWIFT BIC codes, and wire transfer rules for ${bankNameEn}.`;
 
-  const metaTitle = `${bankNameHi} (${shortName}) IFSC कोड, MICR, स्विफ्ट कोड लिस्ट 2026 | World Bank Codes`;
-  const metaDescription = `${bankNameHi} (${shortName}) की सभी शाखाओं के 100% सत्यापित 11-अंकीय IFSC कोड, 9-अंकीय MICR, SWIFT कोड (${swiftCode}), नेट बैंकिंग और NEFT/RTGS/IMPS फंड ट्रांसफर की पूरी जानकारी। RBI अनुमोदित 2026 गाइड।`;
+  const articleSeo = getIndiaBankArticleSeo(bank);
+  const metaTitle = articleSeo.title;
+  const metaDescription = articleSeo.description;
 
   const overviewHi = `
 ${bankNameHi} (${bankNameEn} - ${shortName}) भारत के बैंकिंग क्षेत्र का एक अत्यंत महत्वपूर्ण और भरोसेमंद स्तंभ है। यदि आप भारत के किसी भी राज्य या शहर से अथवा विदेश से इस बैंक के खाते में पैसे ट्रांसफर (NEFT/RTGS/IMPS/UPI) करना चाहते हैं, चेक क्लियरिंग कराना चाहते हैं, या विदेशी मुद्रा रेमिटेंस प्राप्त करना चाहते हैं, तो संबंधित शाखा का **11-अक्षरों का आधिकारिक IFSC कोड (Indian Financial System Code)**, **9-अंकीय MICR कोड** और **अंतरराष्ट्रीय स्विफ्ट कोड (SWIFT/BIC Code)** जानना अनिवार्य है।

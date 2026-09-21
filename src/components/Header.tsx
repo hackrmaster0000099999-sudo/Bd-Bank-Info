@@ -3,7 +3,6 @@ import { Building2, Search, Hash, Globe, BookOpen, Sun, Moon } from 'lucide-reac
 import { Language, Country } from '../types';
 import { Link, useLocation } from 'react-router-dom';
 import { translations } from '../lib/translations';
-import { CountrySelector } from './CountrySelector';
 
 interface HeaderProps {
   lang: Language;
@@ -30,31 +29,18 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800 shadow-2xs transition-colors">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-18">
-          {/* Logo on Left */}
+          {/* Logo on Left: Pure Code-based Crisp Vector Emblem & Typography */}
           <Link to="/" className="flex items-center cursor-pointer group shrink-0 py-1" id="header-logo-link">
-            <div className="flex items-center justify-start group-hover:opacity-95 transition-opacity">
-              <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img
-                  src="/logo.png"
-                  alt="World Bank Codes"
-                  width="240"
-                  height="48"
-                  // @ts-ignore
-                  fetchPriority="high"
-                  className="h-10 sm:h-12 md:h-14 w-auto max-w-[200px] sm:max-w-[280px] md:max-w-[340px] object-contain drop-shadow-2xs"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement?.parentElement?.querySelector('.fallback-brand-text')?.classList.remove('hidden');
-                  }}
-                />
-              </picture>
-              <div className="fallback-brand-text hidden flex items-center space-x-2.5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
+            <div className="flex items-center space-x-3 group-hover:opacity-95 transition-opacity">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-linear-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-600/25 border border-emerald-500/30 group-hover:scale-105 transition-transform shrink-0">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div className="flex flex-col">
                 <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white leading-tight">
-                  World Bank Codes
+                  World Bank <span className="text-emerald-600 dark:text-emerald-400">Codes</span>
+                </span>
+                <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-slate-600 dark:text-slate-300 uppercase">
+                  Global Bank Directory
                 </span>
               </div>
             </div>
@@ -123,16 +109,8 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
           </nav>
 
-          {/* Right actions: Country/Region Selector & Dark Mode Toggle */}
+          {/* Right actions: Dark Mode Toggle */}
           <div className="flex items-center space-x-1.5 sm:space-x-2.5 pl-2 pr-0.5 sm:pr-2">
-            {/* Country Selector with Flag and 2-Letter Code */}
-            <CountrySelector
-              country={country}
-              onSetCountry={onSetCountry}
-              onSetLanguage={onSetLanguage}
-              lang={lang}
-            />
-
             {/* Dark Mode Toggle */}
             <button
               onClick={onToggleDarkMode}

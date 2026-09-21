@@ -1,15 +1,26 @@
+export {
+  getAustraliaHomeSeo,
+  getAustraliaBankSeo,
+  getAustraliaBranchSeo,
+  getAustraliaBankMetaTitle,
+  getAustraliaBankMetaDescription,
+  getAustraliaBranchMetaTitle,
+  getAustraliaBranchMetaDescription,
+  getAustraliaBankArticleSeo
+} from './seoHelper';
+
 export const australiaSeoData = {
   metaTitle: {
-    en: "Australia BSB Numbers & Bank Branch Directory - All Banks BSB Codes & SWIFT",
-    bn: "অস্ট্রেলিয়ার সকল ব্যাংকের বিএসবি কোড ও ব্রাঞ্চ ডিরেক্টরি - Australia BSB Codes",
-    hi: "ऑस्ट्रेलियाई बैंकों के बीएसबी (BSB) कोड, शाखा सूची एवं स्विफ्ट डायरेक्टरी",
-    ru: "BSB коды банков Австралии — Полный справочник отделений, SWIFT и NPP"
+    en: "Australia BSB Numbers & Bank Code Directory 2026 | WBC",
+    bn: "অস্ট্রেলিয়ার সকল ব্যাংকের বিএসবি কোড ও ব্রাঞ্চ ডিরেক্টরি ২০২৬ | WBC",
+    hi: "ऑस्ट्रेलियाई बैंकों के बीएसबी (BSB) कोड व शाखा डायरेक्टरी | WBC",
+    ru: "BSB коды и справочник отделений банков Австралии 2026 | WBC"
   },
   metaDescription: {
-    en: "Search official Australian BSB numbers (Bank-State-Branch), SWIFT/BIC codes, NPP Osko details, branch addresses, postcodes, and contact info for Commonwealth Bank, Westpac, NAB, ANZ, Macquarie, Bendigo Bank and all Australian financial institutions.",
-    bn: "কমনওয়েলথ ব্যাংক, ওয়েস্টপ্যাক, ন্যাব, এএনজেড সহ অস্ট্রেলিয়ার সকল ব্যাংকের অফিসিয়াল ৬ ডিজিটের বিএসবি (BSB) কোড, সুইফট কোড, এনপিপি ও ব্রাঞ্চের ঠিকানা খুঁজুন।",
-    hi: "कॉमनवेल्थ बैंक, वेस्टपैक, NAB, ANZ व सभी ऑस्ट्रेलियाई बैंकों के 6-अंकीय BSB कोड, स्विफ्ट कोड और शाखा का पता खोजें।",
-    ru: "Поиск официальных 6-значных кодов BSB (Bank-State-Branch), SWIFT/BIC, систем мгновенных платежей NPP/Osko для CommBank, Westpac, NAB, ANZ и всех банков Австралии."
+    en: "Find verified 6-digit Australian BSB numbers (Bank-State-Branch), APCA codes, SWIFT/BIC, and PayID/Osko info for 2,120+ bank branches across Australia.",
+    bn: "কমনওয়েলথ ব্যাংক, ওয়েস্টপ্যাক, ন্যাব, এএনজেড সহ অস্ট্রেলিয়ার সকল ব্যাংকের অফিসিয়াল ৬ ডিজিটের বিএসবি (BSB) কোড, সুইফট কোড, এনপিপি ও ব্রাঞ্চের তথ্য খুঁজুন।",
+    hi: "कॉमनवेल्थ बैंक, वेस्टपैक, NAB, ANZ व सभी ऑस्ट्रेलियाई बैंकों के 6-अंकीय BSB कोड, स्विफ्ट कोड और शाखा विवरण खोजें।",
+    ru: "Поиск официальных 6-значных кодов BSB (Bank-State-Branch), SWIFT/BIC, систем мгновенных платежей NPP/Osko для CommBank, Westpac, NAB, ANZ и банков Австралии."
   },
   keywords: [
     "Australia BSB codes",
@@ -61,48 +72,3 @@ export const australiaSeoData = {
   ]
 };
 
-export function getAustraliaBankSeo(bank: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const name = isBn ? (bank.name_bn || bank.name) : isHi ? (bank.name_hi || bank.name) : isRu ? (bank.name_ru || bank.name) : bank.name;
-  return {
-    title: `${name} (${bank.short_name}) BSB Codes, Branches & SWIFT Directory | World Bank Codes`,
-    description: isBn
-      ? `${name}-এর অস্ট্রেলিয়া দেশব্যাপী সকল ব্রাঞ্চের BSB কোড, সুইফট কোড, ঠিকানা ও ফোন নম্বর খুঁজুন।`
-      : isHi
-      ? `${name} के सभी ऑस्ट्रेलियाई शाखाओं के BSB कोड, स्विफ्ट कोड और संपर्क विवरण देखें।`
-      : isRu
-      ? `Все коды BSB, отделения и SWIFT коды ${name} в Австралии. Актуальный справочник 2026.`
-      : `Search all ${bank.name} (${bank.short_name}) branch BSB codes, SWIFT/BIC codes, addresses, and phone numbers in Australia. Verified directory.`
-  };
-}
-
-export function getAustraliaBranchSeo(branch: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const bName = isBn ? (branch.name_bn || branch.name) : isHi ? (branch.name_hi || branch.name) : isRu ? (branch.name_ru || branch.name) : branch.name;
-  const bankName = isBn ? (branch.bank_name_bn || branch.bank_name) : isHi ? (branch.bank_name_hi || branch.bank_name) : isRu ? (branch.bank_name_ru || branch.bank_name) : branch.bank_name;
-  const bsb = branch.bsb_code || branch.routing_number;
-  return {
-    title: `${bankName} (${bName} Branch) BSB: ${bsb} & SWIFT | World Bank Codes`,
-    description: isBn
-      ? `${bankName} (${bName} শাখা, ${branch.district}, ${branch.division})-এর অফিসিয়াল বিএসবি কোড: ${bsb}, সুইফট কোড: ${branch.swift_code || 'N/A'}, পোস্টকোড ও ঠিকানা।`
-      : isHi
-      ? `${bankName} (${bName} शाखा) का आधिकारिक BSB कोड: ${bsb}, स्विफ्ट कोड, पिनकोड एवं पता।`
-      : isRu
-      ? `Официальный BSB код: ${bsb}, SWIFT: ${branch.swift_code || 'N/A'} для ${bankName}, отделение ${bName}, ${branch.district}, Австралия.`
-      : `Official Australian BSB Number: ${bsb}, SWIFT/BIC: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} branch in ${branch.district}, ${branch.division}, Australia. Postcode: ${branch.zip_code || 'N/A'}.`
-  };
-}
-
-export function getAustraliaHomeSeo(lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  return {
-    title: isBn ? australiaSeoData.metaTitle.bn : isHi ? australiaSeoData.metaTitle.hi : isRu ? australiaSeoData.metaTitle.ru : australiaSeoData.metaTitle.en,
-    description: isBn ? australiaSeoData.metaDescription.bn : isHi ? australiaSeoData.metaDescription.hi : isRu ? australiaSeoData.metaDescription.ru : australiaSeoData.metaDescription.en
-  };
-}

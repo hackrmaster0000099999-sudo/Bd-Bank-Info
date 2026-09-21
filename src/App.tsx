@@ -72,19 +72,7 @@ export default function App() {
   // Keep country filter in sync with global country
   const handleSetCountry = (newCountry: Country) => {
     setCountry(newCountry);
-    if (newCountry === 'de') {
-      setLang('de');
-    } else if (newCountry === 'in') {
-      setLang('hi');
-    } else if (newCountry === 'bd') {
-      setLang('bn');
-    } else if (newCountry === 'ru') {
-      setLang('ru');
-    } else if (newCountry === 'my') {
-      setLang('ms');
-    } else {
-      setLang('en');
-    }
+    setLang('en');
 
     setFilters((prev) => ({
       ...prev,
@@ -341,8 +329,8 @@ export default function App() {
     const seo = generateSeoData(viewType, lang, selectedBank || undefined, selectedBranch || undefined, query, selectedArticle?.slug);
 
     updateSEOMeta({
-      title: selectedArticle ? (lang === 'bn' ? (selectedArticle.title_bn || selectedArticle.title) : selectedArticle.title) : seo.title,
-      description: selectedArticle ? (lang === 'bn' ? (selectedArticle.subtitle_bn || selectedArticle.subtitle) : selectedArticle.subtitle) : seo.description,
+      title: selectedArticle ? (selectedArticle.meta_title || selectedArticle.title) : seo.title,
+      description: selectedArticle ? (selectedArticle.meta_description || selectedArticle.subtitle) : seo.description,
       canonicalUrl: selectedArticle ? `https://worldbankcodes.com/article/${selectedArticle.slug}` : seo.canonicalUrl,
       lang: lang,
       bank: selectedBank || undefined,

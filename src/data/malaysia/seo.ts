@@ -1,17 +1,25 @@
+import {
+  getMalaysiaBankMetaTitle,
+  getMalaysiaBankMetaDescription,
+  getMalaysiaBranchMetaTitle,
+  getMalaysiaBranchMetaDescription,
+  getMalaysiaHomeSeo as getMalaysiaHomeSeoStrict
+} from './seoHelper';
+
 export const malaysiaSeoData = {
   metaTitle: {
-    ms: "Direktori Bank Malaysia, Kod Routing IBG, DuitNow & Kod SWIFT - Disahkan BNM",
-    en: "Malaysia Bank Directory, RENTAS, IBG Routing Codes & SWIFT Codes - BNM Verified",
-    bn: "মালয়েশিয়া ব্যাংক ডিরেক্টরি, RENTAS, IBG রাউটিং কোড ও সুইফট কোড (BNM যাচাইকৃত)",
-    hi: "मलेशिया बैंक डायरेक्टरी, रेंटास, आईबीजी रूटिंग कोड एवं स्विफ्ट कोड - BNM सत्यापित",
-    ru: "Банки Малайзии — Клиринговые коды IBG, RENTAS, филиалы и SWIFT (BNM)"
+    ms: "Malaysia Bank IBG Codes & Branch Directory 2026 | WBC",
+    en: "Malaysia Bank IBG Codes & Branch Directory 2026 | WBC",
+    bn: "মালয়েশিয়া ব্যাংক IBG কোড ও ব্রাঞ্চ ডিরেক্টরি ২০২৬ | WBC",
+    hi: "मलेशिया बैंक IBG कोड व शाखा निर्देशिका 2026 | WBC",
+    ru: "Банки Малайзии: Коды IBG и отделения 2026 | WBC"
   },
   metaDescription: {
-    ms: "Cari kod bank rasmi Malaysia, nombor routing 5-digit IBG, butiran pemindahan DuitNow, kod SWIFT/BIC, alamat cawangan dan poskod untuk Maybank, CIMB, Public Bank, RHB, Hong Leong, AmBank, Bank Islam dan semua institusi perbankan berlesen.",
-    en: "Search official Malaysian bank codes, 5-digit IBG clearing routing codes, DuitNow transfer details, SWIFT/BIC codes, branch addresses, and postcodes for Maybank, CIMB, Public Bank, RHB, Hong Leong, AmBank, Bank Islam, and all Malaysian financial institutions.",
-    bn: "মেব্যাংক, সিআইএমবি, পাবলিক ব্যাংক, আরএইচবি, হং লিওং, অ্যামব্যাংক, ব্যাংক ইসলাম সহ মালয়েশিয়ার সমস্ত ব্যাংকের ব্যাংক কোড, ৫-সংখ্যার IBG ক্লিয়ারিং কোড, DuitNow, সুইফট কোড, পোস্টকোড ও শাখা ঠিকানা খুঁজুন।",
-    hi: "Maybank, CIMB, Public Bank, RHB, Hong Leong, AmBank, Bank Islam सहित मलेशिया के सभी बैंकों के 5-अंकीय IBG क्लियरिंग कोड, डुइटनाउ, स्विफ्ट कोड और डाक कोड खोजें।",
-    ru: "Поиск официальных клиринговых кодов Банка Негара Малайзии (IBG 5 цифр), DuitNow, кодов SWIFT/BIC, адресов отделений в Куала-Лумпуре, Селангоре, Джохоре, Пенанге для Maybank, CIMB, Public Bank, RHB, Hong Leong и других."
+    ms: "Find verified 5-digit IBG clearing codes, DuitNow transfer details, SWIFT BIC, and branch addresses for all banks across Malaysia. Official 2026 BNM directory.",
+    en: "Find verified 5-digit IBG clearing codes, DuitNow transfer details, SWIFT BIC, and branch addresses for all banks across Malaysia. Official 2026 BNM directory.",
+    bn: "মালয়েশিয়ার সকল ব্যাংকের ভেরিফাইড ৫-সংখ্যার IBG ক্লিয়ারিং কোড, ডুইটনাউ ট্রান্সফার বিবরণ, সুইফট BIC ও শাখা ঠিকানা খুঁজুন। অফিসিয়াল ২০২৬ BNM ডিরেক্টরি।",
+    hi: "मलेशिया के सभी बैंकों के सत्यापित 5-अंकीय IBG क्लियरिंग कोड, डुइटनाउ विवरण, स्विफ्ट कोड एवं शाखा पते प्राप्त करें। आधिकारिक 2026 BNM डायरेक्टरी।",
+    ru: "Проверенные 5-значные клиринговые коды IBG, DuitNow, SWIFT BIC и адреса отделений всех банков Малайзии в официальном справочнике BNM 2026 года."
   },
   keywords: [
     "Malaysia bank routing codes",
@@ -63,59 +71,21 @@ export const malaysiaSeoData = {
   ]
 };
 
-export function getMalaysiaBankSeo(bank: any, lang: string = 'en') {
-  const isMs = lang === 'ms';
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const name = isBn ? (bank.name_bn || bank.name) : isHi ? (bank.name_hi || bank.name) : isRu ? (bank.name_ru || bank.name) : bank.name;
+export function getMalaysiaBankSeo(bank: any, lang: any = 'en') {
   return {
-    title: isMs
-      ? `Kod Bank ${name} (${bank.short_name}), Nombor Routing IBG & SWIFT | Direktori Rasmi Malaysia`
-      : `${name} (${bank.short_name}) IBG Bank Code, SWIFT & DuitNow Directory | World Bank Codes`,
-    description: isMs
-      ? `Semak semua cawangan ${bank.name} (${bank.short_name}) di Malaysia: kod bank (${bank.bank_code}), kod routing 5-digit IBG, kod SWIFT/BIC (${bank.swift_code}), alamat cawangan dan poskod rasmi disahkan BNM.`
-      : isBn
-      ? `${name}-এর মালয়েশিয়া দেশব্যাপী সকল ব্রাঞ্চের ব্যাংক কোড (${bank.bank_code}), ৫-সংখ্যার IBG ক্লিয়ারিং কোড, সুইফট কোড (${bank.swift_code}) ও শাখা ঠিকানা খুঁজুন।`
-      : isHi
-      ? `${name} की मलेशियाई शाखाओं के IBG बैंक कोड (${bank.bank_code}), स्विफ्ट कोड (${bank.swift_code}) और पते देखें।`
-      : isRu
-      ? `Все клиринговые коды IBG, RENTAS, отделения и SWIFT коды ${name} в Малайзии (BNM верифицировано, 2026).`
-      : `Search all ${bank.name} (${bank.short_name}) branch IBG routing codes (Bank Code: ${bank.bank_code}), SWIFT/BIC codes (${bank.swift_code}), and branch postcodes across Malaysia.`
+    title: getMalaysiaBankMetaTitle(bank, lang),
+    description: getMalaysiaBankMetaDescription(bank, lang)
   };
 }
 
-export function getMalaysiaBranchSeo(branch: any, lang: string = 'en') {
-  const isMs = lang === 'ms';
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const bName = isBn ? (branch.name_bn || branch.name) : isHi ? (branch.name_hi || branch.name) : isRu ? (branch.name_ru || branch.name) : branch.name;
-  const bankName = isBn ? (branch.bank_name_bn || branch.bank_name) : isHi ? (branch.bank_name_hi || branch.bank_name) : isRu ? (branch.bank_name_ru || branch.bank_name) : branch.bank_name;
-  const routing = branch.routing_number;
+export function getMalaysiaBranchSeo(branch: any, lang: any = 'en') {
   return {
-    title: isMs
-      ? `${bankName} (${bName}) Kod Routing IBG: ${routing} & SWIFT | Bank Malaysia`
-      : `${bankName} (${bName}) IBG Clearing: ${routing} & SWIFT | World Bank Codes`,
-    description: isMs
-      ? `Kod routing 5-digit IBG rasmi untuk cawangan ${bankName} (${bName}, ${branch.district}, ${branch.division}): ${routing}. Kod bank: ${branch.bank_code}, kod cawangan: ${branch.branch_code}, SWIFT/BIC: ${branch.swift_code || 'N/A'}, poskod: ${branch.zip_code} dan alamat lengkap.`
-      : isBn
-      ? `${bankName} (${bName}, ${branch.district}, ${branch.division})-এর অফিসিয়াল IBG ক্লিয়ারিং কোড: ${routing}, সুইফট কোড: ${branch.swift_code || 'N/A'}, পোস্টকোড: ${branch.zip_code} ও ঠিকানা।`
-      : isHi
-      ? `${bankName} (${bName}, ${branch.division}) का आधिकारिक IBG क्लियरिंग कोड: ${routing}, स्विफ्ट कोड एवं डाक कोड।`
-      : isRu
-      ? `Официальный IBG клиринговый код: ${routing}, SWIFT: ${branch.swift_code || 'N/A'} для ${bankName}, отделение ${bName}, ${branch.division}, Малайзия.`
-      : `Official Malaysia IBG Clearing Code: ${routing} (Bank: ${branch.bank_code}, Branch: ${branch.branch_code}), SWIFT/BIC: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} in ${branch.district}, Malaysia ${branch.zip_code}.`
+    title: getMalaysiaBranchMetaTitle(branch, lang),
+    description: getMalaysiaBranchMetaDescription(branch, lang)
   };
 }
 
-export function getMalaysiaHomeSeo(lang: string = 'en') {
-  const isMs = lang === 'ms';
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  return {
-    title: isMs ? malaysiaSeoData.metaTitle.ms : isBn ? malaysiaSeoData.metaTitle.bn : isHi ? malaysiaSeoData.metaTitle.hi : isRu ? malaysiaSeoData.metaTitle.ru : malaysiaSeoData.metaTitle.en,
-    description: isMs ? malaysiaSeoData.metaDescription.ms : isBn ? malaysiaSeoData.metaDescription.bn : isHi ? malaysiaSeoData.metaDescription.hi : isRu ? malaysiaSeoData.metaDescription.ru : malaysiaSeoData.metaDescription.en
-  };
+export function getMalaysiaHomeSeo(lang: any = 'en') {
+  return getMalaysiaHomeSeoStrict(lang);
 }
+

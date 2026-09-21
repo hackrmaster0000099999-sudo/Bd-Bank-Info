@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getUaeBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for UAE Banks (مصارف دولة الإمارات العربية المتحدة)
@@ -504,8 +505,8 @@ export const uaeBanksArticles: BankArticle[] = banksData.map((bank) => {
     subtitle_bn: `${bank.name_bn || bank.name}-এর ২০২৬ সালের ৩-সংখ্যার সিবিইউএই ক্লিয়ারিং কোড (${cbuaeCode}), ৯-সংখ্যার UAEFTS রাউটিং (${routingNum}), ২৩ অক্ষরের আইবিএএন (IBAN), আনি (Aani) ইনস্ট্যান্ট পেমেন্ট, ডব্লিউপিএস স্যালারি সিস্টেম এবং সুইফট কোড (${swiftCode}) নির্দেশিকা।`,
     subtitle_hi: `${bank.name_hi || bank.name} का 2026 CBUAE बैंक कोड (${cbuaeCode}), 9-अंकीय राउटिंग (${routingNum}), 23-वर्णों का IBAN, Aani इंस्टेंट पेमेंट और स्विफ्ट कोड (${swiftCode}) विवरण।`,
     subtitle_ru: `Официальный справочник по банку ${bank.name_ru || bank.name}: 3-значный код CBUAE (${cbuaeCode}), маршрутизатор UAEFTS (${routingNum}), 23-значный IBAN, мгновенные переводы Aani и SWIFT (${swiftCode}).`,
-    meta_title: `${bank.name} CBUAE Code, Routing Number, IBAN & SWIFT 2026`,
-    meta_description: `Complete guide to ${bank.name} 3-digit CBUAE clearing code (${cbuaeCode}), 9-digit UAEFTS routing number, 23-character UAE IBAN, Aani instant payments, WPS payroll and SWIFT code (${swiftCode}).`,
+    meta_title: getUaeBankArticleSeo(bank).title,
+    meta_description: getUaeBankArticleSeo(bank).description,
     meta_keywords: [
       `${bank.name} cbuae code`,
       `${bank.name} routing number`,

@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import russianBanksData from './banks.json';
+import { getRussiaBankArticleSeo } from './seoHelper';
 
 /**
  * Экспертный аналитический центр банковской информации РФ (World Bank Codes Russia Editorial)
@@ -238,11 +239,15 @@ const RUSSIA_BANK_KNOWLEDGE_RU: Record<string, {
 /**
  * Создает детализированную, авторитетную статью на русском языке для банков РФ
  */
-export function buildRussiaBankArticle(bank: any): BankArticle {
-  const bankId = bank.id;
-  const bankNameRu = bank.name_ru || bank.name;
-  const bankNameEn = bank.name;
-  const shortName = bank.short_name || 'Банк';
+export function buildRussiaBankArticle(bankInput: any): BankArticle {
+  const bank = typeof bankInput === 'string'
+    ? ((russianBanksData as any[]).find((b: any) => b.id === bankInput) || { id: bankInput, name: bankInput, short_name: bankInput })
+    : (bankInput || {});
+
+  const bankId = bank.id || 'bank';
+  const bankNameRu = bank.name_ru || bank.name || 'Банк';
+  const bankNameEn = bank.name || 'Bank';
+  const shortName = bank.short_name || 'Bank';
   const bikCode = bank.bik_code || bank.bank_code || '044525000';
   const corrAccount = bank.corr_account || '30101810000000000000';
   const inn = bank.inn || '7700000000';
@@ -282,8 +287,9 @@ export function buildRussiaBankArticle(bank: any): BankArticle {
   const subtitleRu = `Полный справочник банковских реквизитов ${bankNameRu}: официальный БИК ${bikCode}, корсчет ${corrAccount}, ИНН, КПП, переводы через СБП, лимиты и проверка отделений.`;
   const subtitleEn = `Complete official banking directory for ${bankNameEn}: 9-digit BIK code, correspondent account, INN, KPP, SBP transfer limits.`;
 
-  const metaTitle = `${bankNameRu} (${shortName}) БИК ${bikCode}, Корсчет, ИНН, SWIFT реквизиты 2026 | World Bank Codes`;
-  const metaDescription = `Актуальные и проверенные реквизиты ${bankNameRu}: БИК ${bikCode}, корсчет ${corrAccount}, ИНН ${inn}, КПП ${kpp}, SWIFT ${swiftCode}, переводы по СБП и реквизиты для платежей. Справочник 2026.`;
+  const articleSeo = getRussiaBankArticleSeo(bank);
+  const metaTitle = articleSeo.title;
+  const metaDescription = articleSeo.description;
 
   const overviewRu = `
 ${bankNameRu} (${bankNameEn}) является важным звеном банковской системы Российской Федерации. Для корректного совершения межбанковских переводов в рублях, оплаты счетов организаций, получения заработной платы, зачисления пенсионных средств или выставления счетов юридическим лицам необходимо указывать точные реквизиты: **9-значный БИК (Банковский идентификационный код)**, **20-значный корреспондентский счет** в подразделении Банка России, а также **ИНН** и **КПП**.

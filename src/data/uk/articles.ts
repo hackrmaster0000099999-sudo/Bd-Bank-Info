@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getUkBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for UK Clearing & Commercial Banks
@@ -783,6 +784,8 @@ Your eligible deposits with **${bankNameEn}** are legally protected under the UK
     { label: 'Customer Helpline', label_bn: 'গ্রাহক সহায়তা হেল্পলাইন', value: knowledge.customerCare, value_bn: knowledge.customerCare }
   ];
 
+  const articleSeo = getUkBankArticleSeo(bank);
+
   return {
     id: bankId,
     bank_id: bankId,
@@ -796,8 +799,8 @@ Your eligible deposits with **${bankNameEn}** are legally protected under the UK
     subtitle_bn: subtitleBn,
     subtitle_hi: `${bankNameEn} के 6-अंकीय सॉर्ट कोड (${sortCodeFormatted}), फास्टर पेमेंट्स, आईबीएएन (IBAN) एवं £85,000 FSCS सुरक्षा की पूरी जानकारी।`,
     subtitle_ru: `Официальный справочник банковских реквизитов ${bankNameEn}: 6-значный Sort Code (${sortCodeFormatted}), переводы Faster Payments, Bacs и SWIFT.`,
-    meta_title: metaTitle,
-    meta_description: metaDescription,
+    meta_title: articleSeo.title,
+    meta_description: articleSeo.description,
     meta_keywords: [
       `${bankNameEn} sort code`,
       `${shortName} sort code ${sortCodeFormatted}`,

@@ -56,7 +56,7 @@ const COUNTRIES: CountryOption[] = [
     flag: '🇦🇪',
     shortCode: 'AE',
     name: 'United Arab Emirates',
-    nameNative: 'সংযুক্ত আরব আমিরাত / الإمارات',
+    nameNative: 'UAE',
     defaultLang: 'en'
   },
   {
@@ -64,7 +64,7 @@ const COUNTRIES: CountryOption[] = [
     flag: '🇸🇬',
     shortCode: 'SG',
     name: 'Singapore',
-    nameNative: 'Singapore / சிங்கப்பூர்',
+    nameNative: 'Singapore',
     defaultLang: 'en'
   },
   {
@@ -72,40 +72,40 @@ const COUNTRIES: CountryOption[] = [
     flag: '🇲🇾',
     shortCode: 'MY',
     name: 'Malaysia',
-    nameNative: 'Malaysia / Bahasa Melayu',
-    defaultLang: 'ms'
+    nameNative: 'Malaysia',
+    defaultLang: 'en'
   },
   {
     code: 'de',
     flag: '🇩🇪',
     shortCode: 'DE',
     name: 'Germany',
-    nameNative: 'Deutschland / Deutsch',
-    defaultLang: 'de'
+    nameNative: 'Germany',
+    defaultLang: 'en'
   },
   {
     code: 'bd',
     flag: '🇧🇩',
     shortCode: 'BD',
     name: 'Bangladesh',
-    nameNative: 'বাংলাদেশ',
-    defaultLang: 'bn'
+    nameNative: 'Bangladesh',
+    defaultLang: 'en'
   },
   {
     code: 'in',
     flag: '🇮🇳',
     shortCode: 'IN',
     name: 'India',
-    nameNative: 'भारत',
-    defaultLang: 'hi'
+    nameNative: 'India',
+    defaultLang: 'en'
   },
   {
     code: 'ru',
     flag: '🇷🇺',
     shortCode: 'RU',
     name: 'Russia',
-    nameNative: 'Россия',
-    defaultLang: 'ru'
+    nameNative: 'Russia',
+    defaultLang: 'en'
   }
 ];
 
@@ -158,7 +158,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-700/80 transition-all cursor-pointer shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-500/30 active:scale-95"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        title="Select Country / দেশ নির্বাচন করুন"
+        title="Select Country"
       >
         <span className="text-sm leading-none">{currentOption.flag}</span>
         <span className="tracking-wider uppercase font-mono font-bold text-xs">{currentOption.shortCode}</span>
@@ -177,7 +177,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         >
           <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-700/60 mb-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 block">
-              {lang === 'ms' ? 'Pilih Negara' : lang === 'de' ? 'Land auswählen' : lang === 'hi' ? 'देश चुनें' : lang === 'bn' ? 'দেশ নির্বাচন করুন' : lang === 'ru' ? 'Выберите страну' : 'Select Country'}
+              Select Country
             </span>
           </div>
 

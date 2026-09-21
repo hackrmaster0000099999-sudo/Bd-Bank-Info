@@ -42,12 +42,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   const handleCountryClick = (c: Country) => {
     onSetCountry(c);
     if (onSetLanguage) {
-      if (c === 'de') onSetLanguage('de');
-      else if (c === 'bd') onSetLanguage('bn');
-      else if (c === 'in') onSetLanguage('hi');
-      else if (c === 'ru') onSetLanguage('ru');
-      else if (c === 'my') onSetLanguage('ms');
-      else onSetLanguage('en');
+      onSetLanguage('en');
     }
   };
 

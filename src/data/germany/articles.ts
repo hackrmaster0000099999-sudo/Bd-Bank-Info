@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getGermanyBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for German Banks (Deutsche Kreditinstitute)
@@ -849,8 +850,9 @@ function buildGermanBankArticle(bank: any): BankArticle {
   const titleBn = `${bankNameBn} বিএলজেড (BLZ ${blzDigits}), আইবান (IBAN), সুইফট কোড ও সেপা গাইড ২০২৬`;
   const subtitleEn = `Complete official guide to ${shortName} 8-digit Bankleitzahl (${blzFormatted}), 22-character German IBAN, SWIFT/BIC (${swiftCode}), SEPA Instant transfers, and €100,000 BaFin deposit protection.`;
   const subtitleBn = `${shortName}-এর ৮-ডিজিটের অফিশিয়াল ব্যাংকলাইৎজাহল (${blzFormatted}), ২২-সংখ্যার জার্মান আইবান (IBAN), সুইফট কোড (${swiftCode}), সেপা ইনস্ট্যান্ট ট্রান্সফার এবং €১০০,০০০ আমানত সুরক্ষার সম্পূর্ণ তথ্য।`;
-  const metaTitle = `${bankNameEn} BLZ ${blzDigits} | German IBAN, SWIFT & SEPA Guide 2026`;
-  const metaDescription = `Find ${bankNameEn} official 8-digit BLZ (${blzDigits}), German IBAN (${knowledge.ibanExample}), SWIFT/BIC ${swiftCode}, SEPA Instant limits, and €100,000 EdB deposit insurance protection rules.`;
+  const metaSeo = getGermanyBankArticleSeo(bank);
+  const metaTitle = metaSeo.title;
+  const metaDescription = metaSeo.description;
 
   const sections = [
     {

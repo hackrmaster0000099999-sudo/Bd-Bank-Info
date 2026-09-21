@@ -24,40 +24,22 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="bg-slate-900 text-slate-300 mt-16 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Adsterra Footer Sponsor Unit (Shown across every page) */}
-        <div className="mb-10 pb-6 border-b border-slate-800/80 flex flex-col items-center justify-center">
-          <div className="block sm:hidden">
-            <AdsterraBanner format="320x50" />
-          </div>
-          <div className="hidden sm:block">
-            <AdsterraBanner format="300x250" />
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {/* Brand & Purpose */}
           <div className="sm:col-span-2 md:col-span-1 space-y-3">
             <Link to="/" className="inline-block group">
-              <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img 
-                  src="/logo.png" 
-                  alt="World Bank Codes" 
-                  width="240"
-                  height="48"
-                  loading="lazy"
-                  className="h-11 sm:h-12 w-auto max-w-[240px] object-contain rounded-lg drop-shadow-sm group-hover:opacity-95 transition-opacity"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement?.parentElement?.querySelector('.footer-fallback-logo')?.classList.remove('hidden');
-                  }}
-                />
-              </picture>
-              <div className="footer-fallback-logo hidden flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-sm tracking-wider shadow-md shadow-emerald-600/30">
-                  WBC
+              <div className="flex items-center space-x-3 group-hover:opacity-95 transition-opacity">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white font-extrabold text-sm tracking-wider shadow-md shadow-emerald-600/30 border border-emerald-500/30">
+                  <Database className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-bold text-lg text-white font-sans">World Bank Codes</span>
+                <div className="flex flex-col">
+                  <span className="font-extrabold text-lg tracking-tight text-white leading-tight">
+                    World Bank <span className="text-emerald-400">Codes</span>
+                  </span>
+                  <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                    Official Directory
+                  </span>
+                </div>
               </div>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed">

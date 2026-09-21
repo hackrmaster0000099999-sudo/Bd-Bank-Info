@@ -1,5 +1,6 @@
 import { BankArticle } from '../../types';
 import banksData from './banks.json';
+import { getAustraliaBankArticleSeo } from './seoHelper';
 
 /**
  * Authoritative Editorial Knowledge Base & Comprehensive Guide for Australian Banks (Australian Financial Institutions)
@@ -610,6 +611,7 @@ export const australiaBanksArticles: BankArticle[] = banksData.map((bank) => {
   const bsbFormatted = bsbCode.length === 6 ? `${bsbCode.slice(0, 3)}-${bsbCode.slice(3)}` : bsbCode;
   const bankCode = bank.bank_code || bsbCode.slice(0, 2);
   const swiftCode = bank.swift_code || knowledge.swiftHo;
+  const articleSeo = getAustraliaBankArticleSeo(bank);
 
   return {
     id: `guide-${bank.id}`,
@@ -624,8 +626,8 @@ export const australiaBanksArticles: BankArticle[] = banksData.map((bank) => {
     subtitle_bn: `${bank.name_bn || bank.name}-এর ২০২৬ সালের ৬-সংখ্যার BSB কোড (${bsbFormatted}), APCA কোড (${bankCode}), ওস্কো ও পে-আইডি ইনস্ট্যান্ট পেমেন্ট, অস্ট্রেলিয়ান সরকারি FCS আমানত সুরক্ষা এবং সুইফট কোড (${swiftCode}) নির্দেশিকা।`,
     subtitle_hi: `${bank.name_hi || bank.name} का 2026 BSB कोड (${bsbFormatted}), APCA कोड (${bankCode}), Osko/PayID ट्रांसफर एवं SWIFT कोड (${swiftCode}) सम्पूर्ण विवरण।`,
     subtitle_ru: `Официальный справочник по банку ${bank.name_ru || bank.name}: 6-значный BSB код (${bsbFormatted}), APCA (${bankCode}), система Osko/PayID и SWIFT (${swiftCode}).`,
-    meta_title: `${bank.name} BSB Code, Routing Number, Osko PayID & SWIFT 2026`,
-    meta_description: `Complete guide to ${bank.name} 6-digit BSB code (${bsbFormatted}), APCA bank code (${bankCode}), Osko/PayID real-time transfers, FCS $250,000 AUD deposit guarantee and SWIFT code (${swiftCode}).`,
+    meta_title: articleSeo.title,
+    meta_description: articleSeo.description,
     meta_keywords: [
       `${bank.name} bsb code`,
       `${bank.name} routing number`,

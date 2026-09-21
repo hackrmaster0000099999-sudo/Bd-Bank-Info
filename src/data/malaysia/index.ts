@@ -18,5 +18,6 @@ export const malaysiaBranches: Branch[] = [
 
 export * from './malaysiaClearingValidator';
 export * from './guide';
-export * from './seo';
+export { malaysiaSeoData } from './seo';
+export * from './seoHelper';
 export * from './articles';

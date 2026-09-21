@@ -1,12 +1,14 @@
+export * from './seoHelper';
+
 export const singaporeSeoData = {
   metaTitle: {
-    en: "Singapore Bank Directory, MEPS+ & FAST Clearing Codes, SWIFT Codes - MAS Certified",
+    en: "Singapore Bank Clearing Codes & FAST Directory 2026 | WBC",
     bn: "সিঙ্গাপুর ব্যাংক ডিরেক্টরি, MEPS+ ও FAST ক্লিয়ারিং কোড, সুইফট কোড (MAS অনুমোদিত)",
     hi: "सिंगापुर बैंक डायरेक्टरी, MEPS+ एवं FAST क्लियरिंग कोड, स्विफ्ट कोड - MAS प्रमाणित",
     ru: "Банки Сингапура — Клиринговые коды MEPS+, FAST, номера отделений и SWIFT (MAS)"
   },
   metaDescription: {
-    en: "Search official Singapore bank clearing routing codes (4-digit bank code + 3-digit branch code), FAST & PayNow directory, SWIFT/BIC codes, branch addresses, and postal codes for DBS, POSB, OCBC, UOB, Standard Chartered, Citibank, HSBC, and all Singapore financial institutions.",
+    en: "Search verified 7-digit bank and branch clearing codes, FAST, PayNow, and branch addresses across Singapore. Official 2026 MAS regulated banking directory.",
     bn: "ডিবিএস, পিওএসবি, ওসিবিসি, ইউওবি, স্ট্যান্ডার্ড চার্টার্ড, সিটিব্যাংক, এইচএসবিসি সহ সিঙ্গাপুরের সকল ব্যাংকের ৪ ডিজিটের ব্যাংক কোড, ৩ ডিজিটের ব্রাঞ্চ কোড, MEPS+, FAST, PayNow, সুইফট কোড ও পোস্টাল কোড খুঁজুন।",
     hi: "DBS, POSB, OCBC, UOB, Standard Chartered, Citibank, HSBC सहित सिंगापुर के सभी बैंकों के 7-अंकीय क्लियरिंग कोड, FAST, PayNow, स्विफ्ट कोड और डाक कोड खोजें।",
     ru: "Поиск официальных клиринговых кодов MAS (7 цифр), систем FAST и PayNow, кодов SWIFT/BIC, адресов отделений в Центральном, Восточном, Западном регионах Сингапура для DBS, POSB, OCBC, UOB, StanChart, Citibank и всех банков."
@@ -60,49 +62,3 @@ export const singaporeSeoData = {
     }
   ]
 };
-
-export function getSingaporeBankSeo(bank: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const name = isBn ? (bank.name_bn || bank.name) : isHi ? (bank.name_hi || bank.name) : isRu ? (bank.name_ru || bank.name) : bank.name;
-  return {
-    title: `${name} (${bank.short_name}) MEPS+, FAST Bank Code & SWIFT Directory | World Bank Codes`,
-    description: isBn
-      ? `${name}-এর সিঙ্গাপুর দেশব্যাপী সকল ব্রাঞ্চের ৪ ডিজিটের ব্যাংক কোড (${bank.bank_code}), ৭ ডিজিটের MEPS+ ক্লিয়ারিং কোড, সুইফট কোড ও শাখা ঠিকানা খুঁজুন।`
-      : isHi
-      ? `${name} के सिंगापुर की सभी शाखाओं के MEPS+ व FAST बैंक कोड (${bank.bank_code}), स्विफ्ट कोड और पते देखें।`
-      : isRu
-      ? `Все клиринговые коды MEPS+, FAST, отделения и SWIFT коды ${name} в Сингапуре (MAS верифицировано, 2026).`
-      : `Search all ${bank.name} (${bank.short_name}) branch MEPS+ / FAST clearing codes (Bank Code: ${bank.bank_code}), SWIFT/BIC codes, and branch postal codes in Singapore.`
-  };
-}
-
-export function getSingaporeBranchSeo(branch: any, lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  const bName = isBn ? (branch.name_bn || branch.name) : isHi ? (branch.name_hi || branch.name) : isRu ? (branch.name_ru || branch.name) : branch.name;
-  const bankName = isBn ? (branch.bank_name_bn || branch.bank_name) : isHi ? (branch.bank_name_hi || branch.bank_name) : isRu ? (branch.bank_name_ru || branch.bank_name) : branch.bank_name;
-  const routing = branch.routing_number;
-  return {
-    title: `${bankName} (${bName}) MEPS+ Clearing: ${routing} & SWIFT | World Bank Codes`,
-    description: isBn
-      ? `${bankName} (${bName}, ${branch.district}, ${branch.division})-এর অফিসিয়াল MEPS+ ক্লিয়ারিং কোড: ${routing}, সুইফট কোড: ${branch.swift_code || 'N/A'}, পোস্টাল কোড: ${branch.zip_code} ও ঠিকানা।`
-      : isHi
-      ? `${bankName} (${bName}, ${branch.division}) का आधिकारिक MEPS+ क्लियरिंग कोड: ${routing}, स्विफ्ट कोड एवं डाक कोड।`
-      : isRu
-      ? `Официальный MEPS+ клиринговый код: ${routing}, SWIFT: ${branch.swift_code || 'N/A'} для ${bankName}, отделение ${bName}, ${branch.division}, Сингапур.`
-      : `Official Singapore MEPS+ & FAST Clearing Code: ${routing} (Bank: ${branch.bank_code}, Branch: ${branch.branch_code}), SWIFT/BIC: ${branch.swift_code || 'HO'} for ${branch.bank_name}, ${branch.name} in ${branch.district}, Singapore ${branch.zip_code}.`
-  };
-}
-
-export function getSingaporeHomeSeo(lang: string = 'en') {
-  const isBn = lang === 'bn';
-  const isHi = lang === 'hi';
-  const isRu = lang === 'ru';
-  return {
-    title: isBn ? singaporeSeoData.metaTitle.bn : isHi ? singaporeSeoData.metaTitle.hi : isRu ? singaporeSeoData.metaTitle.ru : singaporeSeoData.metaTitle.en,
-    description: isBn ? singaporeSeoData.metaDescription.bn : isHi ? singaporeSeoData.metaDescription.hi : isRu ? singaporeSeoData.metaDescription.ru : singaporeSeoData.metaDescription.en
-  };
-}
