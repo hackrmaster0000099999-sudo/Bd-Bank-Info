@@ -11,13 +11,8 @@ async function startServer() {
   const PORT = 3000;
 
   // Basic API health check
-  app.get('/api/health', (req, res) => {
+  app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
-
-  // Ads.txt 301 Redirect
-  app.get('/ads.txt', (req, res) => {
-    res.redirect(301, 'https://srv.adstxtmanager.com/19390/worldbankcodes.com');
   });
 
   // Serve Vite in development or static assets in production
@@ -30,7 +25,7 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
